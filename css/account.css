@@ -5,8 +5,15 @@
 
 .account-body{
   min-height:100vh;
-  background:var(--ink);
-  color:var(--on-ink);
+  background:#f4f2ec;
+  color:var(--on-cream);
+}
+
+.auth[hidden],
+.dash[hidden],
+.setup[hidden],
+.dash-panel[hidden]{
+  display:none!important;
 }
 
 .sr-only{
@@ -337,4 +344,539 @@
 @media(prefers-reduced-motion:reduce){
   .auth-logo,.auth-btn,.auth-link{transition:none}
   .auth-logo:hover,.auth-btn:hover{transform:none}
+}
+
+/* ==========================================================================
+   Личный кабинет
+   Светлая страница как вкладка «Аккаунт»: шапка, боковое меню и карточки.
+   ========================================================================== */
+
+.dash{
+  --dash-bg:#f4f2ec;
+  --dash-card:#fff;
+  --dash-line:rgba(16,16,16,.08);
+  --dash-muted:rgba(16,16,16,.5);
+  --dash-muted-2:rgba(16,16,16,.36);
+  min-height:100svh;
+  background:var(--dash-bg);
+  color:var(--on-cream);
+}
+
+.dash-top{
+  position:sticky;
+  top:0;
+  z-index:30;
+  border-bottom:1px solid var(--dash-line);
+  background:rgba(244,242,236,.84);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+.dash-top-inner{
+  width:min(1160px,100% - 48px);
+  margin-inline:auto;
+  padding:14px 0;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+}
+.dash-brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:16px;
+  font-weight:600;
+  letter-spacing:-.01em;
+}
+.dash-brand img{
+  width:32px;height:32px;
+  border-radius:50%;
+  background:#05050a;
+  object-fit:cover;
+}
+.dash-top-actions{display:flex;align-items:center;gap:8px}
+.dash-top-link{
+  padding:8px 10px;
+  border-radius:999px;
+  font-size:13px;
+  color:rgba(16,16,16,.55);
+  transition:color .2s var(--ease),background .2s var(--ease);
+}
+.dash-top-link:hover{background:rgba(16,16,16,.05);color:var(--on-cream)}
+.dash-top-download{
+  padding:9px 16px;
+  border-radius:999px;
+  background:var(--on-cream);
+  color:var(--cream);
+  font-size:13px;
+  font-weight:500;
+  white-space:nowrap;
+  transition:background .25s var(--ease),transform .25s var(--ease);
+}
+.dash-top-download:hover{background:#232323;transform:translateY(-1px)}
+.dash-top-avatar{
+  flex:none;
+  width:34px;height:34px;
+  display:grid;place-items:center;
+  border-radius:50%;
+  background:var(--on-cream);
+  color:var(--cream);
+  font-size:13px;
+  font-weight:600;
+  text-transform:uppercase;
+  transition:transform .25s var(--ease),opacity .25s var(--ease);
+}
+.dash-top-avatar:hover{transform:translateY(-1px);opacity:.85}
+
+.dash-shell{
+  width:min(1160px,100% - 48px);
+  margin-inline:auto;
+  padding:36px 0 64px;
+  display:grid;
+  grid-template-columns:230px minmax(0,1fr);
+  gap:clamp(28px,4vw,56px);
+  align-items:start;
+}
+
+/* ---------- боковое меню ---------- */
+
+.dash-side{position:sticky;top:92px;min-width:0}
+.dash-user{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding-bottom:20px;
+  border-bottom:1px solid var(--dash-line);
+}
+.dash-user-avatar{
+  flex:none;
+  width:46px;height:46px;
+  display:grid;place-items:center;
+  border-radius:15px;
+  background:var(--on-cream);
+  color:var(--cream);
+  font-size:18px;
+  font-weight:600;
+  text-transform:uppercase;
+}
+.dash-user-info{display:grid;gap:2px;min-width:0}
+.dash-user-info strong{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:14px;
+  font-weight:600;
+  letter-spacing:-.01em;
+}
+.dash-user-info span{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:11px;
+  color:var(--dash-muted-2);
+}
+
+.dash-nav{display:grid;gap:2px;margin-top:16px}
+.dash-nav-label{
+  margin:18px 0 5px;
+  padding:0 10px;
+  font-size:9px;
+  font-weight:600;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--dash-muted-2);
+}
+.dash-nav-label:first-child{margin-top:0}
+.dash-nav button{
+  width:100%;
+  min-height:38px;
+  padding:0 10px;
+  display:flex;
+  align-items:center;
+  border-radius:10px;
+  text-align:left;
+  font-size:13px;
+  color:rgba(16,16,16,.62);
+  transition:background .2s var(--ease),color .2s var(--ease);
+}
+.dash-nav button:hover{background:rgba(16,16,16,.05);color:var(--on-cream)}
+.dash-nav button.is-active{
+  background:rgba(16,16,16,.08);
+  color:var(--on-cream);
+  font-weight:600;
+}
+
+.dash-side-download{
+  margin-top:22px;
+  min-height:42px;
+  padding:0 14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  border:1px solid rgba(16,16,16,.14);
+  border-radius:999px;
+  font-size:13px;
+  font-weight:500;
+  transition:background .2s var(--ease),border-color .2s var(--ease);
+}
+.dash-side-download:hover{background:rgba(16,16,16,.04);border-color:rgba(16,16,16,.28)}
+.dash-side-download span{font-size:16px;line-height:1}
+
+.dash-side-foot{
+  margin-top:26px;
+  padding-top:16px;
+  border-top:1px solid var(--dash-line);
+  display:grid;
+  gap:4px;
+  font-size:11px;
+  color:var(--dash-muted-2);
+}
+.dash-side-foot .mono{font-size:9px;color:var(--dash-muted-2)}
+
+/* ---------- контент ---------- */
+
+.dash-main{min-width:0}
+.dash-head{padding:4px 0 24px}
+.dash-kicker{margin-bottom:12px;color:var(--dash-muted-2)}
+.dash-head h1{
+  margin:0;
+  font-size:clamp(34px,3.4vw,46px);
+  font-weight:600;
+  line-height:1.02;
+  letter-spacing:-.04em;
+}
+.dash-head > p:last-child{
+  margin-top:9px;
+  font-size:14px;
+  color:var(--dash-muted);
+}
+
+.dash-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+  align-items:start;
+}
+
+.dcard{
+  position:relative;
+  min-width:0;
+  padding:20px;
+  border:1px solid var(--dash-line);
+  border-radius:18px;
+  background:var(--dash-card);
+  box-shadow:0 1px 2px rgba(16,16,16,.03);
+}
+.dcard--wide{grid-column:1/-1}
+.dcard h3{
+  margin:0 0 6px;
+  font-size:15px;
+  font-weight:600;
+  letter-spacing:-.01em;
+}
+.dcard p{
+  margin:0;
+  font-size:13px;
+  line-height:1.5;
+  color:var(--dash-muted);
+}
+.dcard-title{
+  margin:0;
+  font-size:20px;
+  font-weight:600;
+  line-height:1.15;
+  letter-spacing:-.03em;
+}
+.dcard-lede{margin-top:9px!important;max-width:54ch;font-size:13px;line-height:1.55;color:var(--dash-muted)}
+
+/* профиль */
+
+.dcard-profile-head{display:flex;align-items:center;gap:14px}
+.profile-avatar--lg{
+  flex:none;
+  width:58px;height:58px;
+  border-radius:18px;
+  display:grid;place-items:center;
+  background:var(--on-cream);
+  color:var(--cream);
+  font-size:24px;
+  font-weight:600;
+  text-transform:uppercase;
+}
+.dcard-profile-copy{min-width:0}
+.dcard-name-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dcard-name-row h2{
+  margin:0;
+  font-size:22px;
+  font-weight:600;
+  line-height:1.1;
+  letter-spacing:-.03em;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.dcard-badge{
+  padding:3px 8px;
+  border-radius:999px;
+  background:rgba(16,16,16,.06);
+  color:rgba(16,16,16,.48);
+  font-size:10px;
+  font-weight:500;
+  white-space:nowrap;
+}
+.dcard-profile-copy p{
+  margin-top:3px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:12px;
+  color:var(--dash-muted);
+}
+.dcard-profile-foot{
+  margin-top:18px;
+  padding-top:14px;
+  border-top:1px solid var(--dash-line);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  font-size:12px;
+  color:var(--dash-muted-2);
+}
+.dcard-id{display:inline-flex;align-items:center;gap:8px;min-width:0}
+.dcard-id > span{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:10px;
+  letter-spacing:.04em;
+  color:rgba(16,16,16,.55);
+}
+.dcard-copy-btn{
+  padding:4px 8px;
+  border:1px solid rgba(16,16,16,.1);
+  border-radius:999px;
+  font-size:10px;
+  color:rgba(16,16,16,.55);
+  white-space:nowrap;
+  transition:background .2s var(--ease),color .2s var(--ease);
+}
+.dcard-copy-btn:hover{background:rgba(16,16,16,.05);color:var(--on-cream)}
+
+/* лаунчер и действия */
+
+.dcard--launcher{display:flex;flex-direction:column;gap:12px}
+.dcard-icon{
+  flex:none;
+  width:44px;height:44px;
+  display:grid;place-items:center;
+  border-radius:14px;
+  background:var(--on-cream);
+  color:var(--cream);
+  font-size:18px;
+  font-weight:700;
+  letter-spacing:-.04em;
+}
+.dcard-icon--lg{width:64px;height:64px;border-radius:18px;font-size:24px}
+.dcard-copy h3{margin:0 0 4px}
+.dcard-copy p{margin:0}
+.dcard--launcher .dash-btn{margin-top:auto}
+
+.dash-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  min-height:42px;
+  padding:0 18px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:500;
+  white-space:nowrap;
+  transition:background .25s var(--ease),border-color .25s var(--ease),transform .25s var(--ease),box-shadow .25s var(--ease);
+}
+.dash-btn:hover{transform:translateY(-1px)}
+.dash-btn--primary{background:var(--on-cream);color:var(--cream)}
+.dash-btn--primary:hover{background:#232323;box-shadow:0 8px 20px rgba(16,16,16,.16)}
+.dash-btn--ghost{
+  border:1px solid rgba(16,16,16,.1);
+  background:rgba(16,16,16,.05);
+  color:rgba(16,16,16,.72);
+}
+.dash-btn--ghost:hover{background:rgba(16,16,16,.09);border-color:rgba(16,16,16,.2);box-shadow:none}
+
+/* списки */
+
+.dcard-list{display:grid;gap:0;margin-top:14px}
+.dcard-list > div{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:14px;
+  padding:9px 0;
+  border-bottom:1px solid var(--dash-line);
+  font-size:12px;
+}
+.dcard-list > div:last-child{border-bottom:0;padding-bottom:0}
+.dcard-list dt{color:var(--dash-muted-2);white-space:nowrap}
+.dcard-list dd{
+  margin:0;
+  min-width:0;
+  text-align:right;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.dcard-list dd.mono{font-size:10px;color:rgba(16,16,16,.58)}
+.dcard-list--bordered{
+  margin-top:18px;
+  padding-top:4px;
+  border-top:1px solid var(--dash-line);
+}
+.dcard-status{display:inline-flex!important;align-items:center;gap:6px;color:#1f6840}
+.dcard-status span{width:6px;height:6px;border-radius:50%;background:#2d9b5e;flex:none}
+.dcard-list--plain{
+  list-style:none;
+  margin:14px 0 0;
+  padding:0;
+  display:grid;
+  gap:9px;
+}
+.dcard-list--plain li{
+  position:relative;
+  padding-left:16px;
+  font-size:13px;
+  line-height:1.45;
+  color:var(--dash-muted);
+}
+.dcard-list--plain li::before{
+  content:"";
+  position:absolute;
+  left:0;top:.55em;
+  width:5px;height:5px;
+  border-radius:50%;
+  background:rgba(16,16,16,.25);
+}
+
+/* безопасность */
+
+.dcard--action{display:flex;flex-direction:column}
+.dcard--action .dash-btn{margin-top:auto;width:100%}
+.auth-form--dash{margin-top:20px;max-width:380px}
+.auth-form--dash .auth-btn{width:max-content;min-width:180px}
+
+/* лаунчер — подробно */
+
+.dcard--launcher-big{overflow:hidden}
+.dcard-launcher-top{display:flex;align-items:flex-start;gap:16px}
+.dcard-launcher-top .mono{color:var(--dash-muted-2);margin-bottom:7px}
+.dcard-launcher-actions{
+  margin-top:22px;
+  padding-top:18px;
+  border-top:1px solid var(--dash-line);
+  display:flex;
+  align-items:center;
+  gap:14px;
+  flex-wrap:wrap;
+}
+.dcard-hint{font-size:11px;color:var(--dash-muted-2)}
+
+/* подвал */
+
+.dash-foot{
+  margin-top:42px;
+  padding-top:18px;
+  border-top:1px solid var(--dash-line);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  font-size:11px;
+  color:var(--dash-muted-2);
+}
+.dash-foot a{transition:color .2s var(--ease)}
+.dash-foot a:hover{color:var(--on-cream)}
+
+/* ---------- сервер не настроен ---------- */
+
+.setup{
+  min-height:100svh;
+  display:grid;
+  place-items:center;
+  padding:24px;
+  background:var(--cream);
+  color:var(--on-cream);
+}
+.setup-card{
+  width:100%;
+  max-width:380px;
+  display:grid;
+  justify-items:center;
+  gap:10px;
+  text-align:center;
+}
+.setup-card .auth-logo{margin-bottom:10px}
+.setup-card .auth-btn{margin-top:10px;min-width:180px;width:auto}
+
+/* ---------- адаптив кабинета ---------- */
+
+@media(max-width:960px){
+  .dash-shell{
+    grid-template-columns:1fr;
+    gap:22px;
+    padding-top:26px;
+  }
+  .dash-side{position:static}
+  .dash-user{display:none}
+  .dash-nav{
+    display:flex;
+    gap:6px;
+    margin-top:0;
+    padding-bottom:4px;
+    overflow-x:auto;
+    scrollbar-width:none;
+  }
+  .dash-nav::-webkit-scrollbar{display:none}
+  .dash-nav-label{display:none}
+  .dash-nav button{
+    flex:none;
+    width:auto;
+    min-height:36px;
+    padding:0 14px;
+    border:1px solid var(--dash-line);
+    border-radius:999px;
+    background:#fff;
+    white-space:nowrap;
+  }
+  .dash-nav button.is-active{
+    background:var(--on-cream);
+    border-color:var(--on-cream);
+    color:var(--cream);
+  }
+  .dash-side-download,.dash-side-foot{display:none}
+  .dash-grid{grid-template-columns:1fr}
+  .dash-head h1{font-size:32px}
+}
+
+@media(max-width:600px){
+  .dash-top-inner{width:calc(100% - 32px);padding:12px 0}
+  .dash-top-link{display:none}
+  .dash-top-download{padding:8px 13px;font-size:12px}
+  .dash-shell{width:calc(100% - 32px);padding-bottom:48px}
+  .dcard{padding:16px}
+  .dcard-profile-head{align-items:flex-start}
+  .dcard-profile-foot{flex-direction:column;align-items:flex-start}
+  .dcard-profile-copy p{white-space:normal;overflow-wrap:anywhere}
+  .dcard-launcher-top{flex-direction:column}
+  .dash-foot{flex-direction:column;align-items:flex-start}
+  .auth-form--dash .auth-btn{width:100%}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .dash-top-download,.dash-top-avatar,.dash-nav button,.dash-side-download,
+  .dash-btn,.dcard-copy-btn,.dash-foot a{transition:none}
+  .dash-top-download:hover,.dash-top-avatar:hover,.dash-btn:hover{transform:none}
 }
