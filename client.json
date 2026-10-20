@@ -1,7 +1,7 @@
 {
   "version": "1.5.1",
   "notes": "Удалён See Invisible. Серверные ограничения сняты: модули доступны на любых серверах.",
-  "url": "https://github.com/AnkaVisual/AnkaVisual.github.io/releases/download/client/ankavisual-1.5-privacy.jar",
+  "url": "https://AnkaVisual.github.io/client/ankavisual-1.5.1.jar",
   "sha256": "1dac38e4a644cd532fae4ce1d66c62a12e1dbf5af048b3c23d284fe2fccdff20",
   "size": 57718551,
   "releasedAt": "2026-10-20"
