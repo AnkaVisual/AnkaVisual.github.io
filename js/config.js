@@ -10,5 +10,5 @@
   var local = location.hostname === '127.0.0.1' || location.hostname === 'localhost';
   window.ANKA_API_BASE = local
     ? 'http://127.0.0.1:8724'
-    : 'https://4wwgm6-ip-79-174-62-53.tunnelmole.net';
+    : 'https://ejilw-79-174-62-53.free.pinggy.net';
 })();
