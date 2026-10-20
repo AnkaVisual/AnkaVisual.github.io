@@ -236,10 +236,13 @@
     return;
   }
 
+  var savedToken = token;
   api('/api/auth/me').then(function (data) {
+    if (token !== savedToken) return;
     if (data.account) showProfile(data.account);
     else throw new Error('Сервер не вернул профиль');
   }).catch(function (error) {
+    if (token !== savedToken) return;
     clearSession();
     showGuest();
     if (error.status && error.status !== 401) {
