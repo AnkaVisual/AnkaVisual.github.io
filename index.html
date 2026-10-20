@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AnkaVisual — визуальный клиент для Minecraft</title>
+<meta name="description" content="AnkaVisual — визуальный клиент для Minecraft 1.21.11 на Fabric. Один .exe без установки: скачал и запустил. После активации работает офлайн.">
+<meta name="theme-color" content="#ebe8e0">
+<link rel="icon" href="assets/ankavisual/icon.ico" sizes="any">
+<link rel="apple-touch-icon" href="assets/ankavisual/logo-round.png">
+<link rel="preload" href="assets/font/inter-400-cyr.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/font/inter-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+
+<!-- ======================= ГЕРОЙ ======================= -->
+<section class="hero">
+  <div class="hero-media">
+    <img src="assets/ankavisual/images/mainmenu/background.png" alt="">
+    <div class="hero-veil"></div>
+  </div>
+
+  <nav class="nav">
+    <div class="shell nav-inner">
+      <a class="brand" href="index.html">
+        <img class="mark" src="assets/ankavisual/logo-round.png" alt="">
+        <span>AnkaVisual</span>
+      </a>
+      <div class="nav-links">
+        <a href="#pillars">Возможности</a>
+        <a href="#stack">Стек</a>
+        <a href="#get">Скачать</a>
+      </div>
+      <a class="btn btn-dark" href="https://github.com/andrejbaslykov45-stack/AnkaVisual.github.io/releases/latest/download/Anka-Launcher-1.0.0-Portable.exe">Скачать &#8599;</a>
+    </div>
+  </nav>
+
+  <div class="hero-inner">
+    <p class="eyebrow mono">Minecraft 1.21.11 &middot; Fabric</p>
+    <h1>Визуальный клиент, который запускается сразу</h1>
+    <p class="lede">Один .exe без установки: скачал, запустил — лаунчер сам
+      развернёт игру и клиент. Доступ по ключу, без входа в аккаунт.</p>
+    <div class="hero-cta">
+      <a class="btn btn-dark" href="https://github.com/andrejbaslykov45-stack/AnkaVisual.github.io/releases/latest/download/Anka-Launcher-1.0.0-Portable.exe">Скачать клиент &#8599;</a>
+      <a class="btn btn-ghost" href="#pillars">Как это работает</a>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= ЦИФРЫ ======================= -->
+<section class="band rise">
+  <div class="shell">
+    <p class="eyebrow mono">Стек</p>
+    <div class="stats" id="stack">
+      <div class="stat">
+        <span class="mono">Версия игры</span>
+        <b>1.21.11</b>
+      </div>
+      <div class="stat">
+        <span class="mono">Загрузчик</span>
+        <b>Fabric 0.20.0</b>
+      </div>
+      <div class="stat">
+        <span class="mono">Java</span>
+        <b>21+</b>
+      </div>
+      <div class="stat">
+        <span class="mono">Доступ</span>
+        <b>По ключу</b>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= ПИЛЮЛИ ======================= -->
+<section class="band rise" id="pillars">
+  <div class="shell pillars">
+    <div class="pillar-grid">
+      <div class="pillar">
+        <img src="assets/ankavisual/images/mainmenu/background.png" alt="">
+        <div class="pillar-top">
+          <span class="mono">Интерфейс</span>
+          <h3>Меню</h3>
+        </div>
+      </div>
+      <div class="pillar">
+        <img src="assets/img/launcher.png" alt="">
+        <div class="pillar-top">
+          <span class="mono">Запуск</span>
+          <h3>Лаунчер</h3>
+        </div>
+      </div>
+      <div class="pillar">
+        <img src="assets/ankavisual/fonts/monsterat/montserrat-semibold.png" alt="">
+        <div class="pillar-top">
+          <span class="mono">Типографика</span>
+          <h3>Свои шрифты</h3>
+        </div>
+      </div>
+      <div class="pillar">
+        <img src="assets/ankavisual/textures/cards/atlas.png" alt="">
+        <div class="pillar-top">
+          <span class="mono">Элементы</span>
+          <h3>Карточки</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="pillar-copy">
+      <p class="eyebrow">Всё это настраивается</p>
+      <h2>Оформление собирается под себя</h2>
+      <p class="lede">Меню, панели, шрифты и иконки живут в конфигах клиента.
+        Лаунчер ставит игру и клиент сам, переключаешь — и в игре всё меняется
+        сразу, без перезахода.</p>
+      <div class="chips">
+        <span class="chip">Fabric API</span>
+        <span class="chip">Офлайн-режим</span>
+        <span class="chip">Автообновление</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= ФИНАЛ ======================= -->
+<section class="band rise" id="get">
+  <div class="shell">
+    <div class="closing">
+      <h2>Готов попробовать?</h2>
+      <p>Лаунчер сам скачает игру, загрузчик и клиент, разложит всё по папке
+        и запустит первый мир.</p>
+      <div class="hero-cta">
+        <a class="btn btn-dark" href="https://github.com/andrejbaslykov45-stack/AnkaVisual.github.io/releases/latest/download/Anka-Launcher-1.0.0-Portable.exe">Скачать клиент &#8599;</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= ПОДВАЛ ======================= -->
+<footer class="foot">
+  <div class="shell">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-brand">
+          <img class="mark" src="assets/ankavisual/logo-round.png" alt="">
+          <span>AnkaVisual</span>
+        </div>
+        <p>Визуальный клиент для Minecraft. Собирается локально, после активации работает офлайн.</p>
+      </div>
+      <div class="foot-col">
+        <h5>Продукт</h5>
+        <a href="#pillars">Возможности</a>
+        <a href="#stack">Стек</a>
+        <a href="#get">Скачать</a>
+      </div>
+      <div class="foot-col">
+        <h5>Требования</h5>
+        <a href="#stack">Minecraft 1.21.11</a>
+        <a href="#stack">Fabric 0.20.0</a>
+        <a href="#stack">Java 21+</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>&copy; 2026 AnkaVisual</span>
+      <span>Minecraft и Fabric принадлежат их владельцам</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/site.js"></script>
+</body>
+</html>
