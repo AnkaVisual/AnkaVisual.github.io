@@ -15,6 +15,11 @@
     launcher: ['Лаунчер', 'Скачай клиент и войди в игру.']
   };
 
+  var PREFIXES = {
+    admin: 'Админ',
+    beta: 'Бета-тестер'
+  };
+
   var guest = document.getElementById('guest');
   var profile = document.getElementById('profile');
   var setup = document.getElementById('setup');
@@ -78,6 +83,14 @@
       else if (field === 'id') node.textContent = id;
       else if (field === 'created') node.textContent = created;
       else if (field === 'lastLogin') node.textContent = lastLogin;
+    });
+
+    var prefix = String(account.prefix || '').toLowerCase();
+    var prefixLabel = PREFIXES[prefix] || 'Аккаунт';
+    Array.prototype.forEach.call(profile.querySelectorAll('[data-account-prefix]'), function (node) {
+      node.textContent = prefixLabel;
+      node.classList.remove('is-admin', 'is-beta');
+      if (PREFIXES[prefix]) node.classList.add('is-' + prefix);
     });
   }
 

@@ -625,6 +625,15 @@
   font-weight:500;
   white-space:nowrap;
 }
+.dcard-badge.is-admin{
+  background:#fbe4e4;
+  color:#a12828;
+}
+.dcard-badge.is-beta{
+  background:#eee5ff;
+  color:#5a35b0;
+}
+.dash-top-prefix{font-size:10px;height:22px;display:inline-flex;align-items:center}
 .dcard-profile-copy p{
   margin-top:3px;
   overflow:hidden;
