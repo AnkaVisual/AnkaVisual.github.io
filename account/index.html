@@ -6,24 +6,27 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Аккаунт — AnkaVisual</title>
 <meta name="description" content="AnkaVisual ID: вход, регистрация и личный кабинет.">
-<meta name="theme-color" content="#0d0d0d">
+<meta name="theme-color" content="#f4f2ec">
 <link rel="icon" href="assets/ankavisual/icon.ico" sizes="any">
 <link rel="apple-touch-icon" href="assets/ankavisual/logo-round.png">
 <link rel="preload" href="assets/font/inter-400-cyr.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/font/inter-400-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/site.css">
-<link rel="stylesheet" href="css/account.css">
+<link rel="stylesheet" href="css/account.css?v=2">
 </head>
 <body class="account-body">
 
-<main class="auth">
+<!-- ============================================================
+     Гость: вход / регистрация
+     ============================================================ -->
+<main id="guest" class="auth" hidden>
   <section class="auth__left">
     <div class="auth-form-wrap">
       <a class="auth-logo" href="index.html" aria-label="AnkaVisual — на главную">
         <img src="assets/ankavisual/logo-round.png" alt="">
       </a>
 
-      <div id="guest" class="auth-panel" hidden>
+      <div id="guestPanel" class="auth-panel">
         <h1 id="authTitle" class="auth-title">Войти в AnkaVisual</h1>
         <p id="authSubtitle" class="auth-subtitle">Рады снова видеть тебя.</p>
 
@@ -74,65 +77,6 @@
         </p>
       </div>
 
-      <div id="profile" class="auth-panel auth-panel--profile" hidden>
-        <h1 class="auth-title">Личный кабинет</h1>
-        <p class="auth-subtitle">Твой профиль AnkaVisual.</p>
-
-        <div class="profile-head">
-          <div id="avatar" class="profile-avatar" aria-hidden="true">A</div>
-          <div class="profile-id">
-            <span class="mono">AnkaVisual ID</span>
-            <strong id="profileName">—</strong>
-            <span id="profileEmail" class="profile-email">—</span>
-          </div>
-        </div>
-
-        <dl class="profile-facts">
-          <div>
-            <dt>Создан</dt>
-            <dd id="profileCreated">—</dd>
-          </div>
-          <div>
-            <dt>Последний вход</dt>
-            <dd id="profileLastLogin">—</dd>
-          </div>
-          <div>
-            <dt>ID</dt>
-            <dd id="profileId" class="mono">—</dd>
-          </div>
-        </dl>
-
-        <div class="profile-actions">
-          <a class="auth-btn auth-btn--primary" href="https://github.com/AnkaVisual/AnkaVisual.github.io/releases/download/v1.1.0/Anka-Launcher-1.1.0-Portable.exe?v=cff0d0b">Скачать лаунчер &#8599;</a>
-          <button id="logout" class="auth-btn auth-btn--ghost" type="button">Выйти</button>
-        </div>
-
-        <details class="profile-details">
-          <summary>Сменить пароль</summary>
-          <form id="passwordForm" class="auth-form">
-            <label class="auth-field">
-              <span class="sr-only">Текущий пароль</span>
-              <input name="currentPassword" type="password" class="auth-input" placeholder="Текущий пароль"
-                     autocomplete="current-password" required>
-            </label>
-            <label class="auth-field">
-              <span class="sr-only">Новый пароль</span>
-              <input name="newPassword" type="password" class="auth-input" placeholder="Новый пароль"
-                     autocomplete="new-password" minlength="8" maxlength="128" required>
-            </label>
-            <button class="auth-btn auth-btn--primary" type="submit">Сменить пароль</button>
-          </form>
-        </details>
-
-        <p id="profileMsg" class="auth-msg" role="status" hidden></p>
-      </div>
-
-      <div id="setup" class="auth-panel" hidden>
-        <h1 class="auth-title">Сервер не настроен</h1>
-        <p class="auth-subtitle">Укажи публичный адрес AnkaGuard в <code>js/config.js</code>, и вход появится здесь.</p>
-        <a class="auth-btn auth-btn--ghost" href="index.html">На главную</a>
-      </div>
-
       <a class="auth-back" href="index.html">&#8592; На главную</a>
     </div>
   </section>
@@ -142,7 +86,7 @@
     <div class="auth-promo">
       <p class="mono auth-promo-kicker">AnkaVisual ID</p>
       <h2>Один аккаунт.<br>Весь AnkaVisual.</h2>
-      <p>Профиль на сайте, ключ в лаунчере. Всё на своих местах.</p>
+      <p>Профиль на сайте, вход в лаунчере. Всё на своих местах.</p>
       <div class="auth-chips">
         <span class="chip">Minecraft 1.21.11</span>
         <span class="chip">Fabric</span>
@@ -153,7 +97,261 @@
   </aside>
 </main>
 
+<!-- ============================================================
+     Аккаунт: личный кабинет
+     ============================================================ -->
+<div id="profile" class="dash" hidden>
+  <header class="dash-top">
+    <div class="dash-top-inner">
+      <a class="dash-brand" href="index.html" aria-label="AnkaVisual — на главную">
+        <img src="assets/ankavisual/logo-round.png" alt="">
+        <span>AnkaVisual</span>
+      </a>
+      <div class="dash-top-actions">
+        <a class="dash-top-link" href="index.html">На сайт</a>
+        <a class="dash-top-download" href="https://github.com/AnkaVisual/AnkaVisual.github.io/releases/download/v1.1.0/Anka-Launcher-1.1.0-Portable.exe?v=cff0d0b">Скачать лаунчер</a>
+        <button class="dash-top-avatar" type="button" data-panel-nav="profile" aria-label="Открыть профиль">
+          <span data-account="avatar">A</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="dash-shell">
+    <aside class="dash-side">
+      <div class="dash-user">
+        <div class="dash-user-avatar" data-account="avatar">A</div>
+        <div class="dash-user-info">
+          <strong data-account="username">—</strong>
+          <span data-account="email">—</span>
+        </div>
+      </div>
+
+      <nav class="dash-nav" aria-label="Разделы аккаунта">
+        <p class="dash-nav-label">Главная</p>
+        <button type="button" class="is-active" data-panel-nav="overview">Обзор</button>
+
+        <p class="dash-nav-label">Аккаунт</p>
+        <button type="button" data-panel-nav="profile">Профиль</button>
+        <button type="button" data-panel-nav="security">Безопасность</button>
+
+        <p class="dash-nav-label">Игра</p>
+        <button type="button" data-panel-nav="launcher">Лаунчер</button>
+      </nav>
+
+      <a class="dash-side-download" href="https://github.com/AnkaVisual/AnkaVisual.github.io/releases/download/v1.1.0/Anka-Launcher-1.1.0-Portable.exe?v=cff0d0b">
+        <span aria-hidden="true">&#8595;</span>
+        Скачать лаунчер
+      </a>
+
+      <div class="dash-side-foot">
+        <span class="mono">AnkaVisual ID</span>
+        <span>аккаунт активен</span>
+      </div>
+    </aside>
+
+    <main class="dash-main">
+      <div class="dash-head">
+        <p class="mono dash-kicker">Аккаунт</p>
+        <h1 id="dashTitle">Обзор</h1>
+        <p id="dashSubtitle">Твой профиль AnkaVisual.</p>
+      </div>
+
+      <!-- Обзор -->
+      <section class="dash-panel" data-panel="overview">
+        <div class="dash-grid">
+          <article class="dcard dcard--wide dcard--profile">
+            <div class="dcard-profile-head">
+              <div class="profile-avatar profile-avatar--lg" data-account="avatar" aria-hidden="true">A</div>
+              <div class="dcard-profile-copy">
+                <div class="dcard-name-row">
+                  <h2 data-account="username">—</h2>
+                  <span class="dcard-badge">Аккаунт</span>
+                </div>
+                <p data-account="email">—</p>
+              </div>
+            </div>
+            <div class="dcard-profile-foot">
+              <span class="mono">AnkaVisual ID</span>
+              <span class="dcard-id">
+                <span data-account="id">—</span>
+                <button type="button" class="dcard-copy" data-copy-id>Копировать</button>
+              </span>
+            </div>
+          </article>
+
+          <article class="dcard dcard--launcher">
+            <div class="dcard-icon" aria-hidden="true">A</div>
+            <div class="dcard-copy">
+              <h3>Лаунчер AnkaVisual</h3>
+              <p>Клиент 1.21.11 на Fabric. Вход — через этот аккаунт.</p>
+            </div>
+            <a class="dash-btn dash-btn--primary" href="https://github.com/AnkaVisual/AnkaVisual.github.io/releases/download/v1.1.0/Anka-Launcher-1.1.0-Portable.exe?v=cff0d0b">Скачать</a>
+          </article>
+
+          <article class="dcard dcard--info">
+            <h3>Данные аккаунта</h3>
+            <dl class="dcard-list">
+              <div>
+                <dt>Создан</dt>
+                <dd data-account="created">—</dd>
+              </div>
+              <div>
+                <dt>Последний вход</dt>
+                <dd data-account="lastLogin">—</dd>
+              </div>
+              <div>
+                <dt>Игровой ник</dt>
+                <dd data-account="username">—</dd>
+              </div>
+              <div>
+                <dt>Статус</dt>
+                <dd class="dcard-status"><span aria-hidden="true"></span>Активен</dd>
+              </div>
+            </dl>
+          </article>
+
+          <article class="dcard dcard--action">
+            <h3>Безопасность</h3>
+            <p>Пароль хранится в виде хэша. Сменить его можно в любой момент.</p>
+            <button type="button" class="dash-btn dash-btn--ghost" data-panel-nav="security">Сменить пароль</button>
+          </article>
+        </div>
+      </section>
+
+      <!-- Профиль -->
+      <section class="dash-panel" data-panel="profile" hidden>
+        <div class="dash-grid">
+          <article class="dcard dcard--wide">
+            <div class="dcard-profile-head">
+              <div class="profile-avatar profile-avatar--lg" data-account="avatar" aria-hidden="true">A</div>
+              <div class="dcard-profile-copy">
+                <div class="dcard-name-row">
+                  <h2 data-account="username">—</h2>
+                  <span class="dcard-badge">Аккаунт</span>
+                </div>
+                <p data-account="email">—</p>
+              </div>
+            </div>
+            <dl class="dcard-list dcard-list--bordered">
+              <div>
+                <dt>AnkaVisual ID</dt>
+                <dd class="mono" data-account="id">—</dd>
+              </div>
+              <div>
+                <dt>Логин</dt>
+                <dd data-account="username">—</dd>
+              </div>
+              <div>
+                <dt>Почта</dt>
+                <dd data-account="email">—</dd>
+              </div>
+              <div>
+                <dt>Создан</dt>
+                <dd data-account="created">—</dd>
+              </div>
+              <div>
+                <dt>Последний вход</dt>
+                <dd data-account="lastLogin">—</dd>
+              </div>
+            </dl>
+          </article>
+
+          <article class="dcard dcard--wide dcard--note">
+            <h3>Как это работает</h3>
+            <p>Логин AnkaVisual используется как ник в Minecraft. Поэтому в игре ты будешь под тем же именем, что и на сайте. Почта нужна только для входа и не показывается другим игрокам.</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- Безопасность -->
+      <section class="dash-panel" data-panel="security" hidden>
+        <div class="dash-grid">
+          <article class="dcard dcard--wide">
+            <h2 class="dcard-title">Сменить пароль</h2>
+            <p class="dcard-lede">После смены пароля текущая сессия закроется — нужно будет войти заново.</p>
+            <form id="passwordForm" class="auth-form auth-form--dash">
+              <label class="auth-field">
+                <span class="sr-only">Текущий пароль</span>
+                <input name="currentPassword" type="password" class="auth-input" placeholder="Текущий пароль"
+                       autocomplete="current-password" required>
+              </label>
+              <label class="auth-field">
+                <span class="sr-only">Новый пароль</span>
+                <input name="newPassword" type="password" class="auth-input" placeholder="Новый пароль"
+                       autocomplete="new-password" minlength="8" maxlength="128" required>
+              </label>
+              <button class="auth-btn auth-btn--primary" type="submit">Сменить пароль</button>
+            </form>
+            <p id="profileMsg" class="auth-msg" role="status" hidden></p>
+          </article>
+
+          <article class="dcard">
+            <h3>Сессия</h3>
+            <p>Вход выполнен на этом устройстве. Если заходил не ты — заверши сессию и смени пароль.</p>
+            <button type="button" class="dash-btn dash-btn--ghost" data-logout>Выйти из аккаунта</button>
+          </article>
+        </div>
+      </section>
+
+      <!-- Лаунчер -->
+      <section class="dash-panel" data-panel="launcher" hidden>
+        <div class="dash-grid">
+          <article class="dcard dcard--wide dcard--launcher-big">
+            <div class="dcard-launcher-top">
+              <div class="dcard-icon dcard-icon--lg" aria-hidden="true">A</div>
+              <div>
+                <p class="mono">AnkaVisual Launcher</p>
+                <h2 class="dcard-title">Скачать клиент</h2>
+                <p class="dcard-lede">Портативная сборка для Windows. Minecraft 1.21.11, Fabric, все функции доступны на всех серверах.</p>
+              </div>
+            </div>
+            <div class="dcard-launcher-actions">
+              <a class="dash-btn dash-btn--primary" href="https://github.com/AnkaVisual/AnkaVisual.github.io/releases/download/v1.1.0/Anka-Launcher-1.1.0-Portable.exe?v=cff0d0b">Скачать Anka Launcher 1.1.0</a>
+              <span class="dcard-hint">Windows · .exe · без установки</span>
+            </div>
+          </article>
+
+          <article class="dcard">
+            <h3>Перед запуском</h3>
+            <ul class="dcard-list dcard-list--plain">
+              <li>Скачай лаунчер и открой его.</li>
+              <li>Войди тем же логином и паролем, что и на сайте.</li>
+              <li>Нажми «Играть» — ник подставится из аккаунта.</li>
+            </ul>
+          </article>
+
+          <article class="dcard">
+            <h3>Нужен аккаунт</h3>
+            <p>Без входа в AnkaVisual лаунчер не запускает игру. Это защищает твой ник и настройки.</p>
+            <button type="button" class="dash-btn dash-btn--ghost" data-panel-nav="profile">Открыть профиль</button>
+          </article>
+        </div>
+      </section>
+
+      <footer class="dash-foot">
+        <span>© 2026 AnkaVisual</span>
+        <a href="index.html">На главную</a>
+      </footer>
+    </main>
+  </div>
+</div>
+
+<!-- ============================================================
+     Сервер аккаунтов не настроен
+     ============================================================ -->
+<div id="setup" class="setup" hidden>
+  <div class="setup-card">
+    <a class="auth-logo" href="index.html" aria-label="AnkaVisual — на главную">
+      <img src="assets/ankavisual/logo-round.png" alt="">
+    </a>
+    <h1 class="auth-title">Сервер не настроен</h1>
+    <p class="auth-subtitle">Укажи публичный адрес AnkaGuard в <code>js/config.js</code>, и вход появится здесь.</p>
+    <a class="auth-btn auth-btn--ghost" href="index.html">На главную</a>
+  </div>
+</div>
+
 <script src="js/config.js?v=15"></script>
-<script src="js/account.js?v=5"></script>
+<script src="js/account.js?v=6"></script>
 </body>
 </html>
