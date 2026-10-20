@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Аккаунт — AnkaVisual</title>
+<meta name="description" content="AnkaVisual ID: вход, регистрация и личный кабинет.">
+<meta name="theme-color" content="#0d0d0d">
+<link rel="icon" href="assets/ankavisual/icon.ico" sizes="any">
+<link rel="apple-touch-icon" href="assets/ankavisual/logo-round.png">
+<link rel="preload" href="assets/font/inter-400-cyr.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/font/inter-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/site.css">
+<link rel="stylesheet" href="css/account.css">
+</head>
+<body class="account-body">
+
+<main class="auth">
+  <section class="auth__left">
+    <div class="auth-form-wrap">
+      <a class="auth-logo" href="index.html" aria-label="AnkaVisual — на главную">
+        <img src="assets/ankavisual/logo-round.png" alt="">
+      </a>
+
+      <div id="guest" class="auth-panel" hidden>
+        <h1 id="authTitle" class="auth-title">Войти в AnkaVisual</h1>
+        <p id="authSubtitle" class="auth-subtitle">Рады снова видеть тебя.</p>
+
+        <form id="loginForm" class="auth-form" autocomplete="on">
+          <label class="auth-field">
+            <span class="sr-only">Логин или почта</span>
+            <input name="login" type="text" class="auth-input" placeholder="Юзернейм или почта"
+                   autocomplete="username" spellcheck="false" required>
+          </label>
+          <label class="auth-field">
+            <span class="sr-only">Пароль</span>
+            <input name="password" type="password" class="auth-input" placeholder="Пароль"
+                   autocomplete="current-password" required>
+          </label>
+          <button class="auth-btn auth-btn--primary" type="submit">Войти</button>
+        </form>
+
+        <form id="registerForm" class="auth-form" autocomplete="on" hidden>
+          <label class="auth-field">
+            <span class="sr-only">Логин</span>
+            <input name="username" type="text" class="auth-input" placeholder="Логин"
+                   autocomplete="username" spellcheck="false"
+                   minlength="3" maxlength="24" pattern="[A-Za-z0-9_-]{3,24}" required>
+          </label>
+          <label class="auth-field">
+            <span class="sr-only">Почта, необязательно</span>
+            <input name="email" type="email" class="auth-input" placeholder="Почта — необязательно"
+                   autocomplete="email" spellcheck="false">
+          </label>
+          <label class="auth-field">
+            <span class="sr-only">Пароль</span>
+            <input name="password" type="password" class="auth-input" placeholder="Пароль"
+                   autocomplete="new-password" minlength="8" maxlength="128" required>
+          </label>
+          <label class="auth-field">
+            <span class="sr-only">Повтори пароль</span>
+            <input name="password2" type="password" class="auth-input" placeholder="Ещё раз пароль"
+                   autocomplete="new-password" minlength="8" maxlength="128" required>
+          </label>
+          <button class="auth-btn auth-btn--primary" type="submit">Создать аккаунт</button>
+        </form>
+
+        <p id="authMsg" class="auth-msg" role="status" hidden></p>
+
+        <p class="auth-foot">
+          <span id="switchHint">Нет аккаунта?</span>
+          <button type="button" class="auth-link" data-mode="register" id="switchMode">Регистрация</button>
+        </p>
+      </div>
+
+      <div id="profile" class="auth-panel auth-panel--profile" hidden>
+        <h1 class="auth-title">Личный кабинет</h1>
+        <p class="auth-subtitle">Твой профиль AnkaVisual.</p>
+
+        <div class="profile-head">
+          <div id="avatar" class="profile-avatar" aria-hidden="true">A</div>
+          <div class="profile-id">
+            <span class="mono">AnkaVisual ID</span>
+            <strong id="profileName">—</strong>
+            <span id="profileEmail" class="profile-email">—</span>
+          </div>
+        </div>
+
+        <dl class="profile-facts">
+          <div>
+            <dt>Создан</dt>
+            <dd id="profileCreated">—</dd>
+          </div>
+          <div>
+            <dt>Последний вход</dt>
+            <dd id="profileLastLogin">—</dd>
+          </div>
+          <div>
+            <dt>ID</dt>
+            <dd id="profileId" class="mono">—</dd>
+          </div>
+        </dl>
+
+        <div class="profile-actions">
+          <a class="auth-btn auth-btn--primary" href="https://github.com/AnkaVisual/AnkaVisual.github.io/releases/download/v1.0.0/Anka-Launcher-1.0.0-Portable.exe?v=275fb8ae">Скачать лаунчер &#8599;</a>
+          <button id="logout" class="auth-btn auth-btn--ghost" type="button">Выйти</button>
+        </div>
+
+        <details class="profile-details">
+          <summary>Сменить пароль</summary>
+          <form id="passwordForm" class="auth-form">
+            <label class="auth-field">
+              <span class="sr-only">Текущий пароль</span>
+              <input name="currentPassword" type="password" class="auth-input" placeholder="Текущий пароль"
+                     autocomplete="current-password" required>
+            </label>
+            <label class="auth-field">
+              <span class="sr-only">Новый пароль</span>
+              <input name="newPassword" type="password" class="auth-input" placeholder="Новый пароль"
+                     autocomplete="new-password" minlength="8" maxlength="128" required>
+            </label>
+            <button class="auth-btn auth-btn--primary" type="submit">Сменить пароль</button>
+          </form>
+        </details>
+
+        <p id="profileMsg" class="auth-msg" role="status" hidden></p>
+      </div>
+
+      <div id="setup" class="auth-panel" hidden>
+        <h1 class="auth-title">Сервер не настроен</h1>
+        <p class="auth-subtitle">Укажи публичный адрес AnkaGuard в <code>js/config.js</code>, и вход появится здесь.</p>
+        <a class="auth-btn auth-btn--ghost" href="index.html">На главную</a>
+      </div>
+
+      <a class="auth-back" href="index.html">&#8592; На главную</a>
+    </div>
+  </section>
+
+  <aside class="auth__right" aria-hidden="true">
+    <div class="auth-scene"></div>
+    <div class="auth-promo">
+      <p class="mono auth-promo-kicker">AnkaVisual ID</p>
+      <h2>Один аккаунт.<br>Весь AnkaVisual.</h2>
+      <p>Профиль на сайте, ключ в лаунчере. Всё на своих местах.</p>
+      <div class="auth-chips">
+        <span class="chip">Minecraft 1.21.11</span>
+        <span class="chip">Fabric</span>
+        <span class="chip">Офлайн-режим</span>
+      </div>
+    </div>
+    <img class="auth-watermark" src="assets/ankavisual/logo-round.png" alt="">
+  </aside>
+</main>
+
+<script src="js/config.js"></script>
+<script src="js/account.js"></script>
+</body>
+</html>

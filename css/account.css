@@ -1,0 +1,340 @@
+/* ==========================================================================
+   AnkaVisual — аккаунт
+   Сплит как у Fantasy: форма слева, промо-панель справа.
+   ========================================================================== */
+
+.account-body{
+  min-height:100vh;
+  background:var(--ink);
+  color:var(--on-ink);
+}
+
+.sr-only{
+  position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+  clip:rect(0,0,0,0);white-space:nowrap;border:0;
+}
+
+.auth{
+  min-height:100svh;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+}
+
+/* ---------- левая половина: форма ---------- */
+
+.auth__left{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:56px 28px;
+  background:var(--cream);
+  color:var(--on-cream);
+}
+
+.auth-form-wrap{
+  position:relative;
+  width:100%;
+  max-width:364px;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  text-align:center;
+}
+
+.auth-logo{
+  display:block;
+  width:58px;height:58px;
+  margin:0 auto 26px;
+  border-radius:50%;
+  overflow:hidden;
+  background:#05050a;
+  box-shadow:0 12px 28px rgba(16,16,16,.16);
+  transition:transform .5s var(--spring);
+}
+.auth-logo:hover{transform:translateY(-2px) rotate(-2deg)}
+.auth-logo img{width:100%;height:100%;object-fit:cover}
+
+.auth-title{
+  margin:0;
+  font-size:clamp(24px,2.2vw,28px);
+  font-weight:600;
+  line-height:1.1;
+  letter-spacing:-.035em;
+}
+.auth-subtitle{
+  margin:9px 0 0;
+  color:rgba(16,16,16,.5);
+  font-size:14px;
+  line-height:1.45;
+}
+
+.auth-form{
+  display:grid;
+  gap:10px;
+  margin-top:26px;
+  text-align:left;
+}
+.auth-form[hidden]{display:none!important}
+
+.auth-field{display:block}
+
+.auth-input{
+  width:100%;
+  height:48px;
+  padding:0 17px;
+  border-radius:14px;
+  border:1px solid transparent;
+  background:rgba(16,16,16,.055);
+  color:var(--on-cream);
+  font:inherit;
+  font-size:14px;
+  outline:none;
+  transition:background .2s var(--ease),border-color .2s var(--ease),box-shadow .2s var(--ease);
+}
+.auth-input::placeholder{color:rgba(16,16,16,.38)}
+.auth-input:hover{background:rgba(16,16,16,.075)}
+.auth-input:focus{
+  background:#fff;
+  border-color:rgba(16,16,16,.38);
+  box-shadow:0 0 0 3px rgba(16,16,16,.06);
+}
+
+.auth-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  width:100%;
+  height:48px;
+  padding:0 20px;
+  border-radius:999px;
+  font:inherit;
+  font-size:14px;
+  font-weight:500;
+  white-space:nowrap;
+  transition:transform .25s var(--ease),background .25s var(--ease),box-shadow .25s var(--ease),opacity .2s;
+}
+.auth-btn:hover{transform:translateY(-1px)}
+.auth-btn:disabled{opacity:.55;cursor:wait;transform:none}
+
+.auth-btn--primary{background:var(--on-cream);color:var(--cream)}
+.auth-btn--primary:hover{background:#232323;box-shadow:0 8px 22px rgba(16,16,16,.18)}
+.auth-btn--ghost{
+  background:rgba(16,16,16,.06);
+  color:rgba(16,16,16,.72);
+  border:1px solid rgba(16,16,16,.1);
+}
+.auth-btn--ghost:hover{background:rgba(16,16,16,.1);box-shadow:none}
+
+.auth-msg{
+  margin-top:14px;
+  padding:10px 13px;
+  border-radius:11px;
+  text-align:left;
+  font-size:13px;
+  line-height:1.4;
+  background:rgba(16,16,16,.06);
+  color:rgba(16,16,16,.72);
+}
+.auth-msg[hidden]{display:none!important}
+.auth-msg.is-bad{background:rgba(154,34,34,.1);color:#8d1f1f}
+.auth-msg.is-ok{background:rgba(34,110,64,.1);color:#1f6840}
+
+.auth-foot{
+  margin:22px 0 0;
+  font-size:14px;
+  color:rgba(16,16,16,.48);
+}
+.auth-link{
+  color:var(--on-cream);
+  font:inherit;
+  font-weight:500;
+  border-bottom:1px solid rgba(16,16,16,.28);
+  padding:0;
+  margin-left:4px;
+  transition:border-color .2s var(--ease),opacity .2s var(--ease);
+}
+.auth-link:hover{border-color:var(--on-cream)}
+
+.auth-back{
+  position:absolute;
+  left:0;
+  bottom:-46px;
+  font-size:13px;
+  color:rgba(16,16,16,.42);
+  transition:color .2s var(--ease);
+}
+.auth-back:hover{color:rgba(16,16,16,.8)}
+
+/* ---------- профиль ---------- */
+
+.auth-panel--profile{text-align:left}
+.auth-panel--profile .auth-title,
+.auth-panel--profile .auth-subtitle{text-align:center}
+
+.profile-head{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-top:24px;
+  padding:16px;
+  border-radius:18px;
+  border:1px solid rgba(16,16,16,.1);
+  background:rgba(255,255,255,.36);
+}
+.profile-avatar{
+  flex:none;
+  width:56px;height:56px;
+  border-radius:17px;
+  display:grid;place-items:center;
+  background:var(--on-cream);
+  color:var(--cream);
+  font-size:24px;
+  font-weight:700;
+  letter-spacing:-.04em;
+}
+.profile-id{display:grid;gap:3px;min-width:0}
+.profile-id .mono{color:rgba(16,16,16,.38)}
+.profile-id strong{
+  font-size:22px;font-weight:600;line-height:1.1;letter-spacing:-.03em;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.profile-email{
+  font-size:13px;color:rgba(16,16,16,.48);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+
+.profile-facts{
+  display:grid;gap:0;
+  margin:18px 0 0;
+  border-top:1px solid rgba(16,16,16,.1);
+}
+.profile-facts div{
+  display:flex;align-items:baseline;justify-content:space-between;gap:16px;
+  padding:10px 0;
+  border-bottom:1px solid rgba(16,16,16,.1);
+}
+.profile-facts dt{font-size:12px;color:rgba(16,16,16,.42)}
+.profile-facts dd{margin:0;font-size:13px;text-align:right;overflow-wrap:anywhere}
+.profile-facts dd.mono{font-size:11px;color:rgba(16,16,16,.55)}
+
+.profile-actions{display:grid;gap:8px;margin-top:18px}
+
+.profile-details{margin-top:18px;padding-top:14px;border-top:1px solid rgba(16,16,16,.1)}
+.profile-details summary{
+  cursor:pointer;font-size:13px;color:rgba(16,16,16,.55);
+  width:max-content;
+}
+.profile-details[open] summary{margin-bottom:14px}
+.profile-details .auth-form{margin-top:0}
+
+.auth-panel--profile code,
+#setup code{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.9em;
+  background:rgba(16,16,16,.07);
+  padding:2px 6px;
+  border-radius:5px;
+}
+
+/* ---------- правая половина: промо ---------- */
+
+.auth__right{
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:clamp(40px,6vw,88px);
+  background:#0d0d0d;
+  color:var(--on-ink);
+  isolation:isolate;
+}
+
+.auth-scene{
+  position:absolute;
+  inset:-24px;
+  z-index:-3;
+  background:url(../assets/ankavisual/images/mainmenu/background.png) center/cover no-repeat;
+  opacity:.38;
+  filter:blur(3px) saturate(.82);
+  transform:scale(1.06);
+}
+.auth__right::before{
+  content:"";
+  position:absolute;inset:0;z-index:-2;
+  background:
+    radial-gradient(80% 70% at 70% 30%,rgba(235,232,224,.11),transparent 60%),
+    linear-gradient(145deg,rgba(13,13,13,.58) 0%,rgba(13,13,13,.82) 52%,rgba(13,13,13,.97) 100%);
+}
+.auth__right::after{
+  content:"";
+  position:absolute;inset:0;z-index:-1;
+  background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+  background-size:64px 64px;
+  mask-image:radial-gradient(75% 75% at 50% 50%,#000 20%,transparent 100%);
+  opacity:.4;
+}
+
+.auth-promo{
+  position:relative;
+  z-index:2;
+  width:100%;
+  max-width:480px;
+}
+.auth-promo-kicker{color:rgba(244,242,238,.42)}
+.auth-promo h2{
+  margin:20px 0 20px;
+  font-size:clamp(40px,4.4vw,68px);
+  font-weight:600;
+  line-height:.95;
+  letter-spacing:-.05em;
+  text-wrap:balance;
+}
+.auth-promo p{
+  max-width:34ch;
+  color:var(--muted);
+  font-size:clamp(14px,1.1vw,16px);
+}
+.auth-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px}
+.auth-chips .chip{color:rgba(244,242,238,.55);border-color:rgba(255,255,255,.14)}
+
+.auth-watermark{
+  position:absolute;
+  right:-80px;
+  bottom:-90px;
+  z-index:1;
+  width:min(460px,48vw);
+  opacity:.1;
+  filter:grayscale(1);
+  pointer-events:none;
+  user-select:none;
+}
+
+/* ---------- адаптив ---------- */
+
+@media(max-width:900px){
+  .auth{grid-template-columns:1fr;min-height:100dvh}
+  .auth__right{display:none}
+  .auth__left{
+    min-height:100svh;
+    padding:calc(48px + env(safe-area-inset-top)) 24px calc(56px + env(safe-area-inset-bottom));
+  }
+  .auth-form-wrap{max-width:380px}
+  .auth-back{position:static;display:block;margin-top:30px;text-align:center}
+  .auth-btn,.auth-input{font-size:16px}
+}
+
+@media(max-width:420px){
+  .auth-logo{width:52px;height:52px;margin-bottom:22px}
+  .auth-title{font-size:23px}
+  .auth-form{margin-top:22px}
+  .auth__left{padding-left:18px;padding-right:18px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .auth-logo,.auth-btn,.auth-link{transition:none}
+  .auth-logo:hover,.auth-btn:hover{transform:none}
+}
