@@ -49,7 +49,8 @@
     $('profileCreated').textContent = date(account.created);
     $('profileLastLogin').textContent = account.lastLogin ? date(account.lastLogin) : 'только что';
     $('avatar').textContent = name.charAt(0).toUpperCase();
-    $('profileStatus').textContent = 'аккаунт';
+    var status = $('profileStatus');
+    if (status) status.textContent = 'аккаунт';
   }
 
   function date(unix) {
@@ -63,12 +64,14 @@
 
   function api(path, options) {
     var opts = options || {};
-    var headers = { 'Content-Type': 'application/json' };
-    if (token) headers.Authorization = 'Bearer ' + token;
+    var url = API + path;
+    if (token) {
+      url += (url.indexOf('?') >= 0 ? '&' : '?') + 'token=' + encodeURIComponent(token);
+    }
 
-    return fetch(API + path, {
+    return fetch(url, {
       method: opts.method || 'GET',
-      headers: headers,
+      headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
       body: opts.body ? JSON.stringify(opts.body) : undefined,
       cache: 'no-store'
     }).then(function (response) {
