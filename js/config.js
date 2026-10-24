@@ -10,5 +10,5 @@
   var local = location.hostname === '127.0.0.1' || location.hostname === 'localhost';
   window.ANKA_API_BASE = local
     ? 'http://127.0.0.1:8724'
-    : 'https://7d806866661b520d-79-174-62-53.serveousercontent.com';
+    : 'https://dc0564416ecb4dcd-79-174-62-53.serveousercontent.com';
 })();
