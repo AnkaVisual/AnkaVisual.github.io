@@ -21,6 +21,9 @@
   };
 
   var PREFIXES = {
+    owner: 'Владелец',
+    coowner: 'Со-владелец',
+    support: 'Поддержка',
     admin: 'Админ',
     beta: 'Бета-тестер'
   };
@@ -114,7 +117,7 @@
     var prefixLabel = PREFIXES[prefix] || 'Аккаунт';
     Array.prototype.forEach.call(profile.querySelectorAll('[data-account-prefix]'), function (node) {
       node.textContent = prefixLabel;
-      node.classList.remove('is-admin', 'is-beta');
+      node.classList.remove('is-admin', 'is-beta', 'is-owner', 'is-coowner', 'is-support');
       if (PREFIXES[prefix]) node.classList.add('is-' + prefix);
     });
   }
