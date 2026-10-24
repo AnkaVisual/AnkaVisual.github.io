@@ -10,6 +10,7 @@
 
   var PANELS = {
     overview: ['Обзор', 'Твой профиль AnkaVisual.'],
+    friends: ['Друзья', 'Твой список друзей и заявки.'],
     profile: ['Профиль', 'Данные аккаунта AnkaVisual.'],
     security: ['Безопасность', 'Пароль и активная сессия.'],
     launcher: ['Лаунчер', 'Скачай клиент и войди в игру.']
@@ -28,6 +29,11 @@
   var loginForm = document.getElementById('loginForm');
   var registerForm = document.getElementById('registerForm');
   var passwordForm = document.getElementById('passwordForm');
+  var friendForm = document.getElementById('friendForm');
+  var friendMsg = document.getElementById('friendMsg');
+  var friendList = document.getElementById('friendList');
+  var friendRequests = document.getElementById('friendRequests');
+  var friendOutgoing = document.getElementById('friendOutgoing');
   var authTitle = document.getElementById('authTitle');
   var authSubtitle = document.getElementById('authSubtitle');
   var switchHint = document.getElementById('switchHint');
@@ -56,6 +62,7 @@
     if (setup) setup.hidden = true;
     if (profile) profile.hidden = false;
     fillAccount(account || {});
+    loadFriends();
     setPanel(currentHashPanel(), false);
   }
 
@@ -120,6 +127,7 @@
 
     if (dashTitle) dashTitle.textContent = PANELS[name][0];
     if (dashSubtitle) dashSubtitle.textContent = PANELS[name][1];
+    if (name === 'friends') loadFriends();
 
     if (updateHash && history.replaceState) {
       history.replaceState(null, '', location.pathname + location.search + '#' + name);
@@ -169,6 +177,173 @@
     token = '';
     accountId = '';
     localStorage.removeItem(TOKEN_KEY);
+  }
+
+  /* ── Друзья ───────────────────────────────────────────────────── */
+
+  var friendsLoading = false;
+  var friendData = { friends: [], incoming: [], outgoing: [] };
+
+  function prefixLabel(prefix) {
+    return PREFIXES[String(prefix || '').toLowerCase()] || 'Аккаунт';
+  }
+
+  function friendMessage(text, bad) {
+    setMessage(friendMsg, text, bad);
+  }
+
+  function setFriendCount(selector, value, hideZero) {
+    Array.prototype.forEach.call(document.querySelectorAll(selector), function (node) {
+      node.textContent = String(value);
+      if (hideZero) node.hidden = !value;
+    });
+  }
+
+  function friendRow(item, actions) {
+    var row = document.createElement('div');
+    row.className = 'friend-row';
+
+    var avatar = document.createElement('div');
+    avatar.className = 'friend-avatar';
+    avatar.textContent = String(item.username || item.id || '?').charAt(0).toUpperCase() || '?';
+    avatar.setAttribute('aria-hidden', 'true');
+
+    var copy = document.createElement('div');
+    copy.className = 'friend-copy';
+
+    var nameLine = document.createElement('div');
+    nameLine.className = 'friend-name-line';
+
+    var name = document.createElement('strong');
+    name.className = 'friend-name';
+    name.textContent = item.username || item.id || '—';
+    nameLine.append(name);
+
+    var prefix = String(item.prefix || '').toLowerCase();
+    var badge = document.createElement('span');
+    badge.className = 'dcard-badge' + (PREFIXES[prefix] ? ' is-' + prefix : '');
+    badge.textContent = prefixLabel(prefix);
+    nameLine.append(badge);
+
+    var id = document.createElement('span');
+    id.className = 'friend-id mono';
+    id.textContent = item.id || '—';
+
+    copy.append(nameLine, id);
+
+    var actionBar = document.createElement('div');
+    actionBar.className = 'friend-actions';
+    (actions || []).forEach(function (action) {
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'friend-btn' + (action.primary ? ' is-primary' : '') + (action.danger ? ' is-danger' : '');
+      button.textContent = action.label;
+      button.addEventListener('click', function () {
+        action.onClick(button);
+      });
+      actionBar.append(button);
+    });
+
+    row.append(avatar, copy, actionBar);
+    return row;
+  }
+
+  function renderFriends(data) {
+    friendData = {
+      friends: Array.isArray(data.friends) ? data.friends : [],
+      incoming: Array.isArray(data.incoming) ? data.incoming : [],
+      outgoing: Array.isArray(data.outgoing) ? data.outgoing : []
+    };
+
+    setFriendCount('[data-friends-count]', friendData.friends.length, false);
+    setFriendCount('[data-friends-incoming]', friendData.incoming.length, false);
+    setFriendCount('[data-friends-outgoing]', friendData.outgoing.length, false);
+    setFriendCount('[data-friends-nav-count]', friendData.incoming.length || friendData.friends.length, true);
+
+    var incomingEmpty = document.querySelector('[data-friends-incoming-empty]');
+    if (incomingEmpty) incomingEmpty.hidden = friendData.incoming.length > 0;
+
+    var friendsEmpty = document.querySelector('[data-friends-empty]');
+    if (friendsEmpty) friendsEmpty.hidden = friendData.friends.length > 0;
+
+    if (friendList) {
+      friendList.replaceChildren();
+      friendData.friends.forEach(function (friend) {
+        friendList.append(friendRow(friend, [{
+          label: 'Удалить',
+          danger: true,
+          onClick: function (button) { friendAction('remove', friend.id, button); }
+        }]));
+      });
+    }
+
+    if (friendRequests) {
+      friendRequests.replaceChildren();
+      friendData.incoming.forEach(function (request) {
+        friendRequests.append(friendRow(request, [
+          {
+            label: 'Принять',
+            primary: true,
+            onClick: function (button) { friendAction('accept', request.id, button); }
+          },
+          {
+            label: 'Отклонить',
+            onClick: function (button) { friendAction('decline', request.id, button); }
+          }
+        ]));
+      });
+    }
+
+    if (friendOutgoing) {
+      friendOutgoing.replaceChildren();
+      friendData.outgoing.forEach(function (request) {
+        friendOutgoing.append(friendRow(request, [{
+          label: 'Отменить',
+          onClick: function (button) { friendAction('cancel', request.id, button); }
+        }]));
+      });
+      var outgoingCard = friendOutgoing.closest('[data-friend-outgoing]');
+      if (outgoingCard) outgoingCard.hidden = friendData.outgoing.length === 0;
+    }
+  }
+
+  function friendAction(action, id, button) {
+    if (button) button.disabled = true;
+    api('/api/friends', {
+      method: 'POST',
+      body: { action: action, id: id }
+    }).then(function (data) {
+      friendMessage(data.message || 'Готово', false);
+      renderFriends(data);
+    }).catch(function (error) {
+      if (error.status === 401) {
+        clearSession();
+        showGuest();
+        setMessage(authMsg, 'Сессия истекла, войди заново', true);
+        return;
+      }
+      friendMessage(error.message, true);
+      if (button) button.disabled = false;
+      if (error.status === 404) loadFriends();
+    });
+  }
+
+  function loadFriends() {
+    if (!token || !profile || profile.hidden || friendsLoading) return;
+    friendsLoading = true;
+    api('/api/friends').then(function (data) {
+      if (token) renderFriends(data);
+    }).catch(function (error) {
+      if (error.status === 401) {
+        clearSession();
+        showGuest();
+        setMessage(authMsg, 'Сессия истекла, войди заново', true);
+      } else {
+        friendMessage(error.message, true);
+      }
+    }).finally(function () {
+      friendsLoading = false;
+    });
   }
 
   function switchMode(nextMode) {
@@ -303,6 +478,38 @@
     });
   }
 
+  if (friendForm) {
+    friendForm.addEventListener('submit', function (event) {
+      event.preventDefault();
+      var input = friendForm.querySelector('input[name="friend"]');
+      var query = String(input ? input.value : '').trim();
+      if (!query) return;
+
+      var submit = friendForm.querySelector('button[type="submit"]');
+      if (submit) submit.disabled = true;
+      friendMessage('Отправляю заявку…', false);
+
+      api('/api/friends', {
+        method: 'POST',
+        body: { action: 'request', query: query }
+      }).then(function (data) {
+        if (input) input.value = '';
+        friendMessage(data.message || 'Заявка отправлена', false);
+        renderFriends(data);
+      }).catch(function (error) {
+        if (error.status === 401) {
+          clearSession();
+          showGuest();
+          setMessage(authMsg, 'Сессия истекла, войди заново', true);
+          return;
+        }
+        friendMessage(error.message, true);
+      }).finally(function () {
+        if (submit) submit.disabled = false;
+      });
+    });
+  }
+
   if (switchModeButton) {
     switchModeButton.addEventListener('click', function () {
       switchMode(mode === 'login' ? 'register' : 'login');
@@ -314,6 +521,7 @@
       var name = button.getAttribute('data-panel-nav');
       setPanel(name, true);
       if (name === 'security') setMessage(profileMsg, '');
+      if (name === 'friends') friendMessage('', false);
     });
   });
 
