@@ -12,7 +12,7 @@
 <link rel="preload" href="assets/font/inter-400-cyr.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/font/inter-400-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/site.css">
-<link rel="stylesheet" href="css/account.css?v=3">
+<link rel="stylesheet" href="css/account.css?v=4">
 </head>
 <body class="account-body">
 
@@ -131,6 +131,7 @@
       <nav class="dash-nav" aria-label="Разделы аккаунта">
         <p class="dash-nav-label">Главная</p>
         <button type="button" class="is-active" data-panel-nav="overview">Обзор</button>
+        <button type="button" data-panel-nav="friends">Друзья <span class="dash-nav-count" data-friends-nav-count>0</span></button>
 
         <p class="dash-nav-label">Аккаунт</p>
         <button type="button" data-panel-nav="profile">Профиль</button>
@@ -216,6 +217,49 @@
             <h3>Безопасность</h3>
             <p>Пароль хранится в виде хэша. Сменить его можно в любой момент.</p>
             <button type="button" class="dash-btn dash-btn--ghost" data-panel-nav="security">Сменить пароль</button>
+          </article>
+        </div>
+      </section>
+
+      <!-- Друзья -->
+      <section class="dash-panel" data-panel="friends" hidden>
+        <div class="dash-grid">
+          <article class="dcard dcard--wide friend-add-card">
+            <h2 class="dcard-title">Добавить друга</h2>
+            <p class="dcard-lede">Введи AnkaVisual ID или игровой логин. Второй игрок увидит заявку у себя.</p>
+            <form id="friendForm" class="friend-add-form">
+              <label class="sr-only" for="friendQuery">AnkaVisual ID или логин</label>
+              <input id="friendQuery" name="friend" type="text" class="auth-input" placeholder="AnkaVisual ID или логин"
+                     autocomplete="off" spellcheck="false" maxlength="32" required>
+              <button class="auth-btn auth-btn--primary" type="submit">Добавить</button>
+            </form>
+            <p id="friendMsg" class="auth-msg" role="status" hidden></p>
+          </article>
+
+          <article class="dcard">
+            <div class="friend-card-head">
+              <h3>Заявки</h3>
+              <span class="friend-count" data-friends-incoming>0</span>
+            </div>
+            <div id="friendRequests" class="friend-list"></div>
+            <p class="friend-empty" data-friends-incoming-empty>Новых заявок нет.</p>
+          </article>
+
+          <article class="dcard">
+            <div class="friend-card-head">
+              <h3>Мои друзья</h3>
+              <span class="friend-count" data-friends-count>0</span>
+            </div>
+            <div id="friendList" class="friend-list"></div>
+            <p class="friend-empty" data-friends-empty>Пока никого. Добавь первый аккаунт.</p>
+          </article>
+
+          <article class="dcard dcard--wide" data-friend-outgoing hidden>
+            <div class="friend-card-head">
+              <h3>Отправленные заявки</h3>
+              <span class="friend-count" data-friends-outgoing>0</span>
+            </div>
+            <div id="friendOutgoing" class="friend-list"></div>
           </article>
         </div>
       </section>
@@ -352,7 +396,7 @@
   </div>
 </div>
 
-<script src="js/config.js?v=47"></script>
-<script src="js/account.js?v=7"></script>
+<script src="js/config.js?v=48"></script>
+<script src="js/account.js?v=8"></script>
 </body>
 </html>
