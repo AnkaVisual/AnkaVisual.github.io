@@ -34,6 +34,13 @@
   var friendList = document.getElementById('friendList');
   var friendRequests = document.getElementById('friendRequests');
   var friendOutgoing = document.getElementById('friendOutgoing');
+  var chatOverlay = document.getElementById('friendChat');
+  var chatTitle = document.getElementById('friendChatTitle');
+  var chatAvatar = document.querySelector('[data-chat-avatar]');
+  var chatId = document.querySelector('[data-chat-id]');
+  var chatMessages = document.getElementById('friendChatMessages');
+  var chatMsg = document.getElementById('friendChatMsg');
+  var chatForm = document.getElementById('friendChatForm');
   var authTitle = document.getElementById('authTitle');
   var authSubtitle = document.getElementById('authSubtitle');
   var switchHint = document.getElementById('switchHint');
@@ -52,6 +59,7 @@
   }
 
   function showGuest() {
+    closeFriendChat();
     if (guest) guest.hidden = false;
     if (profile) profile.hidden = true;
     if (setup) setup.hidden = true;
@@ -134,6 +142,7 @@
     if (dashTitle) dashTitle.textContent = PANELS[name][0];
     if (dashSubtitle) dashSubtitle.textContent = PANELS[name][1];
     if (name === 'friends') loadFriends();
+    else closeFriendChat();
 
     if (updateHash && history.replaceState) {
       history.replaceState(null, '', location.pathname + location.search + '#' + name);
@@ -189,6 +198,10 @@
 
   var friendsLoading = false;
   var friendData = { friends: [], incoming: [], outgoing: [] };
+  var chatFriend = null;
+  var chatLastId = 0;
+  var chatTimer = null;
+  var chatLoading = false;
 
   function prefixLabel(prefix) {
     return PREFIXES[String(prefix || '').toLowerCase()] || 'Аккаунт';
@@ -275,12 +288,26 @@
     if (friendList) {
       friendList.replaceChildren();
       friendData.friends.forEach(function (friend) {
-        friendList.append(friendRow(friend, [{
-          label: 'Удалить',
-          danger: true,
-          onClick: function (button) { friendAction('remove', friend.id, button); }
-        }]));
+        friendList.append(friendRow(friend, [
+          {
+            label: 'Чат',
+            primary: true,
+            onClick: function () { openFriendChat(friend); }
+          },
+          {
+            label: 'Удалить',
+            danger: true,
+            onClick: function (button) { friendAction('remove', friend.id, button); }
+          }
+        ]));
       });
+    }
+
+    if (chatFriend) {
+      var chatStillFriend = friendData.friends.some(function (friend) {
+        return friend.id === chatFriend.id;
+      });
+      if (!chatStillFriend) closeFriendChat();
     }
 
     if (friendRequests) {
@@ -352,6 +379,140 @@
     });
   }
 
+  function chatTime(unix) {
+    if (!unix) return '';
+    var d = new Date(unix * 1000);
+    if (Number.isNaN(d.getTime())) return '';
+    return d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function chatMessage(text, bad) {
+    setMessage(chatMsg, text, bad);
+  }
+
+  function chatEmpty() {
+    if (!chatMessages) return;
+    var empty = document.createElement('p');
+    empty.className = 'friend-chat-empty';
+    empty.textContent = 'Пока нет сообщений. Напиши первым.';
+    empty.setAttribute('data-chat-empty', '');
+    chatMessages.append(empty);
+  }
+
+  function appendChatMessage(message) {
+    if (!chatMessages || !message) return;
+    var empty = chatMessages.querySelector('[data-chat-empty]');
+    if (empty) empty.remove();
+
+    var row = document.createElement('div');
+    row.className = 'friend-chat-row' + (message.from === accountId ? ' is-me' : '');
+
+    var bubble = document.createElement('div');
+    bubble.className = 'friend-chat-bubble';
+
+    var text = document.createElement('p');
+    text.textContent = message.text || '';
+    var time = document.createElement('span');
+    time.className = 'friend-chat-time';
+    time.textContent = chatTime(message.created);
+
+    bubble.append(text, time);
+    row.append(bubble);
+    chatMessages.append(row);
+
+    if (Number(message.id) > chatLastId) chatLastId = Number(message.id);
+  }
+
+  function scrollChat() {
+    if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  function loadChat(replace) {
+    if (!chatFriend || !token || chatLoading || !chatOverlay || chatOverlay.hidden) return;
+    chatLoading = true;
+    var friendId = chatFriend.id;
+    api('/api/friends/chat?friend=' + encodeURIComponent(friendId) + '&after=' + (replace ? 0 : chatLastId)).then(function (data) {
+      if (!chatFriend || chatFriend.id !== friendId) return;
+      if (replace) {
+        chatMessages.replaceChildren();
+        chatLastId = 0;
+      }
+      var list = Array.isArray(data.messages) ? data.messages : [];
+      list.forEach(function (message) {
+        if (Number(message.id) > chatLastId) appendChatMessage(message);
+      });
+      if (replace && !list.length) chatEmpty();
+      scrollChat();
+    }).catch(function (error) {
+      if (!chatFriend || chatFriend.id !== friendId) return;
+      if (error.status === 401) {
+        closeFriendChat();
+        clearSession();
+        showGuest();
+        setMessage(authMsg, 'Сессия истекла, войди заново', true);
+        return;
+      }
+      if (error.status === 404) {
+        closeFriendChat();
+        friendMessage('Переписка доступна только друзьям', true);
+        loadFriends();
+        return;
+      }
+      chatMessage(error.message, true);
+    }).finally(function () {
+      chatLoading = false;
+    });
+  }
+
+  function startChatPolling() {
+    stopChatPolling();
+    chatTimer = setInterval(function () {
+      loadChat(false);
+    }, 3000);
+  }
+
+  function stopChatPolling() {
+    if (chatTimer) {
+      clearInterval(chatTimer);
+      chatTimer = null;
+    }
+  }
+
+  function openFriendChat(friend) {
+    if (!chatOverlay || !friend) return;
+    chatFriend = friend;
+    chatLastId = 0;
+    chatLoading = false;
+    stopChatPolling();
+
+    if (chatTitle) chatTitle.textContent = friend.username || friend.id || 'Чат';
+    if (chatAvatar) {
+      chatAvatar.textContent = String(friend.username || friend.id || '?').charAt(0).toUpperCase() || '?';
+    }
+    if (chatId) chatId.textContent = friend.id || '';
+    if (chatMessages) chatMessages.replaceChildren();
+    if (chatForm) chatForm.reset();
+    chatMessage('', false);
+
+    chatOverlay.hidden = false;
+    document.body.classList.add('friend-chat-open');
+    loadChat(true);
+    startChatPolling();
+    var input = chatForm ? chatForm.querySelector('input[name="text"]') : null;
+    if (input) input.focus();
+  }
+
+  function closeFriendChat() {
+    stopChatPolling();
+    chatFriend = null;
+    chatLastId = 0;
+    chatLoading = false;
+    if (chatOverlay) chatOverlay.hidden = true;
+    if (chatMessages) chatMessages.replaceChildren();
+    chatMessage('', false);
+    document.body.classList.remove('friend-chat-open');
+  }
+
   function switchMode(nextMode) {
     mode = nextMode === 'register' ? 'register' : 'login';
     var isLogin = mode === 'login';
@@ -370,9 +531,9 @@
     setMessage(authMsg, '');
   }
 
-  function resetHash() {
+  function resetHash(dropSearch) {
     if (history.replaceState) {
-      history.replaceState(null, '', location.pathname + location.search);
+      history.replaceState(null, '', location.pathname + (dropSearch ? '' : location.search));
     }
   }
 
@@ -516,6 +677,59 @@
     });
   }
 
+  if (chatForm) {
+    chatForm.addEventListener('submit', function (event) {
+      event.preventDefault();
+      if (!chatFriend || !token) return;
+
+      var input = chatForm.querySelector('input[name="text"]');
+      var text = String(input ? input.value : '').trim();
+      if (!text) return;
+
+      var friendId = chatFriend.id;
+      var submit = chatForm.querySelector('button[type="submit"]');
+      if (submit) submit.disabled = true;
+      chatMessage('', false);
+
+      api('/api/friends/chat', {
+        method: 'POST',
+        body: { friend: friendId, text: text }
+      }).then(function (data) {
+        if (!chatFriend || chatFriend.id !== friendId) return;
+        if (input) input.value = '';
+        if (data.message) appendChatMessage(data.message);
+        scrollChat();
+      }).catch(function (error) {
+        if (!chatFriend || chatFriend.id !== friendId) return;
+        if (error.status === 401) {
+          closeFriendChat();
+          clearSession();
+          showGuest();
+          setMessage(authMsg, 'Сессия истекла, войди заново', true);
+          return;
+        }
+        if (error.status === 404) {
+          closeFriendChat();
+          friendMessage('Переписка доступна только друзьям', true);
+          loadFriends();
+          return;
+        }
+        chatMessage(error.message, true);
+      }).finally(function () {
+        if (submit) submit.disabled = false;
+        if (input && chatFriend && chatFriend.id === friendId) input.focus();
+      });
+    });
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('[data-chat-close]'), function (button) {
+    button.addEventListener('click', closeFriendChat);
+  });
+
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && chatOverlay && !chatOverlay.hidden) closeFriendChat();
+  });
+
   if (switchModeButton) {
     switchModeButton.addEventListener('click', function () {
       switchMode(mode === 'login' ? 'register' : 'login');
@@ -574,7 +788,7 @@
     switchMode('login');
     showGuest();
     setMessage(authMsg, 'Вхожу в аккаунт…');
-    resetHash();
+    resetHash(true);
 
     api('/api/auth/admin-login', {
       method: 'POST',
