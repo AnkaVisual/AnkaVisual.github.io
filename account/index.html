@@ -1,11 +1,11 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="utf-8">
 <base href="/">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>РђРєРєР°СѓРЅС‚ вЂ” AnkaVisual</title>
-<meta name="description" content="AnkaVisual ID: РІС…РѕРґ, СЂРµРіРёСЃС‚СЂР°С†РёСЏ Рё Р»РёС‡РЅС‹Р№ РєР°Р±РёРЅРµС‚.">
+<title>Аккаунт — AnkaVisual</title>
+<meta name="description" content="AnkaVisual ID: вход, регистрация и личный кабинет.">
 <meta name="theme-color" content="#f4f2ec">
 <link rel="icon" href="assets/ankavisual/icon.ico" sizes="any">
 <link rel="apple-touch-icon" href="assets/ankavisual/logo-round.png">
@@ -17,67 +17,67 @@
 <body class="account-body">
 
 <!-- ============================================================
-     Р“РѕСЃС‚СЊ: РІС…РѕРґ / СЂРµРіРёСЃС‚СЂР°С†РёСЏ
+     Гость: вход / регистрация
      ============================================================ -->
 <main id="guest" class="auth" hidden>
   <section class="auth__left">
     <div class="auth-form-wrap">
-      <a class="auth-logo" href="index.html" aria-label="AnkaVisual вЂ” РЅР° РіР»Р°РІРЅСѓСЋ">
+      <a class="auth-logo" href="index.html" aria-label="AnkaVisual — на главную">
         <img src="assets/ankavisual/logo-round.png" alt="">
       </a>
 
       <div id="guestPanel" class="auth-panel">
-        <h1 id="authTitle" class="auth-title">Р’РѕР№С‚Рё РІ AnkaVisual</h1>
-        <p id="authSubtitle" class="auth-subtitle">Р Р°РґС‹ СЃРЅРѕРІР° РІРёРґРµС‚СЊ С‚РµР±СЏ.</p>
+        <h1 id="authTitle" class="auth-title">Войти в AnkaVisual</h1>
+        <p id="authSubtitle" class="auth-subtitle">Рады снова видеть тебя.</p>
 
         <form id="loginForm" class="auth-form" autocomplete="on">
           <label class="auth-field">
-            <span class="sr-only">Р›РѕРіРёРЅ РёР»Рё РїРѕС‡С‚Р°</span>
-            <input name="login" type="text" class="auth-input" placeholder="Р®Р·РµСЂРЅРµР№Рј РёР»Рё РїРѕС‡С‚Р°"
+            <span class="sr-only">Логин или почта</span>
+            <input name="login" type="text" class="auth-input" placeholder="Юзернейм или почта"
                    autocomplete="username" spellcheck="false" required>
           </label>
           <label class="auth-field">
-            <span class="sr-only">РџР°СЂРѕР»СЊ</span>
-            <input name="password" type="password" class="auth-input" placeholder="РџР°СЂРѕР»СЊ"
+            <span class="sr-only">Пароль</span>
+            <input name="password" type="password" class="auth-input" placeholder="Пароль"
                    autocomplete="current-password" required>
           </label>
-          <button class="auth-btn auth-btn--primary" type="submit">Р’РѕР№С‚Рё</button>
+          <button class="auth-btn auth-btn--primary" type="submit">Войти</button>
         </form>
 
         <form id="registerForm" class="auth-form" autocomplete="on" hidden>
           <label class="auth-field">
-            <span class="sr-only">Р›РѕРіРёРЅ</span>
-            <input name="username" type="text" class="auth-input" placeholder="Р›РѕРіРёРЅ"
+            <span class="sr-only">Логин</span>
+            <input name="username" type="text" class="auth-input" placeholder="Логин"
                    autocomplete="username" spellcheck="false"
                    minlength="3" maxlength="24" pattern="[A-Za-z0-9_-]{3,24}" required>
           </label>
           <label class="auth-field">
-            <span class="sr-only">РџРѕС‡С‚Р°, РЅРµРѕР±СЏР·Р°С‚РµР»СЊРЅРѕ</span>
-            <input name="email" type="email" class="auth-input" placeholder="РџРѕС‡С‚Р° вЂ” РЅРµРѕР±СЏР·Р°С‚РµР»СЊРЅРѕ"
+            <span class="sr-only">Почта, необязательно</span>
+            <input name="email" type="email" class="auth-input" placeholder="Почта — необязательно"
                    autocomplete="email" spellcheck="false">
           </label>
           <label class="auth-field">
-            <span class="sr-only">РџР°СЂРѕР»СЊ</span>
-            <input name="password" type="password" class="auth-input" placeholder="РџР°СЂРѕР»СЊ"
+            <span class="sr-only">Пароль</span>
+            <input name="password" type="password" class="auth-input" placeholder="Пароль"
                    autocomplete="new-password" minlength="8" maxlength="128" required>
           </label>
           <label class="auth-field">
-            <span class="sr-only">РџРѕРІС‚РѕСЂРё РїР°СЂРѕР»СЊ</span>
-            <input name="password2" type="password" class="auth-input" placeholder="Р•С‰С‘ СЂР°Р· РїР°СЂРѕР»СЊ"
+            <span class="sr-only">Повтори пароль</span>
+            <input name="password2" type="password" class="auth-input" placeholder="Ещё раз пароль"
                    autocomplete="new-password" minlength="8" maxlength="128" required>
           </label>
-          <button class="auth-btn auth-btn--primary" type="submit">РЎРѕР·РґР°С‚СЊ Р°РєРєР°СѓРЅС‚</button>
+          <button class="auth-btn auth-btn--primary" type="submit">Создать аккаунт</button>
         </form>
 
         <p id="authMsg" class="auth-msg" role="status" hidden></p>
 
         <p class="auth-foot">
-          <span id="switchHint">РќРµС‚ Р°РєРєР°СѓРЅС‚Р°?</span>
-          <button type="button" class="auth-link" data-mode="register" id="switchMode">Р РµРіРёСЃС‚СЂР°С†РёСЏ</button>
+          <span id="switchHint">Нет аккаунта?</span>
+          <button type="button" class="auth-link" data-mode="register" id="switchMode">Регистрация</button>
         </p>
       </div>
 
-      <a class="auth-back" href="index.html">&#8592; РќР° РіР»Р°РІРЅСѓСЋ</a>
+      <a class="auth-back" href="index.html">&#8592; На главную</a>
     </div>
   </section>
 
@@ -85,12 +85,12 @@
     <div class="auth-scene"></div>
     <div class="auth-promo">
       <p class="mono auth-promo-kicker">AnkaVisual ID</p>
-      <h2>РћРґРёРЅ Р°РєРєР°СѓРЅС‚.<br>Р’РµСЃСЊ AnkaVisual.</h2>
-      <p>РџСЂРѕС„РёР»СЊ РЅР° СЃР°Р№С‚Рµ, РІС…РѕРґ РІ Р»Р°СѓРЅС‡РµСЂРµ. Р’СЃС‘ РЅР° СЃРІРѕРёС… РјРµСЃС‚Р°С….</p>
+      <h2>Один аккаунт.<br>Весь AnkaVisual.</h2>
+      <p>Профиль на сайте, вход в лаунчере. Всё на своих местах.</p>
       <div class="auth-chips">
         <span class="chip">Minecraft 1.21.11</span>
         <span class="chip">Fabric</span>
-        <span class="chip">РћС„Р»Р°Р№РЅ-СЂРµР¶РёРј</span>
+        <span class="chip">Офлайн-режим</span>
       </div>
     </div>
     <img class="auth-watermark" src="assets/ankavisual/logo-round.png" alt="">
@@ -98,20 +98,20 @@
 </main>
 
 <!-- ============================================================
-     РђРєРєР°СѓРЅС‚: Р»РёС‡РЅС‹Р№ РєР°Р±РёРЅРµС‚
+     Аккаунт: личный кабинет
      ============================================================ -->
 <div id="profile" class="dash" hidden>
   <header class="dash-top">
     <div class="dash-top-inner">
-      <a class="dash-brand" href="index.html" aria-label="AnkaVisual вЂ” РЅР° РіР»Р°РІРЅСѓСЋ">
+      <a class="dash-brand" href="index.html" aria-label="AnkaVisual — на главную">
         <img src="assets/ankavisual/logo-round.png" alt="">
         <span>AnkaVisual</span>
       </a>
       <div class="dash-top-actions">
-        <a class="dash-top-link" href="index.html">РќР° СЃР°Р№С‚</a>
-        <a class="dash-top-download" href="https://github.com/AnkaVisual/AnkaVisual.github.io/releases/download/v1.1.1/Anka-Launcher-1.1.1-Portable.exe?v=da19211">РЎРєР°С‡Р°С‚СЊ Р»Р°СѓРЅС‡РµСЂ</a>
-        <span class="dcard-badge dash-top-prefix" data-account-prefix>РђРєРєР°СѓРЅС‚</span>
-        <button class="dash-top-avatar" type="button" data-panel-nav="profile" aria-label="РћС‚РєСЂС‹С‚СЊ РїСЂРѕС„РёР»СЊ">
+        <a class="dash-top-link" href="index.html">На сайт</a>
+        <a class="dash-top-download" href="https://github.com/AnkaVisual/AnkaVisual.github.io/releases/download/v1.1.1/Anka-Launcher-1.1.1-Portable.exe?v=da19211">Скачать лаунчер</a>
+        <span class="dcard-badge dash-top-prefix" data-account-prefix>Аккаунт</span>
+        <button class="dash-top-avatar" type="button" data-panel-nav="profile" aria-label="Открыть профиль">
           <span data-account="avatar">A</span>
         </button>
       </div>
@@ -123,43 +123,43 @@
       <div class="dash-user">
         <div class="dash-user-avatar" data-account="avatar">A</div>
         <div class="dash-user-info">
-          <strong data-account="username">вЂ”</strong>
-          <span data-account="email">вЂ”</span>
+          <strong data-account="username">—</strong>
+          <span data-account="email">—</span>
         </div>
       </div>
 
-      <nav class="dash-nav" aria-label="Р Р°Р·РґРµР»С‹ Р°РєРєР°СѓРЅС‚Р°">
-        <p class="dash-nav-label">Р“Р»Р°РІРЅР°СЏ</p>
-        <button type="button" class="is-active" data-panel-nav="overview">РћР±Р·РѕСЂ</button>
-        <button type="button" data-panel-nav="friends">Р”СЂСѓР·СЊСЏ <span class="dash-nav-count" data-friends-nav-count>0</span></button>
+      <nav class="dash-nav" aria-label="Разделы аккаунта">
+        <p class="dash-nav-label">Главная</p>
+        <button type="button" class="is-active" data-panel-nav="overview">Обзор</button>
+        <button type="button" data-panel-nav="friends">Друзья <span class="dash-nav-count" data-friends-nav-count>0</span></button>
 
-        <p class="dash-nav-label">РђРєРєР°СѓРЅС‚</p>
-        <button type="button" data-panel-nav="profile">РџСЂРѕС„РёР»СЊ</button>
-        <button type="button" data-panel-nav="security">Р‘РµР·РѕРїР°СЃРЅРѕСЃС‚СЊ</button>
+        <p class="dash-nav-label">Аккаунт</p>
+        <button type="button" data-panel-nav="profile">Профиль</button>
+        <button type="button" data-panel-nav="security">Безопасность</button>
 
-        <p class="dash-nav-label">РРіСЂР°</p>
-        <button type="button" data-panel-nav="launcher">Р›Р°СѓРЅС‡РµСЂ</button>
+        <p class="dash-nav-label">Игра</p>
+        <button type="button" data-panel-nav="launcher">Лаунчер</button>
       </nav>
 
       <a class="dash-side-download" href="https://github.com/AnkaVisual/AnkaVisual.github.io/releases/download/v1.1.1/Anka-Launcher-1.1.1-Portable.exe?v=da19211">
         <span aria-hidden="true">&#8595;</span>
-        РЎРєР°С‡Р°С‚СЊ Р»Р°СѓРЅС‡РµСЂ
+        Скачать лаунчер
       </a>
 
       <div class="dash-side-foot">
         <span class="mono">AnkaVisual ID</span>
-        <span>Р°РєРєР°СѓРЅС‚ Р°РєС‚РёРІРµРЅ</span>
+        <span>аккаунт активен</span>
       </div>
     </aside>
 
     <main class="dash-main">
       <div class="dash-head">
-        <p class="mono dash-kicker">РђРєРєР°СѓРЅС‚</p>
-        <h1 id="dashTitle">РћР±Р·РѕСЂ</h1>
-        <p id="dashSubtitle">РўРІРѕР№ РїСЂРѕС„РёР»СЊ AnkaVisual.</p>
+        <p class="mono dash-kicker">Аккаунт</p>
+        <h1 id="dashTitle">Обзор</h1>
+        <p id="dashSubtitle">Твой профиль AnkaVisual.</p>
       </div>
 
-      <!-- РћР±Р·РѕСЂ -->
+      <!-- Обзор -->
       <section class="dash-panel" data-panel="overview">
         <div class="dash-grid">
           <article class="dcard dcard--wide dcard--profile">
@@ -167,17 +167,17 @@
               <div class="profile-avatar profile-avatar--lg" data-account="avatar" aria-hidden="true">A</div>
               <div class="dcard-profile-copy">
                 <div class="dcard-name-row">
-                  <h2 data-account="username">вЂ”</h2>
-                  <span class="dcard-badge" data-account-prefix>РђРєРєР°СѓРЅС‚</span>
+                  <h2 data-account="username">—</h2>
+                  <span class="dcard-badge" data-account-prefix>Аккаунт</span>
                 </div>
-                <p data-account="email">вЂ”</p>
+                <p data-account="email">—</p>
               </div>
             </div>
             <div class="dcard-profile-foot">
               <span class="mono">AnkaVisual ID</span>
               <span class="dcard-id">
-                <span data-account="id">вЂ”</span>
-                <button type="button" class="dcard-copy-btn" data-copy-id>РљРѕРїРёСЂРѕРІР°С‚СЊ</button>
+                <span data-account="id">—</span>
+                <button type="button" class="dcard-copy-btn" data-copy-id>Копировать</button>
               </span>
             </div>
           </article>
@@ -185,78 +185,78 @@
           <article class="dcard dcard--launcher">
             <div class="dcard-icon" aria-hidden="true">A</div>
             <div class="dcard-copy">
-              <h3>Р›Р°СѓРЅС‡РµСЂ AnkaVisual</h3>
-              <p>РљР»РёРµРЅС‚ 1.21.11 РЅР° Fabric. Р’С…РѕРґ вЂ” С‡РµСЂРµР· СЌС‚РѕС‚ Р°РєРєР°СѓРЅС‚.</p>
+              <h3>Лаунчер AnkaVisual</h3>
+              <p>Клиент 1.21.11 на Fabric. Вход — через этот аккаунт.</p>
             </div>
-            <a class="dash-btn dash-btn--primary" href="https://github.com/AnkaVisual/AnkaVisual.github.io/releases/download/v1.1.1/Anka-Launcher-1.1.1-Portable.exe?v=da19211">РЎРєР°С‡Р°С‚СЊ</a>
+            <a class="dash-btn dash-btn--primary" href="https://github.com/AnkaVisual/AnkaVisual.github.io/releases/download/v1.1.1/Anka-Launcher-1.1.1-Portable.exe?v=da19211">Скачать</a>
           </article>
 
           <article class="dcard dcard--info">
-            <h3>Р”Р°РЅРЅС‹Рµ Р°РєРєР°СѓРЅС‚Р°</h3>
+            <h3>Данные аккаунта</h3>
             <dl class="dcard-list">
               <div>
-                <dt>РЎРѕР·РґР°РЅ</dt>
-                <dd data-account="created">вЂ”</dd>
+                <dt>Создан</dt>
+                <dd data-account="created">—</dd>
               </div>
               <div>
-                <dt>РџРѕСЃР»РµРґРЅРёР№ РІС…РѕРґ</dt>
-                <dd data-account="lastLogin">вЂ”</dd>
+                <dt>Последний вход</dt>
+                <dd data-account="lastLogin">—</dd>
               </div>
               <div>
-                <dt>РРіСЂРѕРІРѕР№ РЅРёРє</dt>
-                <dd data-account="username">вЂ”</dd>
+                <dt>Игровой ник</dt>
+                <dd data-account="username">—</dd>
               </div>
               <div>
-                <dt>РЎС‚Р°С‚СѓСЃ</dt>
-                <dd class="dcard-status"><span aria-hidden="true"></span>РђРєС‚РёРІРµРЅ</dd>
+                <dt>Статус</dt>
+                <dd class="dcard-status"><span aria-hidden="true"></span>Активен</dd>
               </div>
             </dl>
           </article>
 
           <article class="dcard dcard--action">
-            <h3>Р‘РµР·РѕРїР°СЃРЅРѕСЃС‚СЊ</h3>
-            <p>РџР°СЂРѕР»СЊ С…СЂР°РЅРёС‚СЃСЏ РІ РІРёРґРµ С…СЌС€Р°. РЎРјРµРЅРёС‚СЊ РµРіРѕ РјРѕР¶РЅРѕ РІ Р»СЋР±РѕР№ РјРѕРјРµРЅС‚.</p>
-            <button type="button" class="dash-btn dash-btn--ghost" data-panel-nav="security">РЎРјРµРЅРёС‚СЊ РїР°СЂРѕР»СЊ</button>
+            <h3>Безопасность</h3>
+            <p>Пароль хранится в виде хэша. Сменить его можно в любой момент.</p>
+            <button type="button" class="dash-btn dash-btn--ghost" data-panel-nav="security">Сменить пароль</button>
           </article>
         </div>
       </section>
 
-      <!-- Р”СЂСѓР·СЊСЏ -->
+      <!-- Друзья -->
       <section class="dash-panel" data-panel="friends" hidden>
         <div class="dash-grid">
           <article class="dcard dcard--wide friend-add-card">
-            <h2 class="dcard-title">Р”РѕР±Р°РІРёС‚СЊ РґСЂСѓРіР°</h2>
-            <p class="dcard-lede">Р’РІРµРґРё AnkaVisual ID РёР»Рё РёРіСЂРѕРІРѕР№ Р»РѕРіРёРЅ. Р’С‚РѕСЂРѕР№ РёРіСЂРѕРє СѓРІРёРґРёС‚ Р·Р°СЏРІРєСѓ Сѓ СЃРµР±СЏ.</p>
+            <h2 class="dcard-title">Добавить друга</h2>
+            <p class="dcard-lede">Введи AnkaVisual ID или игровой логин. Второй игрок увидит заявку у себя.</p>
             <form id="friendForm" class="friend-add-form">
-              <label class="sr-only" for="friendQuery">AnkaVisual ID РёР»Рё Р»РѕРіРёРЅ</label>
-              <input id="friendQuery" name="friend" type="text" class="auth-input" placeholder="AnkaVisual ID РёР»Рё Р»РѕРіРёРЅ"
+              <label class="sr-only" for="friendQuery">AnkaVisual ID или логин</label>
+              <input id="friendQuery" name="friend" type="text" class="auth-input" placeholder="AnkaVisual ID или логин"
                      autocomplete="off" spellcheck="false" maxlength="32" required>
-              <button class="auth-btn auth-btn--primary" type="submit">Р”РѕР±Р°РІРёС‚СЊ</button>
+              <button class="auth-btn auth-btn--primary" type="submit">Добавить</button>
             </form>
             <p id="friendMsg" class="auth-msg" role="status" hidden></p>
           </article>
 
           <article class="dcard">
             <div class="friend-card-head">
-              <h3>Р—Р°СЏРІРєРё</h3>
+              <h3>Заявки</h3>
               <span class="friend-count" data-friends-incoming>0</span>
             </div>
             <div id="friendRequests" class="friend-list"></div>
-            <p class="friend-empty" data-friends-incoming-empty>РќРѕРІС‹С… Р·Р°СЏРІРѕРє РЅРµС‚.</p>
+            <p class="friend-empty" data-friends-incoming-empty>Новых заявок нет.</p>
           </article>
 
           <article class="dcard">
             <div class="friend-card-head">
-              <h3>РњРѕРё РґСЂСѓР·СЊСЏ</h3>
+              <h3>Мои друзья</h3>
               <span class="friend-count" data-friends-count>0</span>
             </div>
             <div id="friendList" class="friend-list"></div>
-            <p class="friend-empty" data-friends-empty>РџРѕРєР° РЅРёРєРѕРіРѕ. Р”РѕР±Р°РІСЊ РїРµСЂРІС‹Р№ Р°РєРєР°СѓРЅС‚.</p>
+            <p class="friend-empty" data-friends-empty>Пока никого. Добавь первый аккаунт.</p>
           </article>
 
           <article class="dcard dcard--wide" data-friend-outgoing hidden>
             <div class="friend-card-head">
-              <h3>РћС‚РїСЂР°РІР»РµРЅРЅС‹Рµ Р·Р°СЏРІРєРё</h3>
+              <h3>Отправленные заявки</h3>
               <span class="friend-count" data-friends-outgoing>0</span>
             </div>
             <div id="friendOutgoing" class="friend-list"></div>
@@ -264,7 +264,7 @@
         </div>
       </section>
 
-      <!-- РџСЂРѕС„РёР»СЊ -->
+      <!-- Профиль -->
       <section class="dash-panel" data-panel="profile" hidden>
         <div class="dash-grid">
           <article class="dcard dcard--wide">
@@ -272,74 +272,74 @@
               <div class="profile-avatar profile-avatar--lg" data-account="avatar" aria-hidden="true">A</div>
               <div class="dcard-profile-copy">
                 <div class="dcard-name-row">
-                  <h2 data-account="username">вЂ”</h2>
-                  <span class="dcard-badge" data-account-prefix>РђРєРєР°СѓРЅС‚</span>
+                  <h2 data-account="username">—</h2>
+                  <span class="dcard-badge" data-account-prefix>Аккаунт</span>
                 </div>
-                <p data-account="email">вЂ”</p>
+                <p data-account="email">—</p>
               </div>
             </div>
             <dl class="dcard-list dcard-list--bordered">
               <div>
                 <dt>AnkaVisual ID</dt>
-                <dd class="mono" data-account="id">вЂ”</dd>
+                <dd class="mono" data-account="id">—</dd>
               </div>
               <div>
-                <dt>Р›РѕРіРёРЅ</dt>
-                <dd data-account="username">вЂ”</dd>
+                <dt>Логин</dt>
+                <dd data-account="username">—</dd>
               </div>
               <div>
-                <dt>РџРѕС‡С‚Р°</dt>
-                <dd data-account="email">вЂ”</dd>
+                <dt>Почта</dt>
+                <dd data-account="email">—</dd>
               </div>
               <div>
-                <dt>РЎРѕР·РґР°РЅ</dt>
-                <dd data-account="created">вЂ”</dd>
+                <dt>Создан</dt>
+                <dd data-account="created">—</dd>
               </div>
               <div>
-                <dt>РџРѕСЃР»РµРґРЅРёР№ РІС…РѕРґ</dt>
-                <dd data-account="lastLogin">вЂ”</dd>
+                <dt>Последний вход</dt>
+                <dd data-account="lastLogin">—</dd>
               </div>
             </dl>
           </article>
 
           <article class="dcard dcard--wide dcard--note">
-            <h3>РљР°Рє СЌС‚Рѕ СЂР°Р±РѕС‚Р°РµС‚</h3>
-            <p>Р›РѕРіРёРЅ AnkaVisual РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РєР°Рє РЅРёРє РІ Minecraft. РџРѕСЌС‚РѕРјСѓ РІ РёРіСЂРµ С‚С‹ Р±СѓРґРµС€СЊ РїРѕРґ С‚РµРј Р¶Рµ РёРјРµРЅРµРј, С‡С‚Рѕ Рё РЅР° СЃР°Р№С‚Рµ. РџРѕС‡С‚Р° РЅСѓР¶РЅР° С‚РѕР»СЊРєРѕ РґР»СЏ РІС…РѕРґР° Рё РЅРµ РїРѕРєР°Р·С‹РІР°РµС‚СЃСЏ РґСЂСѓРіРёРј РёРіСЂРѕРєР°Рј.</p>
+            <h3>Как это работает</h3>
+            <p>Логин AnkaVisual используется как ник в Minecraft. Поэтому в игре ты будешь под тем же именем, что и на сайте. Почта нужна только для входа и не показывается другим игрокам.</p>
           </article>
         </div>
       </section>
 
-      <!-- Р‘РµР·РѕРїР°СЃРЅРѕСЃС‚СЊ -->
+      <!-- Безопасность -->
       <section class="dash-panel" data-panel="security" hidden>
         <div class="dash-grid">
           <article class="dcard dcard--wide">
-            <h2 class="dcard-title">РЎРјРµРЅРёС‚СЊ РїР°СЂРѕР»СЊ</h2>
-            <p class="dcard-lede">РџРѕСЃР»Рµ СЃРјРµРЅС‹ РїР°СЂРѕР»СЏ С‚РµРєСѓС‰Р°СЏ СЃРµСЃСЃРёСЏ Р·Р°РєСЂРѕРµС‚СЃСЏ вЂ” РЅСѓР¶РЅРѕ Р±СѓРґРµС‚ РІРѕР№С‚Рё Р·Р°РЅРѕРІРѕ.</p>
+            <h2 class="dcard-title">Сменить пароль</h2>
+            <p class="dcard-lede">После смены пароля текущая сессия закроется — нужно будет войти заново.</p>
             <form id="passwordForm" class="auth-form auth-form--dash">
               <label class="auth-field">
-                <span class="sr-only">РўРµРєСѓС‰РёР№ РїР°СЂРѕР»СЊ</span>
-                <input name="currentPassword" type="password" class="auth-input" placeholder="РўРµРєСѓС‰РёР№ РїР°СЂРѕР»СЊ"
+                <span class="sr-only">Текущий пароль</span>
+                <input name="currentPassword" type="password" class="auth-input" placeholder="Текущий пароль"
                        autocomplete="current-password" required>
               </label>
               <label class="auth-field">
-                <span class="sr-only">РќРѕРІС‹Р№ РїР°СЂРѕР»СЊ</span>
-                <input name="newPassword" type="password" class="auth-input" placeholder="РќРѕРІС‹Р№ РїР°СЂРѕР»СЊ"
+                <span class="sr-only">Новый пароль</span>
+                <input name="newPassword" type="password" class="auth-input" placeholder="Новый пароль"
                        autocomplete="new-password" minlength="8" maxlength="128" required>
               </label>
-              <button class="auth-btn auth-btn--primary" type="submit">РЎРјРµРЅРёС‚СЊ РїР°СЂРѕР»СЊ</button>
+              <button class="auth-btn auth-btn--primary" type="submit">Сменить пароль</button>
             </form>
             <p id="profileMsg" class="auth-msg" role="status" hidden></p>
           </article>
 
           <article class="dcard">
-            <h3>РЎРµСЃСЃРёСЏ</h3>
-            <p>Р’С…РѕРґ РІС‹РїРѕР»РЅРµРЅ РЅР° СЌС‚РѕРј СѓСЃС‚СЂРѕР№СЃС‚РІРµ. Р•СЃР»Рё Р·Р°С…РѕРґРёР» РЅРµ С‚С‹ вЂ” Р·Р°РІРµСЂС€Рё СЃРµСЃСЃРёСЋ Рё СЃРјРµРЅРё РїР°СЂРѕР»СЊ.</p>
-            <button type="button" class="dash-btn dash-btn--ghost" data-logout>Р’С‹Р№С‚Рё РёР· Р°РєРєР°СѓРЅС‚Р°</button>
+            <h3>Сессия</h3>
+            <p>Вход выполнен на этом устройстве. Если заходил не ты — заверши сессию и смени пароль.</p>
+            <button type="button" class="dash-btn dash-btn--ghost" data-logout>Выйти из аккаунта</button>
           </article>
         </div>
       </section>
 
-      <!-- Р›Р°СѓРЅС‡РµСЂ -->
+      <!-- Лаунчер -->
       <section class="dash-panel" data-panel="launcher" hidden>
         <div class="dash-grid">
           <article class="dcard dcard--wide dcard--launcher-big">
@@ -347,75 +347,75 @@
               <div class="dcard-icon dcard-icon--lg" aria-hidden="true">A</div>
               <div>
                 <p class="mono">AnkaVisual Launcher</p>
-                <h2 class="dcard-title">РЎРєР°С‡Р°С‚СЊ РєР»РёРµРЅС‚</h2>
-                <p class="dcard-lede">РџРѕСЂС‚Р°С‚РёРІРЅР°СЏ СЃР±РѕСЂРєР° РґР»СЏ Windows. Minecraft 1.21.11, Fabric, РІСЃРµ С„СѓРЅРєС†РёРё РґРѕСЃС‚СѓРїРЅС‹ РЅР° РІСЃРµС… СЃРµСЂРІРµСЂР°С….</p>
+                <h2 class="dcard-title">Скачать клиент</h2>
+                <p class="dcard-lede">Портативная сборка для Windows. Minecraft 1.21.11, Fabric, все функции доступны на всех серверах.</p>
               </div>
             </div>
             <div class="dcard-launcher-actions">
-              <a class="dash-btn dash-btn--primary" href="https://github.com/AnkaVisual/AnkaVisual.github.io/releases/download/v1.1.1/Anka-Launcher-1.1.1-Portable.exe?v=da19211">РЎРєР°С‡Р°С‚СЊ Anka Launcher 1.1.1</a>
-              <span class="dcard-hint">Windows В· .exe В· Р±РµР· СѓСЃС‚Р°РЅРѕРІРєРё</span>
+              <a class="dash-btn dash-btn--primary" href="https://github.com/AnkaVisual/AnkaVisual.github.io/releases/download/v1.1.1/Anka-Launcher-1.1.1-Portable.exe?v=da19211">Скачать Anka Launcher 1.1.1</a>
+              <span class="dcard-hint">Windows · .exe · без установки</span>
             </div>
           </article>
 
           <article class="dcard">
-            <h3>РџРµСЂРµРґ Р·Р°РїСѓСЃРєРѕРј</h3>
+            <h3>Перед запуском</h3>
             <ul class="dcard-list dcard-list--plain">
-              <li>РЎРєР°С‡Р°Р№ Р»Р°СѓРЅС‡РµСЂ Рё РѕС‚РєСЂРѕР№ РµРіРѕ.</li>
-              <li>Р’РѕР№РґРё С‚РµРј Р¶Рµ Р»РѕРіРёРЅРѕРј Рё РїР°СЂРѕР»РµРј, С‡С‚Рѕ Рё РЅР° СЃР°Р№С‚Рµ.</li>
-              <li>РќР°Р¶РјРё В«РРіСЂР°С‚СЊВ» вЂ” РЅРёРє РїРѕРґСЃС‚Р°РІРёС‚СЃСЏ РёР· Р°РєРєР°СѓРЅС‚Р°.</li>
+              <li>Скачай лаунчер и открой его.</li>
+              <li>Войди тем же логином и паролем, что и на сайте.</li>
+              <li>Нажми «Играть» — ник подставится из аккаунта.</li>
             </ul>
           </article>
 
           <article class="dcard">
-            <h3>РќСѓР¶РµРЅ Р°РєРєР°СѓРЅС‚</h3>
-            <p>Р‘РµР· РІС…РѕРґР° РІ AnkaVisual Р»Р°СѓРЅС‡РµСЂ РЅРµ Р·Р°РїСѓСЃРєР°РµС‚ РёРіСЂСѓ. Р­С‚Рѕ Р·Р°С‰РёС‰Р°РµС‚ С‚РІРѕР№ РЅРёРє Рё РЅР°СЃС‚СЂРѕР№РєРё.</p>
-            <button type="button" class="dash-btn dash-btn--ghost" data-panel-nav="profile">РћС‚РєСЂС‹С‚СЊ РїСЂРѕС„РёР»СЊ</button>
+            <h3>Нужен аккаунт</h3>
+            <p>Без входа в AnkaVisual лаунчер не запускает игру. Это защищает твой ник и настройки.</p>
+            <button type="button" class="dash-btn dash-btn--ghost" data-panel-nav="profile">Открыть профиль</button>
           </article>
         </div>
       </section>
 
       <footer class="dash-foot">
-        <span>В© 2026 AnkaVisual</span>
-        <a href="index.html">РќР° РіР»Р°РІРЅСѓСЋ</a>
+        <span>© 2026 AnkaVisual</span>
+        <a href="index.html">На главную</a>
       </footer>
     </main>
   </div>
 </div>
 
-<!-- Р§Р°С‚ СЃ РґСЂСѓРіРѕРј -->
+<!-- Чат с другом -->
 <div id="friendChat" class="friend-chat" hidden>
   <div class="friend-chat-backdrop" data-chat-close></div>
   <section class="friend-chat-card" role="dialog" aria-modal="true" aria-labelledby="friendChatTitle">
     <header class="friend-chat-head">
       <div class="friend-chat-avatar" data-chat-avatar aria-hidden="true">A</div>
       <div class="friend-chat-copy">
-        <strong id="friendChatTitle">Р§Р°С‚</strong>
-        <span class="mono" data-chat-id>вЂ”</span>
+        <strong id="friendChatTitle">Чат</strong>
+        <span class="mono" data-chat-id>—</span>
       </div>
-      <button type="button" class="friend-chat-close" data-chat-close aria-label="Р—Р°РєСЂС‹С‚СЊ С‡Р°С‚">Г—</button>
+      <button type="button" class="friend-chat-close" data-chat-close aria-label="Закрыть чат">×</button>
     </header>
     <div id="friendChatMessages" class="friend-chat-messages" aria-live="polite"></div>
     <p id="friendChatMsg" class="auth-msg" role="status" hidden></p>
     <form id="friendChatForm" class="friend-chat-form">
-      <label class="sr-only" for="friendChatText">РЎРѕРѕР±С‰РµРЅРёРµ</label>
-      <input id="friendChatText" name="text" type="text" class="auth-input" placeholder="РЎРѕРѕР±С‰РµРЅРёРµвЂ¦"
+      <label class="sr-only" for="friendChatText">Сообщение</label>
+      <input id="friendChatText" name="text" type="text" class="auth-input" placeholder="Сообщение…"
              autocomplete="off" maxlength="500" required>
-      <button class="auth-btn auth-btn--primary" type="submit">РћС‚РїСЂР°РІРёС‚СЊ</button>
+      <button class="auth-btn auth-btn--primary" type="submit">Отправить</button>
     </form>
   </section>
 </div>
 
 <!-- ============================================================
-     РЎРµСЂРІРµСЂ Р°РєРєР°СѓРЅС‚РѕРІ РЅРµ РЅР°СЃС‚СЂРѕРµРЅ
+     Сервер аккаунтов не настроен
      ============================================================ -->
 <div id="setup" class="setup" hidden>
   <div class="setup-card">
-    <a class="auth-logo" href="index.html" aria-label="AnkaVisual вЂ” РЅР° РіР»Р°РІРЅСѓСЋ">
+    <a class="auth-logo" href="index.html" aria-label="AnkaVisual — на главную">
       <img src="assets/ankavisual/logo-round.png" alt="">
     </a>
-    <h1 class="auth-title">РЎРµСЂРІРµСЂ РЅРµ РЅР°СЃС‚СЂРѕРµРЅ</h1>
-    <p class="auth-subtitle">РЈРєР°Р¶Рё РїСѓР±Р»РёС‡РЅС‹Р№ Р°РґСЂРµСЃ AnkaGuard РІ <code>js/config.js</code>, Рё РІС…РѕРґ РїРѕСЏРІРёС‚СЃСЏ Р·РґРµСЃСЊ.</p>
-    <a class="auth-btn auth-btn--ghost" href="index.html">РќР° РіР»Р°РІРЅСѓСЋ</a>
+    <h1 class="auth-title">Сервер не настроен</h1>
+    <p class="auth-subtitle">Укажи публичный адрес AnkaGuard в <code>js/config.js</code>, и вход появится здесь.</p>
+    <a class="auth-btn auth-btn--ghost" href="index.html">На главную</a>
   </div>
 </div>
 
