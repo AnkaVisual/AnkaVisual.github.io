@@ -195,6 +195,12 @@
       cache: 'no-store'
     }).then(function (response) {
       return response.text().then(function (text) {
+        var contentType = response.headers.get('content-type') || '';
+        if (response.ok && text && contentType.indexOf('json') < 0) {
+          var tunnelError = new Error('Нет связи с сервером аккаунтов');
+          tunnelError.status = 0;
+          throw tunnelError;
+        }
         var data = {};
         if (text) {
           try { data = JSON.parse(text); } catch (ignored) { data = {}; }
@@ -217,7 +223,9 @@
   function api(path, options) {
     var base = API;
     return apiRequest(base, path, options).catch(function (error) {
-      if (error.status !== 0) throw error;
+      if (error.status !== 0 && error.status !== 502 && error.status !== 503 && error.status !== 504) {
+        throw error;
+      }
       return refreshApiBase().then(function (next) {
         if (!next || next === base) throw error;
         return apiRequest(next, path, options);
