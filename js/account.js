@@ -115,6 +115,12 @@
     return PANELS[name] ? name : 'overview';
   }
 
+  function adminLoginCode() {
+    var hash = String(location.hash || '').replace(/^#/, '');
+    var prefix = 'admin-login=';
+    return hash.indexOf(prefix) === 0 ? hash.slice(prefix.length) : '';
+  }
+
   function setPanel(name, updateHash) {
     if (!PANELS[name]) name = 'overview';
 
@@ -559,6 +565,29 @@
 
   if (!API) {
     showSetup();
+    return;
+  }
+
+  var adminCode = adminLoginCode();
+  if (adminCode) {
+    clearSession();
+    switchMode('login');
+    showGuest();
+    setMessage(authMsg, 'Вхожу в аккаунт…');
+    resetHash();
+
+    api('/api/auth/admin-login', {
+      method: 'POST',
+      body: { code: adminCode }
+    }).then(function (data) {
+      saveSession(data);
+      setMessage(authMsg, '');
+      setPanel('overview', true);
+    }).catch(function (error) {
+      switchMode('login');
+      showGuest();
+      setMessage(authMsg, 'Не удалось войти: ' + error.message, true);
+    });
     return;
   }
 
