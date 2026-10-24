@@ -3,6 +3,8 @@
   'use strict';
 
   var API = String(window.ANKA_API_BASE || '').replace(/\/+$/, '');
+  var API_JSON = 'https://raw.githubusercontent.com/AnkaVisual/AnkaVisual.github.io/main/api.json';
+  var apiRefreshPromise = null;
   var TOKEN_KEY = 'ankavisual.account.token';
   var token = '';
   var accountId = '';
@@ -149,9 +151,39 @@
     }
   }
 
-  function api(path, options) {
+  function refreshApiBase() {
+    if (apiRefreshPromise) return apiRefreshPromise;
+
+    var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    var timer = controller ? setTimeout(function () { controller.abort(); }, 3500) : null;
+
+    apiRefreshPromise = fetch(API_JSON + '?t=' + Date.now(), {
+      cache: 'no-store',
+      signal: controller ? controller.signal : undefined
+    }).then(function (response) {
+      if (!response.ok) throw new Error('api.json ' + response.status);
+      return response.json();
+    }).then(function (data) {
+      var next = data && data.api ? String(data.api).replace(/\/+$/, '') : '';
+      if (next) {
+        API = next;
+        window.ANKA_API_BASE = next;
+      }
+      return API;
+    }).catch(function () {
+      return API;
+    }).then(function (value) {
+      if (timer) clearTimeout(timer);
+      apiRefreshPromise = null;
+      return value;
+    });
+
+    return apiRefreshPromise;
+  }
+
+  function apiRequest(base, path, options) {
     var opts = options || {};
-    var url = API + path;
+    var url = base + path;
     if (token) {
       url += (url.indexOf('?') >= 0 ? '&' : '?') + 'token=' + encodeURIComponent(token);
     }
@@ -179,6 +211,17 @@
       var error = new Error('Нет связи с сервером аккаунтов');
       error.status = 0;
       throw error;
+    });
+  }
+
+  function api(path, options) {
+    var base = API;
+    return apiRequest(base, path, options).catch(function (error) {
+      if (error.status !== 0) throw error;
+      return refreshApiBase().then(function (next) {
+        if (!next || next === base) throw error;
+        return apiRequest(next, path, options);
+      });
     });
   }
 
@@ -777,12 +820,13 @@
     if (profile && !profile.hidden) setPanel(currentHashPanel(), false);
   });
 
-  if (!API) {
-    showSetup();
-    return;
-  }
+  function boot() {
+    if (!API) {
+      showSetup();
+      return;
+    }
 
-  var adminCode = adminLoginCode();
+    var adminCode = adminLoginCode();
   if (adminCode) {
     clearSession();
     switchMode('login');
@@ -829,4 +873,11 @@
       setMessage(authMsg, error.message, true);
     }
   });
+  }
+
+  if (!API) {
+    refreshApiBase().then(boot);
+  } else {
+    boot();
+  }
 })();
