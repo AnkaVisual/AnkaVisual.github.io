@@ -6,9 +6,11 @@
   var API_JSON = 'https://raw.githubusercontent.com/AnkaVisual/AnkaVisual.github.io/main/api.json';
   var apiRefreshPromise = null;
   var TOKEN_KEY = 'ankavisual.account.token';
+  var BROWSER_KEY = 'ankavisual.browser.code';
   var token = '';
   var accountId = '';
   var mode = 'login';
+  var browserCode = '';
 
   var PANELS = {
     overview: ['Обзор', 'Твой профиль AnkaVisual.'],
@@ -49,6 +51,11 @@
   var switchModeButton = document.getElementById('switchMode');
   var dashTitle = document.getElementById('dashTitle');
   var dashSubtitle = document.getElementById('dashSubtitle');
+  var browserLogin = document.getElementById('browserLogin');
+  var browserLoginName = document.getElementById('browserLoginName');
+  var browserLoginMsg = document.getElementById('browserLoginMsg');
+  var browserApproveButton = document.getElementById('browserLoginApprove');
+  var browserCancelButton = document.getElementById('browserLoginCancel');
   var panels = profile ? Array.prototype.slice.call(profile.querySelectorAll('[data-panel]')) : [];
   var navButtons = profile ? Array.prototype.slice.call(profile.querySelectorAll('.dash-nav [data-panel-nav]')) : [];
   var panelTriggers = profile ? Array.prototype.slice.call(profile.querySelectorAll('[data-panel-nav]')) : [];
@@ -74,6 +81,7 @@
     fillAccount(account || {});
     loadFriends();
     setPanel(currentHashPanel(), false);
+    if (browserCode) showBrowserLogin(account || {});
   }
 
   function showSetup() {
@@ -129,6 +137,103 @@
     var hash = String(location.hash || '').replace(/^#/, '');
     var prefix = 'admin-login=';
     return hash.indexOf(prefix) === 0 ? hash.slice(prefix.length) : '';
+  }
+
+  /* ── Вход в лаунчер через браузер ─────────────────────────────── */
+
+  function browserLoginCode() {
+    var hash = String(location.hash || '').replace(/^#/, '');
+    var prefix = 'browser-login=';
+    if (hash.indexOf(prefix) === 0) return hash.slice(prefix.length);
+    try {
+      return sessionStorage.getItem(BROWSER_KEY) || '';
+    } catch (ignored) {
+      return '';
+    }
+  }
+
+  function rememberBrowserCode(code) {
+    browserCode = code || '';
+    try {
+      if (browserCode) sessionStorage.setItem(BROWSER_KEY, browserCode);
+      else sessionStorage.removeItem(BROWSER_KEY);
+    } catch (ignored) { /* приватный режим */ }
+  }
+
+  function pageMessage(text, bad) {
+    if (profile && !profile.hidden) setMessage(profileMsg, text, bad);
+    else setMessage(authMsg, text, bad);
+  }
+
+  function hideBrowserLogin() {
+    if (browserLogin) browserLogin.hidden = true;
+    setMessage(browserLoginMsg, '');
+  }
+
+  function clearBrowserLogin() {
+    rememberBrowserCode('');
+    hideBrowserLogin();
+    var hash = String(location.hash || '').replace(/^#/, '');
+    if (hash.indexOf('browser-login=') === 0 && history.replaceState) {
+      history.replaceState(null, '', location.pathname + location.search);
+    }
+  }
+
+  function showBrowserLogin(account) {
+    if (!browserLogin || !browserCode) return;
+    browserLogin.hidden = false;
+    if (browserLoginName) {
+      browserLoginName.textContent = account && account.username ? account.username : '—';
+    }
+    if (browserApproveButton) {
+      browserApproveButton.hidden = false;
+      browserApproveButton.disabled = false;
+      browserApproveButton.textContent = 'Подтвердить вход';
+    }
+    if (browserCancelButton) browserCancelButton.textContent = 'Отмена';
+    setMessage(browserLoginMsg, '');
+  }
+
+  function approveBrowserLogin() {
+    if (!browserCode) return;
+    if (browserApproveButton) {
+      browserApproveButton.disabled = true;
+      browserApproveButton.textContent = 'Подтверждаю…';
+    }
+    setMessage(browserLoginMsg, '');
+
+    api('/api/auth/browser/approve', {
+      method: 'POST',
+      body: { code: browserCode }
+    }).then(function () {
+      rememberBrowserCode('');
+      if (browserApproveButton) browserApproveButton.hidden = true;
+      if (browserCancelButton) browserCancelButton.textContent = 'Закрыть';
+      setMessage(browserLoginMsg, 'Готово. Вернись в лаунчер — вход выполнится автоматически.', false);
+      var hash = String(location.hash || '').replace(/^#/, '');
+      if (hash.indexOf('browser-login=') === 0 && history.replaceState) {
+        history.replaceState(null, '', location.pathname + location.search + '#overview');
+      }
+    }).catch(function (error) {
+      if (error.status === 401) {
+        clearBrowserLogin();
+        clearSession();
+        switchMode('login');
+        showGuest();
+        setMessage(authMsg, 'Сессия истекла, войди заново', true);
+        return;
+      }
+      if (error.status === 410) {
+        clearBrowserLogin();
+        pageMessage('Код входа истёк — запусти вход в лаунчере заново', true);
+        return;
+      }
+      setMessage(browserLoginMsg, error.message, true);
+      if (browserApproveButton) {
+        browserApproveButton.disabled = false;
+        browserApproveButton.textContent = 'Подтвердить вход';
+      }
+    });
   }
 
   function setPanel(name, updateHash) {
@@ -796,6 +901,16 @@
     });
   });
 
+  if (browserApproveButton) {
+    browserApproveButton.addEventListener('click', approveBrowserLogin);
+  }
+  if (browserCancelButton) {
+    browserCancelButton.addEventListener('click', clearBrowserLogin);
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('[data-browser-cancel]'), function (node) {
+    node.addEventListener('click', clearBrowserLogin);
+  });
+
   var copyButton = document.querySelector('[data-copy-id]');
   if (copyButton) {
     copyButton.addEventListener('click', function () {
@@ -834,8 +949,11 @@
       return;
     }
 
+    rememberBrowserCode(browserLoginCode());
+
     var adminCode = adminLoginCode();
   if (adminCode) {
+    rememberBrowserCode('');
     clearSession();
     switchMode('login');
     showGuest();
@@ -861,6 +979,9 @@
   if (!token) {
     switchMode('login');
     showGuest();
+    if (browserCode) {
+      setMessage(authMsg, 'Лаунчер ждёт вход. Войди в аккаунт, чтобы подтвердить его.');
+    }
     return;
   }
 

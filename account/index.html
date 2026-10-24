@@ -12,7 +12,7 @@
 <link rel="preload" href="assets/font/inter-400-cyr.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/font/inter-400-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/site.css">
-<link rel="stylesheet" href="css/account.css?v=6">
+<link rel="stylesheet" href="css/account.css?v=7">
 </head>
 <body class="account-body">
 
@@ -405,6 +405,21 @@
   </section>
 </div>
 
+<!-- Подтверждение входа в лаунчер через браузер -->
+<div id="browserLogin" class="browser-login" hidden>
+  <div class="browser-login-backdrop" data-browser-cancel></div>
+  <section class="browser-login-card" role="dialog" aria-modal="true" aria-labelledby="browserLoginTitle">
+    <h2 id="browserLoginTitle">Вход в лаунчер</h2>
+    <p>Лаунчер AnkaVisual просит войти в аккаунт <strong id="browserLoginName">—</strong>.</p>
+    <p class="browser-login-hint">После подтверждения лаунчер получит сессию автоматически.</p>
+    <p id="browserLoginMsg" class="auth-msg" role="status" hidden></p>
+    <div class="browser-login-actions">
+      <button type="button" class="auth-btn auth-btn--primary" id="browserLoginApprove">Подтвердить вход</button>
+      <button type="button" class="auth-btn auth-btn--ghost" id="browserLoginCancel">Отмена</button>
+    </div>
+  </section>
+</div>
+
 <!-- ============================================================
      Сервер аккаунтов не настроен
      ============================================================ -->
@@ -420,6 +435,6 @@
 </div>
 
 <script src="js/config.js?v=65"></script>
-<script src="js/account.js?v=14"></script>
+<script src="js/account.js?v=15"></script>
 </body>
 </html>
