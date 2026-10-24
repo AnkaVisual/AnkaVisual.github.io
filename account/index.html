@@ -12,7 +12,7 @@
 <link rel="preload" href="assets/font/inter-400-cyr.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/font/inter-400-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/site.css">
-<link rel="stylesheet" href="css/account.css?v=5">
+<link rel="stylesheet" href="css/account.css?v=6">
 </head>
 <body class="account-body">
 
@@ -382,6 +382,29 @@
   </div>
 </div>
 
+<!-- Чат с другом -->
+<div id="friendChat" class="friend-chat" hidden>
+  <div class="friend-chat-backdrop" data-chat-close></div>
+  <section class="friend-chat-card" role="dialog" aria-modal="true" aria-labelledby="friendChatTitle">
+    <header class="friend-chat-head">
+      <div class="friend-chat-avatar" data-chat-avatar aria-hidden="true">A</div>
+      <div class="friend-chat-copy">
+        <strong id="friendChatTitle">Чат</strong>
+        <span class="mono" data-chat-id>—</span>
+      </div>
+      <button type="button" class="friend-chat-close" data-chat-close aria-label="Закрыть чат">×</button>
+    </header>
+    <div id="friendChatMessages" class="friend-chat-messages" aria-live="polite"></div>
+    <p id="friendChatMsg" class="auth-msg" role="status" hidden></p>
+    <form id="friendChatForm" class="friend-chat-form">
+      <label class="sr-only" for="friendChatText">Сообщение</label>
+      <input id="friendChatText" name="text" type="text" class="auth-input" placeholder="Сообщение…"
+             autocomplete="off" maxlength="500" required>
+      <button class="auth-btn auth-btn--primary" type="submit">Отправить</button>
+    </form>
+  </section>
+</div>
+
 <!-- ============================================================
      Сервер аккаунтов не настроен
      ============================================================ -->
@@ -396,7 +419,7 @@
   </div>
 </div>
 
-<script src="js/config.js?v=53"></script>
-<script src="js/account.js?v=11"></script>
+<script src="js/config.js?v=54"></script>
+<script src="js/account.js?v=12"></script>
 </body>
 </html>
