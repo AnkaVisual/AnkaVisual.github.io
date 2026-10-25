@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>AnkaGuard — панель</title>
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<header class="top">
+    <div class="brand">
+        <span class="logo">AG</span>
+        <span class="brand-name">AnkaGuard</span>
+        <span id="dot" class="dot" title="нет связи"></span>
+    </div>
+    <div class="top-actions">
+        <button id="refresh" class="ghost" hidden>Обновить</button>
+        <button id="logout" class="ghost" hidden>Выйти</button>
+    </div>
+</header>
+
+<main>
+    <section id="login" class="card login">
+        <h1>Вход в панель</h1>
+        <p class="muted">
+            Нужен <code>admin-token</code> из <code>config/server.properties</code>.
+            Токен живёт только в этой вкладке и стирается при закрытии.
+        </p>
+        <form id="loginForm" class="login-form">
+            <input id="token" type="password" autocomplete="current-password"
+                   placeholder="admin-token" spellcheck="false" required>
+            <button type="submit">Войти</button>
+        </form>
+        <p id="loginError" class="error" hidden></p>
+    </section>
+
+    <section id="app" hidden>
+        <div id="stats" class="stats"></div>
+        <div id="plans" class="plans" hidden></div>
+
+        <nav class="admin-tabs" aria-label="Разделы панели">
+            <button id="tabKeys" type="button" class="on" data-admin-tab="keys">Ключи</button>
+            <button id="tabAccounts" type="button" data-admin-tab="accounts">Аккаунты</button>
+        </nav>
+
+        <div id="keysView">
+        <div class="layout">
+            <section class="card grow">
+                <div class="card-head">
+                    <h2>Ключи</h2>
+                    <span id="count" class="muted"></span>
+                </div>
+                <div class="toolbar">
+                    <input id="search" type="search" placeholder="поиск: ключ, заметка, план">
+                    <select id="filter">
+                        <option value="all">все</option>
+                        <option value="active">активные</option>
+                        <option value="revoked">отозванные</option>
+                        <option value="expired">истёкшие</option>
+                    </select>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Ключ</th>
+                            <th class="note-col">Заметка</th>
+                            <th class="plan-col">План</th>
+                            <th>До</th>
+                            <th class="num act-col">Акт.</th>
+                            <th class="num dev-col">Устр.</th>
+                            <th>Статус</th>
+                        </tr>
+                        </thead>
+                        <tbody id="rows"></tbody>
+                    </table>
+                </div>
+                <p id="empty" class="muted empty" hidden>Ничего не найдено.</p>
+            </section>
+
+            <aside class="side">
+                <section class="card">
+                    <h2>Выпустить ключи</h2>
+                    <form id="createForm" class="stack">
+                        <label>Сколько
+                            <input id="cCount" type="number" min="1" max="500" value="1">
+                        </label>
+                        <label>Дней
+                            <input id="cDays" type="number" min="0" value="30">
+                        </label>
+                        <label>План
+                            <input id="cPlan" value="pro" spellcheck="false">
+                        </label>
+                        <label>Активаций
+                            <input id="cAct" type="number" min="1" value="1">
+                        </label>
+                        <label>Заметка
+                            <input id="cNote" placeholder="заказ или имя" maxlength="120">
+                        </label>
+                        <button type="submit">Выпустить</button>
+                    </form>
+                    <pre id="created" class="created" hidden></pre>
+                </section>
+
+                <section class="card">
+                    <h2>Журнал</h2>
+                    <ul id="log" class="log"></ul>
+                </section>
+            </aside>
+        </div>
+        </div>
+
+        <div id="accountsView" hidden>
+            <section class="card accounts-card">
+                <div class="card-head">
+                    <h2>Аккаунты</h2>
+                    <span id="accCount" class="muted"></span>
+                </div>
+                <div class="toolbar accounts-toolbar">
+                    <input id="accSearch" type="search" placeholder="поиск: логин, почта или ID">
+                    <select id="accFilter" aria-label="Статус аккаунта">
+                        <option value="all">все</option>
+                        <option value="active">активные</option>
+                        <option value="blocked">заблокированные</option>
+                    </select>
+                    <select id="accPrefixFilter" aria-label="Префикс">
+                        <option value="all">все префиксы</option>
+                        <option value="owner">Владелец</option>
+                        <option value="coowner">Со-владелец</option>
+                        <option value="support">Поддержка</option>
+                        <option value="admin">Админ</option>
+                        <option value="beta">Бета-тестер</option>
+                        <option value="none">Без префикса</option>
+                    </select>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Игровой ID</th>
+                            <th class="acc-mail-col">Почта</th>
+                            <th>Префикс</th>
+                            <th class="acc-created-col">Создан</th>
+                            <th>Вход</th>
+                            <th class="num">Сессии</th>
+                            <th>Статус</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody id="accRows"></tbody>
+                    </table>
+                </div>
+                <p id="accEmpty" class="muted empty" hidden>Аккаунтов не найдено.</p>
+            </section>
+        </div>
+    </section>
+</main>
+
+<div id="toast" class="toast" hidden></div>
+<div id="modal" class="modal" hidden>
+    <div class="modal-box card">
+        <h3 id="mTitle"></h3>
+        <p id="mText" class="muted"></p>
+        <div id="mFields" class="stack"></div>
+        <div class="modal-actions">
+            <button id="mCancel" class="ghost" type="button">Отмена</button>
+            <button id="mOk" type="button">ОК</button>
+        </div>
+    </div>
+</div>
+
+<script>window.ANKAGUARD_API_BASE = 'https://ankaguard.ankavisual.workers.dev';</script>
+<script src="../js/admin-panel.js?v=4"></script>
+</body>
+</html>

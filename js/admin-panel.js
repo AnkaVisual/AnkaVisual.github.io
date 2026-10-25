@@ -3,6 +3,7 @@
     'use strict';
 
     var $ = function (id) { return document.getElementById(id); };
+    var API_BASE = String(window.ANKAGUARD_API_BASE || '').replace(/\/$/, '');
 
     var state = {
         token: '',
@@ -24,7 +25,7 @@
         var headers = { 'X-Admin-Token': state.token };
         if (options.body) headers['Content-Type'] = 'application/json';
 
-        var response = await fetch(path, {
+        var response = await fetch(API_BASE + path, {
             method: options.method || 'GET',
             headers: headers,
             body: options.body ? JSON.stringify(options.body) : undefined,
