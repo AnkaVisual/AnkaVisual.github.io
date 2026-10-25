@@ -50,17 +50,15 @@
         var token = state.token;
         var promise = (async function () {
             try {
-                var results = await Promise.all([
-                    api('/api/admin/keys'),
-                    api('/api/admin/stats'),
-                    api('/api/admin/log'),
-                    api('/api/admin/accounts')
-                ]);
+                var keys = await api('/api/admin/keys');
+                var stats = await api('/api/admin/stats');
+                var log = await api('/api/admin/log');
+                var accounts = await api('/api/admin/accounts');
                 if (state.token !== token) return;
-                state.keys = results[0].keys || [];
-                state.stats = results[1].stats || {};
-                state.log = (results[2].log || []).slice().reverse();
-                state.accounts = results[3].accounts || [];
+                state.keys = keys.keys || [];
+                state.stats = stats.stats || {};
+                state.log = (log.log || []).slice().reverse();
+                state.accounts = accounts.accounts || [];
                 renderStats();
                 renderRows();
                 renderLog();
