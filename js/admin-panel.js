@@ -25,12 +25,12 @@
         var headers = { 'X-Admin-Token': state.token };
         if (options.body) headers['Content-Type'] = 'application/json';
         var method = options.method || 'GET';
-        var attempts = method === 'GET' ? 3 : 1;
+        var attempts = method === 'GET' ? 2 : 1;
         var lastError = null;
 
         for (var attempt = 1; attempt <= attempts; attempt++) {
             var controller = new AbortController();
-            var timer = setTimeout(function () { controller.abort(); }, 5000);
+            var timer = setTimeout(function () { controller.abort(); }, 20000);
             try {
                 var response = await fetch(API_BASE + path, {
                     method: method,
@@ -1118,11 +1118,13 @@
 
     async function start(token) {
         state.token = token;
-        $('loginError').hidden = true;
+        $('loginError').hidden = false;
+        $('loginError').textContent = 'Подключение…';
         try {
             await load(true);
             if (state.token !== token) return;
             sessionStorage.setItem('ag-token', token);
+            $('loginError').hidden = true;
             showApp();
             clearInterval(state.timer);
             state.timer = setInterval(async function () {
