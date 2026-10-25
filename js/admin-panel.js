@@ -24,24 +24,42 @@
         options = options || {};
         var headers = { 'X-Admin-Token': state.token };
         if (options.body) headers['Content-Type'] = 'application/json';
+        var method = options.method || 'GET';
+        var attempts = method === 'GET' ? 3 : 1;
+        var lastError = null;
 
-        var response = await fetch(API_BASE + path, {
-            method: options.method || 'GET',
-            headers: headers,
-            body: options.body ? JSON.stringify(options.body) : undefined,
-            cache: 'no-store'
-        });
+        for (var attempt = 1; attempt <= attempts; attempt++) {
+            var controller = new AbortController();
+            var timer = setTimeout(function () { controller.abort(); }, 5000);
+            try {
+                var response = await fetch(API_BASE + path, {
+                    method: method,
+                    headers: headers,
+                    body: options.body ? JSON.stringify(options.body) : undefined,
+                    cache: 'no-store',
+                    signal: controller.signal
+                });
 
-        var data = null;
-        try { data = await response.json(); } catch (ignored) { /* тело может быть пустым */ }
+                var data = null;
+                try { data = await response.json(); } catch (ignored) { /* тело может быть пустым */ }
+                clearTimeout(timer);
 
-        if (!response.ok) {
-            var error = new Error((data && data.message) || ('HTTP ' + response.status));
-            error.code = (data && data.error) || ('HTTP_' + response.status);
-            error.status = response.status;
-            throw error;
+                if (!response.ok) {
+                    var error = new Error((data && data.message) || ('HTTP ' + response.status));
+                    error.code = (data && data.error) || ('HTTP_' + response.status);
+                    error.status = response.status;
+                    throw error;
+                }
+                return data || {};
+            } catch (error) {
+                clearTimeout(timer);
+                lastError = error;
+                var retryable = method === 'GET' && (!error.status || error.status >= 500);
+                if (!retryable || attempt === attempts) throw error;
+                await new Promise(function (resolve) { setTimeout(resolve, 350 * attempt); });
+            }
         }
-        return data || {};
+        throw lastError || new Error('Сервер не отвечает.');
     }
 
     var loadPromise = null;
