@@ -182,13 +182,18 @@
             0, 0, size, size
           );
 
+          // PNG читается Java ImageIO (мод), поэтому сначала пробуем его.
+          // Если файл слишком тяжёлый — сжимаем в JPEG.
+          var png = canvas.toDataURL('image/png');
+          if (Math.floor(png.length * 3 / 4) <= 90 * 1024) {
+            resolve(png);
+            return;
+          }
+
           var qualities = [0.9, 0.8, 0.7, 0.6, 0.5];
           var best = '';
           for (var i = 0; i < qualities.length; i++) {
-            var candidate = canvas.toDataURL('image/webp', qualities[i]);
-            if (candidate.indexOf('data:image/webp') !== 0) {
-              candidate = canvas.toDataURL('image/jpeg', qualities[i]);
-            }
+            var candidate = canvas.toDataURL('image/jpeg', qualities[i]);
             best = candidate;
             if (Math.floor(candidate.length * 3 / 4) <= 90 * 1024) break;
           }
