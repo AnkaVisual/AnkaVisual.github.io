@@ -2,8 +2,8 @@
 (function () {
   'use strict';
 
-  var API = String(window.ANKA_API_BASE || '').replace(/\/+$/, '');
-  var API_JSON = 'https://raw.githubusercontent.com/AnkaVisual/AnkaVisual.github.io/main/api.json';
+  var API = String(window.ANKA_API_BASE || 'https://ankaguard.ankavisual.workers.dev').replace(/\/+$/, '');
+  var API_JSON = 'https://ankavisual.github.io/api.json';
   var apiRefreshPromise = null;
   var TOKEN_KEY = 'ankavisual.account.token';
   var BROWSER_KEY = 'ankavisual.browser.code';
