@@ -59,6 +59,12 @@
   var browserLoginMsg = document.getElementById('browserLoginMsg');
   var browserApproveButton = document.getElementById('browserLoginApprove');
   var browserCancelButton = document.getElementById('browserLoginCancel');
+  var avatarInput = document.getElementById('avatarInput');
+  var avatarPick = document.getElementById('avatarPick');
+  var avatarRemove = document.getElementById('avatarRemove');
+  var avatarMsg = document.getElementById('avatarMsg');
+  var avatarPreview = document.getElementById('avatarPreview');
+  var accountData = {};
   var panels = profile ? Array.prototype.slice.call(profile.querySelectorAll('[data-panel]')) : [];
   var navButtons = profile ? Array.prototype.slice.call(profile.querySelectorAll('.dash-nav [data-panel-nav]')) : [];
   var panelTriggers = profile ? Array.prototype.slice.call(profile.querySelectorAll('[data-panel-nav]')) : [];
@@ -94,6 +100,7 @@
   }
 
   function fillAccount(account) {
+    accountData = account || {};
     var name = account.username || '—';
     var email = account.email || 'почта не указана';
     var id = account.id || '—';
@@ -105,7 +112,7 @@
     if (!profile) return;
     Array.prototype.forEach.call(profile.querySelectorAll('[data-account]'), function (node) {
       var field = node.getAttribute('data-account');
-      if (field === 'avatar') node.textContent = name.charAt(0).toUpperCase() || 'A';
+      if (field === 'avatar') applyAvatar(node, account);
       else if (field === 'username') node.textContent = name;
       else if (field === 'email') node.textContent = email;
       else if (field === 'id') node.textContent = id;
@@ -119,6 +126,134 @@
       node.textContent = prefixLabel;
       node.classList.remove('is-admin', 'is-beta', 'is-owner', 'is-coowner', 'is-support');
       if (PREFIXES[prefix]) node.classList.add('is-' + prefix);
+    });
+
+    renderAvatars();
+  }
+
+  function applyAvatar(node, account) {
+    if (!node) return;
+    var src = account && account.avatar ? String(account.avatar) : '';
+    if (src) {
+      node.style.backgroundImage = 'url(' + src + ')';
+      node.classList.add('has-avatar');
+      node.textContent = '';
+      return;
+    }
+    node.style.backgroundImage = '';
+    node.classList.remove('has-avatar');
+    var name = String((account && account.username) || 'A');
+    node.textContent = name.charAt(0).toUpperCase() || 'A';
+  }
+
+  function renderAvatars() {
+    if (profile) {
+      Array.prototype.forEach.call(profile.querySelectorAll('[data-account="avatar"]'), function (node) {
+        applyAvatar(node, accountData);
+      });
+    }
+    if (avatarPreview) applyAvatar(avatarPreview, accountData);
+    if (avatarRemove) avatarRemove.hidden = !accountData.avatar;
+  }
+
+  function setAvatarMessage(text, bad) {
+    setMessage(avatarMsg, text, bad);
+  }
+
+  function avatarFromFile(file) {
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onerror = function () { reject(new Error('не удалось прочитать файл')); };
+      reader.onload = function () {
+        var image = new Image();
+        image.onerror = function () { reject(new Error('не удалось открыть картинку')); };
+        image.onload = function () {
+          var size = 256;
+          var canvas = document.createElement('canvas');
+          canvas.width = size;
+          canvas.height = size;
+          var ctx = canvas.getContext('2d');
+          if (!ctx) { reject(new Error('браузер не поддерживает обработку картинок')); return; }
+
+          var side = Math.min(image.width, image.height);
+          ctx.drawImage(
+            image,
+            (image.width - side) / 2, (image.height - side) / 2, side, side,
+            0, 0, size, size
+          );
+
+          var qualities = [0.9, 0.8, 0.7, 0.6, 0.5];
+          var best = '';
+          for (var i = 0; i < qualities.length; i++) {
+            var candidate = canvas.toDataURL('image/webp', qualities[i]);
+            if (candidate.indexOf('data:image/webp') !== 0) {
+              candidate = canvas.toDataURL('image/jpeg', qualities[i]);
+            }
+            best = candidate;
+            if (Math.floor(candidate.length * 3 / 4) <= 90 * 1024) break;
+          }
+          resolve(best);
+        };
+        image.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function saveAvatar(dataUrl) {
+    return api('/api/auth/avatar', {
+      method: 'POST',
+      body: { avatar: dataUrl }
+    }).then(function (data) {
+      accountData = data.account || accountData;
+      renderAvatars();
+      setAvatarMessage(data.message || 'аватар обновлён', false);
+      return data;
+    });
+  }
+
+  if (avatarPick && avatarInput) {
+    avatarPick.addEventListener('click', function () { avatarInput.click(); });
+
+    avatarInput.addEventListener('change', function () {
+      var file = avatarInput.files && avatarInput.files[0];
+      avatarInput.value = '';
+      if (!file) return;
+
+      if (!/^image\//.test(file.type)) {
+        setAvatarMessage('выбери картинку PNG, JPEG или WebP', true);
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        setAvatarMessage('файл больше 5 МБ', true);
+        return;
+      }
+
+      avatarPick.disabled = true;
+      setAvatarMessage('Готовлю фото…');
+      avatarFromFile(file).then(function (dataUrl) {
+        if (Math.floor(dataUrl.length * 3 / 4) > 96 * 1024) {
+          throw new Error('фото слишком большое даже после сжатия');
+        }
+        setAvatarMessage('Сохраняю…');
+        return saveAvatar(dataUrl);
+      }).catch(function (error) {
+        setAvatarMessage(error.message || 'не удалось сохранить аватар', true);
+      }).then(function () {
+        avatarPick.disabled = false;
+      });
+    });
+  }
+
+  if (avatarRemove) {
+    avatarRemove.addEventListener('click', function () {
+      avatarRemove.disabled = true;
+      setAvatarMessage('Удаляю…');
+      saveAvatar('').catch(function (error) {
+        setAvatarMessage(error.message || 'не удалось удалить аватар', true);
+      }).then(function () {
+        avatarRemove.disabled = false;
+      });
     });
   }
 
@@ -383,7 +518,7 @@
 
     var avatar = document.createElement('div');
     avatar.className = 'friend-avatar';
-    avatar.textContent = String(item.username || item.id || '?').charAt(0).toUpperCase() || '?';
+    applyAvatar(avatar, item);
     avatar.setAttribute('aria-hidden', 'true');
 
     var copy = document.createElement('div');
@@ -645,9 +780,7 @@
     stopChatPolling();
 
     if (chatTitle) chatTitle.textContent = friend.username || friend.id || 'Чат';
-    if (chatAvatar) {
-      chatAvatar.textContent = String(friend.username || friend.id || '?').charAt(0).toUpperCase() || '?';
-    }
+    if (chatAvatar) applyAvatar(chatAvatar, friend);
     if (chatId) chatId.textContent = friend.id || '';
     if (chatMessages) chatMessages.replaceChildren();
     if (chatForm) chatForm.reset();

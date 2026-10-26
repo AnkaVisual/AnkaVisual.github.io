@@ -201,6 +201,32 @@
   font-weight:700;
   letter-spacing:-.04em;
 }
+.profile-avatar.has-avatar,
+.dash-user-avatar.has-avatar,
+.dash-top-avatar [data-account="avatar"].has-avatar,
+.friend-avatar.has-avatar,
+.friend-chat-avatar.has-avatar{
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+  color:transparent;
+}
+.dash-top-avatar [data-account="avatar"]{
+  display:grid;place-items:center;
+  width:100%;height:100%;
+  border-radius:inherit;
+  overflow:hidden;
+}
+.avatar-editor{
+  display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+  margin-top:16px;
+}
+.avatar-editor-preview{width:96px;height:96px;border-radius:26px;font-size:36px}
+.avatar-editor-actions{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  min-width:0;
+}
+.avatar-editor-actions .auth-msg{flex-basis:100%;margin:0}
 .profile-id{display:grid;gap:3px;min-width:0}
 .profile-id .mono{color:rgba(16,16,16,.38)}
 .profile-id strong{

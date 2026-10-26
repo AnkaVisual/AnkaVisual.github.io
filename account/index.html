@@ -12,7 +12,7 @@
 <link rel="preload" href="assets/font/inter-400-cyr.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/font/inter-400-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/site.css">
-<link rel="stylesheet" href="css/account.css?v=8">
+<link rel="stylesheet" href="css/account.css?v=9">
 </head>
 <body class="account-body">
 
@@ -109,7 +109,7 @@
       </a>
       <div class="dash-top-actions">
         <a class="dash-top-link" href="index.html">На сайт</a>
-        <a class="dash-top-download" href="https://github.com/AnkaVisual/AnkaVisual.github.io/releases/download/v1.1.1/Anka-Launcher-1.1.1-Portable.exe?v=da19211">Скачать лаунчер</a>
+        <a class="dash-top-download" href="https://github.com/AnkaVisual/AnkaVisual.github.io/releases/download/v1.1.5/Anka-Launcher-1.1.5-Portable.exe">Скачать лаунчер</a>
         <span class="dcard-badge dash-top-prefix" data-account-prefix>Аккаунт</span>
         <button class="dash-top-avatar" type="button" data-panel-nav="profile" aria-label="Открыть профиль">
           <span data-account="avatar">A</span>
@@ -141,7 +141,7 @@
         <button type="button" data-panel-nav="launcher">Лаунчер</button>
       </nav>
 
-      <a class="dash-side-download" href="https://github.com/AnkaVisual/AnkaVisual.github.io/releases/download/v1.1.1/Anka-Launcher-1.1.1-Portable.exe?v=da19211">
+      <a class="dash-side-download" href="https://github.com/AnkaVisual/AnkaVisual.github.io/releases/download/v1.1.5/Anka-Launcher-1.1.5-Portable.exe">
         <span aria-hidden="true">&#8595;</span>
         Скачать лаунчер
       </a>
@@ -188,7 +188,7 @@
               <h3>Лаунчер AnkaVisual</h3>
               <p>Клиент 1.21.11 на Fabric. Вход — через этот аккаунт.</p>
             </div>
-            <a class="dash-btn dash-btn--primary" href="https://github.com/AnkaVisual/AnkaVisual.github.io/releases/download/v1.1.1/Anka-Launcher-1.1.1-Portable.exe?v=da19211">Скачать</a>
+            <a class="dash-btn dash-btn--primary" href="https://github.com/AnkaVisual/AnkaVisual.github.io/releases/download/v1.1.5/Anka-Launcher-1.1.5-Portable.exe">Скачать</a>
           </article>
 
           <article class="dcard dcard--info">
@@ -302,6 +302,20 @@
             </dl>
           </article>
 
+          <article class="dcard dcard--wide dcard--avatar">
+            <h2 class="dcard-title">Аватар</h2>
+            <p class="dcard-lede">Картинка до 5 МБ — мы сожмём её до 256×256 и сохраним в профиле.</p>
+            <div class="avatar-editor">
+              <div class="profile-avatar profile-avatar--lg avatar-editor-preview" id="avatarPreview" aria-hidden="true">A</div>
+              <div class="avatar-editor-actions">
+                <input id="avatarInput" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+                <button type="button" class="dash-btn dash-btn--primary" id="avatarPick">Выбрать фото</button>
+                <button type="button" class="dash-btn dash-btn--ghost" id="avatarRemove" hidden>Удалить фото</button>
+                <p class="auth-msg" id="avatarMsg" hidden></p>
+              </div>
+            </div>
+          </article>
+
           <article class="dcard dcard--wide dcard--note">
             <h3>Как это работает</h3>
             <p>Логин AnkaVisual используется как ник в Minecraft. Поэтому в игре ты будешь под тем же именем, что и на сайте. Почта нужна только для входа и не показывается другим игрокам.</p>
@@ -352,7 +366,7 @@
               </div>
             </div>
             <div class="dcard-launcher-actions">
-              <a class="dash-btn dash-btn--primary" href="https://github.com/AnkaVisual/AnkaVisual.github.io/releases/download/v1.1.1/Anka-Launcher-1.1.1-Portable.exe?v=da19211">Скачать Anka Launcher 1.1.1</a>
+              <a class="dash-btn dash-btn--primary" href="https://github.com/AnkaVisual/AnkaVisual.github.io/releases/download/v1.1.5/Anka-Launcher-1.1.5-Portable.exe">Скачать Anka Launcher 1.1.5</a>
               <span class="dcard-hint">Windows · .exe · без установки</span>
             </div>
           </article>
@@ -435,6 +449,6 @@
 </div>
 
 <script src="js/config.js?v=101"></script>
-<script src="js/account.js?v=17"></script>
+<script src="js/account.js?v=18"></script>
 </body>
 </html>
