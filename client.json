@@ -1,8 +1,8 @@
 {
-  "version": "1.5.2",
-  "notes": "Удалён See Invisible. Серверные ограничения сняты: модули доступны на любых серверах.",
+  "version": "1.5.3",
+  "notes": "Префикс профиля AnkaVisual окрашивается в цвет роли в шапке визуалов.",
   "url": "https://github.com/AnkaVisual/AnkaVisual.github.io/releases/download/client/ankavisual-1.5-privacy.jar",
-  "sha256": "d00343554a89c51a1a8fd62f9445d02cb996311d953ef764feecd843733494f9",
-  "size": 57718938,
-  "releasedAt": "2026-10-26"
+  "sha256": "99257d4171cd8bae16660a6a0dd9f8b81a97920c13ac459828a654d51c2f14f2",
+  "size": 57719339,
+  "releasedAt": "2026-10-27"
 }
