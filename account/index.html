@@ -52,9 +52,9 @@
                    minlength="3" maxlength="24" pattern="[A-Za-z0-9_-]{3,24}" required>
           </label>
           <label class="auth-field">
-            <span class="sr-only">Почта, необязательно</span>
-            <input name="email" type="email" class="auth-input" placeholder="Почта — необязательно"
-                   autocomplete="email" spellcheck="false">
+            <span class="sr-only">Почта</span>
+            <input name="email" type="email" class="auth-input" placeholder="Почта"
+                   autocomplete="email" spellcheck="false" required>
           </label>
           <label class="auth-field">
             <span class="sr-only">Пароль</span>
@@ -67,6 +67,19 @@
                    autocomplete="new-password" minlength="8" maxlength="128" required>
           </label>
           <button class="auth-btn auth-btn--primary" type="submit">Создать аккаунт</button>
+        </form>
+
+        <form id="verifyForm" class="auth-form" autocomplete="one-time-code" hidden>
+          <p class="auth-subtitle" id="verifyHint">Введи код из письма.</p>
+          <label class="auth-field">
+            <span class="sr-only">Код из письма</span>
+            <input name="code" type="text" class="auth-input" placeholder="Код из письма"
+                   inputmode="numeric" autocomplete="one-time-code"
+                   pattern="[0-9]{6}" maxlength="6" required>
+          </label>
+          <button class="auth-btn auth-btn--primary" type="submit">Подтвердить почту</button>
+          <button type="button" class="auth-link" id="verifyResend">Отправить код снова</button>
+          <button type="button" class="auth-link" id="verifyBack">Изменить данные</button>
         </form>
 
         <p id="authMsg" class="auth-msg" role="status" hidden></p>

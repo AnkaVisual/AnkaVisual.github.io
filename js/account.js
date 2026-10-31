@@ -35,6 +35,11 @@
   var profileMsg = document.getElementById('profileMsg');
   var loginForm = document.getElementById('loginForm');
   var registerForm = document.getElementById('registerForm');
+  var verifyForm = document.getElementById('verifyForm');
+  var verifyHint = document.getElementById('verifyHint');
+  var verifyResend = document.getElementById('verifyResend');
+  var verifyBack = document.getElementById('verifyBack');
+  var pendingEmail = '';
   var passwordForm = document.getElementById('passwordForm');
   var friendForm = document.getElementById('friendForm');
   var friendMsg = document.getElementById('friendMsg');
@@ -810,11 +815,35 @@
     document.body.classList.remove('friend-chat-open');
   }
 
+  function finishRegister(data) {
+    saveSession(data);
+    setMessage(authMsg, '');
+    if (registerForm) registerForm.reset();
+    if (verifyForm) verifyForm.hidden = true;
+    pendingEmail = '';
+    setPanel('overview', true);
+  }
+
+  function showVerify(email) {
+    pendingEmail = email;
+    if (loginForm) loginForm.hidden = true;
+    if (registerForm) registerForm.hidden = true;
+    if (verifyForm) verifyForm.hidden = false;
+    if (authTitle) authTitle.textContent = 'Подтверди почту';
+    if (authSubtitle) authSubtitle.textContent = 'Код отправлен на ' + email;
+    if (verifyHint) verifyHint.textContent = 'Введи 6-значный код из письма. Он действует 10 минут.';
+    setMessage(authMsg, '');
+    var input = verifyForm && verifyForm.querySelector('input[name="code"]');
+    if (input) { input.value = ''; input.focus(); }
+  }
+
   function switchMode(nextMode) {
     mode = nextMode === 'register' ? 'register' : 'login';
     var isLogin = mode === 'login';
     if (loginForm) loginForm.hidden = !isLogin;
     if (registerForm) registerForm.hidden = isLogin;
+    if (verifyForm) verifyForm.hidden = true;
+    pendingEmail = '';
 
     if (authTitle) authTitle.textContent = isLogin ? 'Войти в AnkaVisual' : 'Создать аккаунт';
     if (authSubtitle) authSubtitle.textContent = isLogin
@@ -872,6 +901,10 @@
       var password = String(form.get('password') || '');
       var password2 = String(form.get('password2') || '');
 
+      if (!email) {
+        setMessage(authMsg, 'Укажи почту — на неё придёт код', true);
+        return;
+      }
       if (password !== password2) {
         setMessage(authMsg, 'Пароли не совпадают', true);
         return;
@@ -879,21 +912,89 @@
 
       var submit = registerForm.querySelector('button[type="submit"]');
       submit.disabled = true;
-      setMessage(authMsg, 'Создаю аккаунт…');
+      setMessage(authMsg, 'Отправляю код на почту…');
 
-      api('/api/auth/register', {
+      var payload = { username: username, email: email, password: password };
+      api('/api/auth/register/start', {
         method: 'POST',
-        body: { username: username, email: email, password: password }
+        body: payload
       }).then(function (data) {
-        saveSession(data);
-        setMessage(authMsg, '');
-        registerForm.reset();
-        setPanel('overview', true);
+        if (data && data.token) {
+          finishRegister(data);
+          return;
+        }
+        showVerify(email);
+      }).catch(function (error) {
+        if (error.code === 'MAIL_NOT_CONFIGURED') {
+          // Почта на сервере ещё не настроена — создаём аккаунт старым способом.
+          return api('/api/auth/register', {
+            method: 'POST',
+            body: payload
+          }).then(function (data) {
+            finishRegister(data);
+          });
+        }
+        throw error;
       }).catch(function (error) {
         setMessage(authMsg, error.message, true);
       }).finally(function () {
         submit.disabled = false;
       });
+    });
+  }
+
+  if (verifyForm) {
+    verifyForm.addEventListener('submit', function (event) {
+      event.preventDefault();
+      var code = String(new FormData(verifyForm).get('code') || '').replace(/\s+/g, '');
+      if (!/^\d{6}$/.test(code)) {
+        setMessage(authMsg, 'Введи 6 цифр из письма', true);
+        return;
+      }
+      if (!pendingEmail) {
+        setMessage(authMsg, 'Начни регистрацию заново', true);
+        return;
+      }
+
+      var submit = verifyForm.querySelector('button[type="submit"]');
+      submit.disabled = true;
+      setMessage(authMsg, 'Проверяю код…');
+
+      api('/api/auth/register/verify', {
+        method: 'POST',
+        body: { email: pendingEmail, code: code }
+      }).then(function (data) {
+        finishRegister(data);
+      }).catch(function (error) {
+        setMessage(authMsg, error.message, true);
+      }).finally(function () {
+        submit.disabled = false;
+      });
+    });
+  }
+
+  if (verifyResend) {
+    verifyResend.addEventListener('click', function () {
+      if (!pendingEmail) return;
+      verifyResend.disabled = true;
+      setMessage(authMsg, 'Отправляю код повторно…');
+      api('/api/auth/register/resend', {
+        method: 'POST',
+        body: { email: pendingEmail }
+      }).then(function () {
+        setMessage(authMsg, 'Код отправлен повторно');
+      }).catch(function (error) {
+        setMessage(authMsg, error.message, true);
+      }).finally(function () {
+        verifyResend.disabled = false;
+      });
+    });
+  }
+
+  if (verifyBack) {
+    verifyBack.addEventListener('click', function () {
+      if (verifyForm) verifyForm.hidden = true;
+      switchMode('register');
     });
   }
 
