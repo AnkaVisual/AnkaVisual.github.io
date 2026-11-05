@@ -87,15 +87,20 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   font-size:13.5px;font-weight:600;letter-spacing:-.005em;white-space:nowrap;
   transition:background .25s var(--ease),border-color .25s var(--ease),color .25s var(--ease),transform .3s var(--ease);
 }
-.btn:hover{transform:translateY(-1px)}
+.btn:hover{
+  transform:translateY(-1px);
+  background:rgba(255,255,255,.08);
+  border-color:rgba(255,255,255,.22);
+  color:#fff;
+  box-shadow:none;
+}
 .btn:active{transform:translateY(0)}
 .btn svg{flex:none;transition:transform .3s var(--ease)}
-.btn:hover svg{transform:translateX(2px)}
 .btn-light{background:#fff;color:#000;padding-right:8px}
 .btn-light svg{width:26px;height:26px;padding:6px;border-radius:50%;background:rgba(0,0,0,.08)}
-.btn-light:hover{background:#e9e9e9}
+.btn-light:hover{background:#e9e9e9;border-color:#e9e9e9;color:#000}
 .btn-ghost{border-color:var(--line-2);color:rgba(255,255,255,.72)}
-.btn-ghost:hover{border-color:rgba(255,255,255,.26);background:rgba(255,255,255,.03);color:#fff}
+.btn-ghost:hover{border-color:rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:#fff}
 .btn-sm{height:40px;font-size:13px}
 
 /* ---------- шапка ---------- */
@@ -401,13 +406,12 @@ html.intro .hero-title.ht-ready{animation:ht-rise 1.9s var(--ease-out) .05s both
   font-size:10.5px;letter-spacing:.02em;color:rgba(255,255,255,.3);
 }
 .plan-cta{
-  margin-top:auto;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:8px;
+  margin-top:auto;height:42px;border:1px solid transparent;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:8px;
   background:#fff;color:#000;font-size:13px;font-weight:600;
-  transition:background .25s var(--ease),color .25s var(--ease),border-color .25s var(--ease);
+  transition:background .25s var(--ease),color .25s var(--ease),border-color .25s var(--ease),transform .25s var(--ease);
 }
 .plan-cta svg{transition:transform .3s var(--ease)}
-.plan-cta:hover{background:#e9e9e9}
-.plan-cta:hover svg{transform:translateX(2px)}
+.plan-cta:hover{background:#e9e9e9;border-color:#e9e9e9;transform:translateY(-1px)}
 .plan-cta.is-soon{
   margin-top:12px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.08);
   color:rgba(255,255,255,.36);cursor:default;

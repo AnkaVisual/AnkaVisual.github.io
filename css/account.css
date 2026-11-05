@@ -3,6 +3,11 @@
    Сплит как у Fantasy: форма слева, промо-панель справа.
    ========================================================================== */
 
+:root{
+  --cream:#f4f2ec;
+  --on-cream:#101010;
+}
+
 .account-body{
   min-height:100vh;
   background:#f4f2ec;
@@ -1284,3 +1289,47 @@
   min-width:150px;
 }
 .browser-login .auth-msg{margin:0}
+
+/* ---------- единый hover кнопок ---------- */
+
+.auth-btn,
+.dash-btn,
+.dash-top-download,
+.dash-side-download,
+.dcard-copy-btn,
+.friend-btn,
+.friend-chat-close{
+  transition:background .2s var(--ease),border-color .2s var(--ease),color .2s var(--ease),transform .2s var(--ease),box-shadow .2s var(--ease);
+}
+
+.auth-btn,
+.dash-btn,
+.dash-top-download{border:1px solid transparent}
+
+.auth-btn:hover,
+.dash-btn:hover,
+.dash-top-download:hover,
+.dash-side-download:hover,
+.dcard-copy-btn:hover,
+.friend-btn:hover,
+.friend-chat-close:hover{
+  background:rgba(16,16,16,.09);
+  border-color:rgba(16,16,16,.2);
+  color:var(--on-cream);
+  box-shadow:none;
+  transform:translateY(-1px);
+}
+
+.auth-btn--primary:hover,
+.dash-btn--primary:hover,
+.friend-btn.is-primary:hover{
+  background:rgba(16,16,16,.09);
+  border-color:rgba(16,16,16,.2);
+  color:var(--on-cream);
+}
+
+.friend-btn.is-danger:hover{
+  background:rgba(161,40,40,.11);
+  border-color:rgba(161,40,40,.3);
+  color:#8d2020;
+}
