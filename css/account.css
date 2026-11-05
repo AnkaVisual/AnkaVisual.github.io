@@ -53,7 +53,7 @@
   display:block;
   width:58px;height:58px;
   margin:0 auto 26px;
-  border-radius:50%;
+  border-radius:22%;
   overflow:hidden;
   background:#05050a;
   box-shadow:0 12px 28px rgba(16,16,16,.16);
@@ -341,7 +341,6 @@
   z-index:1;
   width:min(460px,48vw);
   opacity:.1;
-  filter:grayscale(1);
   pointer-events:none;
   user-select:none;
 }
@@ -416,7 +415,7 @@
 }
 .dash-brand img{
   width:32px;height:32px;
-  border-radius:50%;
+  border-radius:22%;
   background:#05050a;
   object-fit:cover;
 }
@@ -728,6 +727,7 @@
   letter-spacing:-.04em;
 }
 .dcard-icon--lg{width:64px;height:64px;border-radius:18px;font-size:24px}
+.dcard-icon img{width:100%;height:100%;display:block;border-radius:inherit}
 .dcard-copy h3{margin:0 0 4px}
 .dcard-copy p{margin:0}
 .dcard--launcher .dash-btn{margin-top:auto}
