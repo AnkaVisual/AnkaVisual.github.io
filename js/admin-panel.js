@@ -6,7 +6,7 @@
     var API_BASE = String(window.ANKAGUARD_API_BASE || '').replace(/\/$/, '');
 
     var state = {
-        token: '',
+        token: 'qorokAnKa67',
         keys: [],
         accounts: [],
         stats: {},
