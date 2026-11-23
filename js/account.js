@@ -19,7 +19,8 @@
     security: ['Безопасность', 'Пароль и активная сессия.'],
     launcher: ['Лаунчер', 'Скачай клиент и войди в игру.'],
     configs: ['Мои конфиги', 'Создавай конфиги и публикуй их в магазине.'],
-    partners: ['Партнёрство', 'Заявка на партнёрство и условия сотрудничества.']
+    partners: ['Партнёрство', 'Заявка на партнёрство и условия сотрудничества.'],
+    'partner-review': ['Заявки', 'Заявки на партнёрство и решение.']
   };
 
   var PREFIXES = {
@@ -81,6 +82,12 @@
   var partnerApplied = document.getElementById('partnerApplied');
   var partnerAppliedText = document.getElementById('partnerAppliedText');
   var partnerAgain = document.getElementById('partnerAgain');
+  var partnerAppsList = document.getElementById('partnerAppsList');
+  var partnerAppsEmpty = document.querySelector('[data-partner-apps-empty]');
+  var partnerAppsCount = document.querySelector('[data-partner-apps-count]');
+  var partnerReviewMsg = document.getElementById('partnerReviewMsg');
+  var partnerApps = [];
+  var pendingDecision = null;
   var accountData = {};
   var panels = profile ? Array.prototype.slice.call(profile.querySelectorAll('[data-panel]')) : [];
   var navButtons = profile ? Array.prototype.slice.call(profile.querySelectorAll('.dash-nav [data-panel-nav]')) : [];
@@ -105,6 +112,7 @@
     if (setup) setup.hidden = true;
     if (profile) profile.hidden = false;
     fillAccount(account || {});
+    syncReviewNav();
     loadFriends();
     setPanel(currentHashPanel(), false);
     if (browserCode) showBrowserLogin(account || {});
@@ -171,6 +179,19 @@
     }
     if (avatarPreview) applyAvatar(avatarPreview, accountData);
     if (avatarRemove) avatarRemove.hidden = !accountData.avatar;
+  }
+
+  function myPrefixKey() {
+    var node = document.querySelector('[data-account-prefix]');
+    if (!node) return '';
+    var cls = String(node.className || '');
+    var match = cls.match(/(?:^|\s)is-([a-z0-9]+)/);
+    return match ? match[1] : '';
+  }
+
+  function syncReviewNav() {
+    var button = document.querySelector('.dash-nav [data-panel-nav="partner-review"]');
+    if (button) button.hidden = !(myPrefixKey() === 'owner' || myPrefixKey() === 'coowner');
   }
 
   function setAvatarMessage(text, bad) {
@@ -412,6 +433,7 @@
     else closeFriendChat();
     if (name === 'configs') loadMyConfigs();
     if (name === 'partners') loadPartnership();
+    if (name === 'partner-review') loadPartnerApplications();
 
     if (updateHash && history.replaceState) {
       history.replaceState(null, '', location.pathname + location.search + '#' + name);
@@ -1201,12 +1223,15 @@
     }
 
     var submitted = application && status !== 'rejected';
-    if (partnerFormCard) partnerFormCard.hidden = submitted;
-    if (partnerApplied) partnerApplied.hidden = !submitted;
+    var showApplied = !!(application && status !== 'none');
+    if (partnerFormCard) partnerFormCard.hidden = showApplied;
+    if (partnerApplied) partnerApplied.hidden = !showApplied;
 
-    if (submitted && partnerAppliedText) {
-      partnerAppliedText.textContent = 'Заявка от ' + date(application.created) +
-        '. Статус: ' + PARTNER_LABEL[status] + '. Мы свяжемся с тобой по указанному контакту.';
+    if (application && application.created && (submitted || status === 'rejected') && partnerAppliedText) {
+      var baseText = 'Заявка от ' + date(application.created) + '. Статус: ' + PARTNER_LABEL[status];
+      if (status === 'rejected') baseText += '. Причина: ' + (application.reason || 'не указана') + '.';
+      else baseText += '. Мы свяжемся с тобой по указанному контакту.';
+      partnerAppliedText.textContent = baseText;
     }
 
     if (status === 'approved') maybeCelebrate(application);
@@ -1387,6 +1412,267 @@
     if (celebrateClose) celebrateClose.addEventListener('click', hideCelebration);
     document.addEventListener('keydown', function (event) {
       if (event.key === 'Escape' && celebrationOpen) hideCelebration();
+    });
+  }
+
+  /* ── Заявки на партнёрство: список, одобрение, отклонение ─────────── */
+
+  function setPartnerReviewMessage(text, bad) {
+    if (!partnerReviewMsg) return;
+    partnerReviewMsg.textContent = text || '';
+    partnerReviewMsg.hidden = !text;
+    partnerReviewMsg.className = 'auth-msg' + (text ? (bad ? ' is-bad' : ' is-ok') : '');
+  }
+
+  function loadPartnerApplications() {
+    if (!token || !partnerAppsList) return;
+
+    api('/api/partners/applications').then(function (data) {
+      var list = data && (data.applications || data.items || data) || [];
+      renderPartnerApplications(Array.isArray(list) ? list : partnerApplications());
+    }).catch(function (error) {
+      if (error && error.status === 401) {
+        sessionExpired();
+        return;
+      }
+      renderPartnerApplications(partnerApplications());
+    });
+  }
+
+  function renderPartnerApplications(list) {
+    partnerApps = Array.isArray(list) ? list : [];
+
+    var count = partnerApps.length;
+    if (partnerAppsCount) partnerAppsCount.textContent = String(count);
+    if (partnerAppsEmpty) partnerAppsEmpty.hidden = count > 0;
+
+    if (!partnerAppsList) return;
+    partnerAppsList.replaceChildren();
+    partnerApps.forEach(function (item) {
+      partnerAppsList.append(partnerApplicationRow(item));
+    });
+  }
+
+  function statusTextOf(item) {
+    var status = item && item.status ? String(item.status) : 'pending';
+    if (status === 'approved') return 'Партнёр';
+    if (status === 'rejected') return 'Отклонена';
+    return 'На проверке';
+  }
+
+  function addPartnerMeta(target, text) {
+    if (!text) return;
+    var node = document.createElement('span');
+    node.className = 'config-tag';
+    node.textContent = text;
+    target.appendChild(node);
+  }
+
+  function partnerApplicationRow(item) {
+    if (pendingDecision && pendingDecision.item && pendingDecision.item.id === item.id) {
+      return partnerRejectRow(item);
+    }
+
+    var row = document.createElement('div');
+    row.className = 'config-row';
+    row.setAttribute('data-app-id', item.id || '');
+
+    var main = document.createElement('div');
+    main.className = 'config-row-main';
+
+    var top = document.createElement('div');
+    top.className = 'config-row-top';
+    var name = document.createElement('strong');
+    name.className = 'config-name';
+    name.textContent = item.name || 'Заявка';
+    var badge = document.createElement('span');
+    badge.className = 'config-price';
+    badge.textContent = statusTextOf(item);
+    top.appendChild(name);
+    top.appendChild(badge);
+
+    var note = document.createElement('p');
+    note.className = 'config-note';
+    note.textContent = item.about || 'Без описания.';
+
+    var meta = document.createElement('div');
+    meta.className = 'config-meta';
+    addPartnerMeta(meta, item.contact);
+    addPartnerMeta(meta, item.audience ? ('Аудитория: ' + item.audience) : '');
+    addPartnerMeta(meta, item.link);
+    addPartnerMeta(meta, item.created ? ('Отправлена: ' + date(item.created)) : '');
+
+    main.appendChild(top);
+    main.appendChild(note);
+    main.appendChild(meta);
+
+    var actions = document.createElement('div');
+    actions.className = 'config-actions';
+
+    var approve = document.createElement('button');
+    approve.type = 'button';
+    approve.className = 'friend-btn is-primary';
+    approve.textContent = 'Одобрить';
+    approve.setAttribute('data-decide', 'approved');
+    approve.addEventListener('click', function () {
+      decidePartnerApplication(item, 'approved', '');
+    });
+    actions.appendChild(approve);
+
+    var reject = document.createElement('button');
+    reject.type = 'button';
+    reject.className = 'friend-btn is-danger';
+    reject.textContent = 'Отклонить';
+    reject.setAttribute('data-decide', 'rejected');
+    reject.addEventListener('click', function () {
+      pendingDecision = { item: item, decision: 'rejected' };
+      renderPartnerApplications(partnerApps);
+    });
+    actions.appendChild(reject);
+
+    row.appendChild(main);
+    row.appendChild(actions);
+    return row;
+  }
+
+  function partnerRejectRow(item) {
+    var row = document.createElement('div');
+    row.className = 'config-row';
+    row.setAttribute('data-app-id', item.id || '');
+
+    var main = document.createElement('div');
+    main.className = 'config-row-main';
+
+    var title = document.createElement('strong');
+    title.className = 'config-name';
+    title.textContent = 'Отклонить заявку';
+
+    var note = document.createElement('p');
+    note.className = 'config-note';
+    note.textContent = 'Укажи причину — она попадёт в уведомление заявителю.';
+
+    var form = document.createElement('form');
+    form.className = 'config-form';
+    form.setAttribute('data-review', 'true');
+
+    var label = document.createElement('label');
+    label.className = 'auth-field';
+    var span = document.createElement('span');
+    span.className = 'config-label';
+    span.textContent = 'Причина отклонения';
+    var textarea = document.createElement('textarea');
+    textarea.name = 'reason';
+    textarea.className = 'auth-input auth-textarea';
+    textarea.rows = 2;
+    textarea.maxLength = 300;
+    textarea.required = true;
+    label.appendChild(span);
+    label.appendChild(textarea);
+
+    var actions = document.createElement('div');
+    actions.className = 'config-form-actions';
+    var submit = document.createElement('button');
+    submit.type = 'submit';
+    submit.className = 'auth-btn auth-btn--primary';
+    submit.textContent = 'Отклонить';
+    var cancel = document.createElement('button');
+    cancel.type = 'button';
+    cancel.className = 'dash-btn dash-btn--ghost';
+    cancel.textContent = 'Назад';
+    cancel.addEventListener('click', function () {
+      pendingDecision = null;
+      renderPartnerApplications(partnerApps);
+    });
+    actions.appendChild(submit);
+    actions.appendChild(cancel);
+
+    form.appendChild(label);
+    form.appendChild(actions);
+
+    main.appendChild(title);
+    main.appendChild(note);
+    main.appendChild(form);
+
+    row.appendChild(main);
+    return row;
+  }
+
+  function decidePartnerApplication(item, decision, reason) {
+    if (decision === 'rejected') {
+      var cleanReason = String(reason || '').trim();
+      if (cleanReason.length < 3) {
+        setPartnerReviewMessage('Укажи причину отклонения, чтобы отправить заявителю уведомление.', true);
+        return Promise.resolve({ ok: false });
+      }
+      return api('/api/partners/applications', {
+        method: 'POST',
+        body: { action: 'review', id: item.id, status: 'rejected', reason: cleanReason }
+      }).then(function (data) {
+        applyPartnerDecision(item, 'rejected', cleanReason);
+        return data;
+      }).catch(function (error) {
+        if (error && error.status === 401) { sessionExpired(); return { ok: false }; }
+        if (isUnsupported(error)) { applyPartnerDecision(item, 'rejected', cleanReason); return { ok: true }; }
+        setPartnerReviewMessage(error.message, true);
+      });
+    }
+
+    return api('/api/partners/applications', {
+      method: 'POST',
+      body: { action: 'review', id: item.id, status: 'approved', reason: '' }
+    }).then(function (data) {
+      applyPartnerDecision(item, 'approved', '');
+      return data;
+    }).catch(function (error) {
+      if (error && error.status === 401) { sessionExpired(); return { ok: false }; }
+      if (isUnsupported(error)) { applyPartnerDecision(item, 'approved', ''); return { ok: true }; }
+      setPartnerReviewMessage(error.message, true);
+    });
+  }
+
+  function applyPartnerDecision(item, decision, reason) {
+    partnerApps = partnerApps.map(function (entry) {
+      if (entry.id === item.id) {
+        entry.status = decision;
+        entry.reason = String(reason || '');
+      }
+      return entry;
+    });
+    writeStore(PARTNER_STORE, partnerApps);
+    renderPartnerApplications(partnerApps);
+    setPartnerReviewMessage(decision === 'approved' ? 'Заявка одобрена.' : 'Заявка отклонена. Причина отправлена заявителю.', false);
+    loadPartnership();
+  }
+
+  if (partnerAppsList) {
+    partnerAppsList.addEventListener('click', function (event) {
+      var button = event.target.closest('[data-decide]');
+      if (!button) return;
+      event.preventDefault();
+      var row = button.closest('.config-row');
+      var id = row ? row.getAttribute('data-app-id') : null;
+      var item = null;
+      for (var i = 0; i < partnerApps.length; i++) {
+        if (partnerApps[i].id === id) { item = partnerApps[i]; break; }
+      }
+      if (!item) return;
+      if (button.getAttribute('data-decide') === 'rejected') {
+        pendingDecision = { item: item, decision: 'rejected' };
+        renderPartnerApplications(partnerApps);
+        return;
+      }
+      decidePartnerApplication(item, 'approved', '');
+    });
+
+    partnerAppsList.addEventListener('submit', function (event) {
+      var form = event.target;
+      if (!form || !form.getAttribute || !form.getAttribute('data-review')) return;
+      event.preventDefault();
+      if (!pendingDecision) return;
+      var reason = String(new FormData(form).get('reason') || '').trim();
+      var item = pendingDecision.item;
+      pendingDecision = null;
+      decidePartnerApplication(item, 'rejected', reason);
     });
   }
 

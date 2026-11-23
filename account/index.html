@@ -156,6 +156,7 @@
         <p class="dash-nav-label">Сообщество</p>
         <button type="button" data-panel-nav="configs">Мои конфиги</button>
         <button type="button" data-panel-nav="partners">Партнёрство</button>
+        <button type="button" data-panel-nav="partner-review" class="dash-review-only" hidden>Заявки</button>
       </nav>
 
       <a class="dash-side-download" href="https://github.com/AnkaVisual/AnkaVisual.github.io/releases/download/v1.0.0/AnkaLauncher.exe">
@@ -574,6 +575,26 @@
             <h2 class="dcard-title">Заявка отправлена</h2>
             <p class="dcard-lede" id="partnerAppliedText">Мы получили заявку и свяжемся с тобой.</p>
             <button type="button" class="dash-btn dash-btn--ghost" id="partnerAgain" hidden>Отправить заново</button>
+          </article>
+        </div>
+      </section>
+
+      <!-- Заявки на партнёрство (владелец / со-владелец) -->
+      <section class="dash-panel" data-panel="partner-review" hidden>
+        <div class="dash-grid">
+          <article class="dcard dcard--wide">
+            <div class="dash-card-head">
+              <div>
+                <h2 class="dcard-title">Заявки на партнёрство</h2>
+                <p class="dcard-lede">Одобряй или отклоняй заявки авторов конфигов, каналов и серверов.</p>
+              </div>
+              <span class="config-count" data-partner-apps-count>0</span>
+            </div>
+
+            <p id="partnerReviewMsg" class="auth-msg" role="status" hidden></p>
+
+            <div id="partnerAppsList" class="config-list"></div>
+            <p class="config-empty" data-partner-apps-empty>Новых заявок нет.</p>
           </article>
         </div>
       </section>
