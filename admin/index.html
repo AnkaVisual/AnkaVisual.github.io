@@ -25,17 +25,22 @@
     <section id="login" class="card login">
         <h1>Вход в панель</h1>
         <p class="muted">
-            Токен администратора AnkaGuard.
-            <code>admin-token</code> выдаётся бэкендом после прохождения админ-авторизации.
+            Вход только для владельца и аккаунтов из списка разрешённых.
+            Для запросов к API дополнительно нужен <code>admin-token</code>, выданный бэкендом.
         </p>
+        <p id="accountInfo" class="account-info" hidden></p>
         <form id="loginForm" class="stack">
             <label>
-                Токен
+                admin-token
                 <input id="token" type="password" autocomplete="current-password" placeholder="admin-token" spellcheck="false" required>
             </label>
             <button type="submit">Войти</button>
         </form>
         <p id="loginError" class="error" hidden></p>
+        <div id="denied" class="denied" hidden>
+            <p id="deniedText" class="muted"></p>
+            <a class="link-button" href="../account/">Открыть аккаунт</a>
+        </div>
     </section>
 
     <section id="app" hidden>
@@ -199,7 +204,8 @@
     </div>
 </div>
 
+<script src="admin-access.js"></script>
 <script>window.ANKAGUARD_API_BASE = 'https://ankaguard.ankavisual.workers.dev';</script>
-<script src="../js/admin-panel.js?v=7"></script>
+<script src="../js/admin-panel.js?v=8"></script>
 </body>
 </html>

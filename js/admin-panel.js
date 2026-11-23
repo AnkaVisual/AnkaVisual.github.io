@@ -4,9 +4,14 @@
 
     var $ = function (id) { return document.getElementById(id); };
     var API_BASE = String(window.ANKAGUARD_API_BASE || 'https://ankaguard.ankavisual.workers.dev').replace(/\/$/, '');
+    var ALLOWED_IDS = (Array.isArray(window.ANKAGUARD_ADMIN_ALLOWED_IDS)
+        ? window.ANKAGUARD_ADMIN_ALLOWED_IDS : []).map(function (id) {
+        return String(id).trim();
+    }).filter(Boolean);
 
     var state = {
         token: '',
+        account: null,
         keys: [],
         accounts: [],
         stats: {},
@@ -25,7 +30,93 @@
         log: $('viewLog')
     };
 
-    /* ---------- api ---------- */
+    /* ── доступ к панели: сайтовый аккаунт ── */
+
+    function hasPanelAccess(account) {
+        if (!account) return false;
+        var prefix = String(account.prefix || '').toLowerCase();
+        var id = String(account.id || '');
+        return prefix === 'owner' || ALLOWED_IDS.indexOf(id) !== -1;
+    }
+
+    function fetchAccount(siteToken) {
+        return fetch(API_BASE + '/api/auth/me?token=' + encodeURIComponent(siteToken), {
+            headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+            cache: 'no-store'
+        }).then(function (response) {
+            return response.text().then(function (text) {
+                var data = {};
+                if (text) {
+                    try { data = JSON.parse(text); } catch (ignored) { /* ignore */ }
+                }
+                if (!response.ok) {
+                    var error = new Error(data.message || 'Не удалось проверить аккаунт');
+                    error.status = response.status;
+                    throw error;
+                }
+                return data;
+            });
+        }, function () {
+            throw new Error('Нет связи с сервером аккаунтов');
+        });
+    }
+
+    async function checkAccess() {
+        var siteToken = '';
+        try { siteToken = localStorage.getItem('ankavisual.account.token') || ''; } catch (ignored) { /* ignore */ }
+        if (!siteToken) {
+            showLogin('Для входа в панель сначала войди в аккаунт AnkaVisual на сайте.');
+            return false;
+        }
+
+        try {
+            var data = await fetchAccount(siteToken);
+            var account = data.account || null;
+            if (!account) throw new Error('Сервер не вернул профиль аккаунта');
+            state.account = account;
+
+            if (!hasPanelAccess(account)) {
+                showDenied('Аккаунт «' + (account.username || account.id || 'без имени')
+                    + '» не имеет доступа к панели. Доступ выдает владелец.');
+                return false;
+            }
+
+            showAccountInfo(account);
+            return true;
+        } catch (error) {
+            state.account = null;
+            showLogin(error && error.message || 'Не удалось проверить доступ.');
+            return false;
+        }
+    }
+
+    function showAccountInfo(account) {
+        var node = $('accountInfo');
+        if (!node) return;
+        var role = String(account.prefix || '').toLowerCase();
+        var label = role === 'owner' ? 'Владелец' : (PREFIX_LABELS[role] || 'Разрешён');
+        var name = document.createElement('b');
+        name.textContent = account.username || '—';
+        var prefix = document.createElement('span');
+        prefix.className = 'role';
+        prefix.textContent = label;
+        node.replaceChildren(
+            document.createTextNode('Вошёл как '), name,
+            document.createTextNode(' · '), prefix,
+            document.createTextNode(' · ID ' + (account.id || '—'))
+        );
+        node.hidden = false;
+    }
+
+    function showDenied(message) {
+        showLogin('');
+        var denied = $('denied');
+        var deniedText = $('deniedText');
+        if (deniedText) deniedText.textContent = message || 'Нет доступа к панели.';
+        if (denied) denied.hidden = false;
+    }
+
+    /* ── api ── */
 
     async function api(path, options) {
         options = options || {};
@@ -1115,13 +1206,19 @@
             dot.className = 'dot offline';
             dot.title = 'нет связи';
         }
+        var denied = $('denied');
+        if (denied) denied.hidden = true;
+        var form = $('loginForm');
+        if (form) form.hidden = !hasPanelAccess(state.account);
+        var accountInfo = $('accountInfo');
+        if (accountInfo) accountInfo.hidden = !state.account;
         var loginError = $('loginError');
         if (loginError) {
             loginError.hidden = !message;
             loginError.textContent = message || '';
         }
         var token = $('token');
-        if (token) token.focus();
+        if (token && form && !form.hidden) token.focus();
     }
 
     function logout(message) {
@@ -1170,6 +1267,10 @@
 
     $('loginForm').addEventListener('submit', function (event) {
         event.preventDefault();
+        if (!hasPanelAccess(state.account)) {
+            showLogin('Сначала войди в аккаунт AnkaVisual, которому разрешён доступ к панели.');
+            return;
+        }
         var token = ($('token') && $('token').value ? $('token').value : '').trim();
         if (!token) return;
         start(token);
@@ -1227,8 +1328,11 @@
         }
     });
 
-    var saved = '';
-    try { saved = sessionStorage.getItem('ag-token') || ''; } catch (ignored) { /* ignore */ }
-    if (saved) start(saved);
-    else showLogin('');
+    checkAccess().then(function (allowed) {
+        if (!allowed) return;
+        var saved = '';
+        try { saved = sessionStorage.getItem('ag-token') || ''; } catch (ignored) { /* ignore */ }
+        if (saved) start(saved);
+        else showLogin('');
+    });
 })();
