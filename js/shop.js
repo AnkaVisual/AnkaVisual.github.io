@@ -12,6 +12,19 @@
 
   var activeFilter = 'all';
   var items = [];
+  var LOCAL_CONFIGS_KEY = 'ankavisual.shop.local.configs';
+
+  function localConfigs() {
+    try {
+      var list = JSON.parse(localStorage.getItem(LOCAL_CONFIGS_KEY) || '[]');
+      if (!Array.isArray(list)) return [];
+      return list.filter(function (item) {
+        return item && item.status !== 'draft';
+      });
+    } catch (ignored) {
+      return [];
+    }
+  }
 
   var CATEGORY_LABEL = {
     pvp: 'PvP',
@@ -142,7 +155,18 @@
   }
 
   function applyList(list) {
-    items = Array.isArray(list) && list.length ? list : fallback;
+    var remote = Array.isArray(list) ? list : [];
+    var seen = {};
+    var merged = [];
+
+    remote.concat(localConfigs()).forEach(function (item) {
+      var key = String(item.id || item.code || item.name || '');
+      if (!key || seen[key]) return;
+      seen[key] = true;
+      merged.push(item);
+    });
+
+    items = merged.length ? merged : fallback;
     render();
   }
 

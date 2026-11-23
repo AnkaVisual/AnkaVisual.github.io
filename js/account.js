@@ -17,7 +17,9 @@
     friends: ['Друзья', 'Твой список друзей и заявки.'],
     profile: ['Профиль', 'Данные аккаунта AnkaVisual.'],
     security: ['Безопасность', 'Пароль и активная сессия.'],
-    launcher: ['Лаунчер', 'Скачай клиент и войди в игру.']
+    launcher: ['Лаунчер', 'Скачай клиент и войди в игру.'],
+    configs: ['Мои конфиги', 'Создавай конфиги и публикуй их в магазине.'],
+    partners: ['Партнёрство', 'Заявка на партнёрство и условия сотрудничества.']
   };
 
   var PREFIXES = {
@@ -69,6 +71,16 @@
   var avatarRemove = document.getElementById('avatarRemove');
   var avatarMsg = document.getElementById('avatarMsg');
   var avatarPreview = document.getElementById('avatarPreview');
+  var configForm = document.getElementById('configForm');
+  var configMsg = document.getElementById('configMsg');
+  var configList = document.getElementById('configList');
+  var partnerForm = document.getElementById('partnerForm');
+  var partnerMsg = document.getElementById('partnerMsg');
+  var partnerStatus = document.getElementById('partnerStatus');
+  var partnerFormCard = document.getElementById('partnerFormCard');
+  var partnerApplied = document.getElementById('partnerApplied');
+  var partnerAppliedText = document.getElementById('partnerAppliedText');
+  var partnerAgain = document.getElementById('partnerAgain');
   var accountData = {};
   var panels = profile ? Array.prototype.slice.call(profile.querySelectorAll('[data-panel]')) : [];
   var navButtons = profile ? Array.prototype.slice.call(profile.querySelectorAll('.dash-nav [data-panel-nav]')) : [];
@@ -398,6 +410,8 @@
     if (dashSubtitle) dashSubtitle.textContent = PANELS[name][1];
     if (name === 'friends') loadFriends();
     else closeFriendChat();
+    if (name === 'configs') loadMyConfigs();
+    if (name === 'partners') loadPartnership();
 
     if (updateHash && history.replaceState) {
       history.replaceState(null, '', location.pathname + location.search + '#' + name);
@@ -815,6 +829,483 @@
     document.body.classList.remove('friend-chat-open');
   }
 
+  /* ── Конфиги и магазин ────────────────────────────────────────── */
+
+  var CONFIG_STORE = 'ankavisual.shop.local.configs';
+  var PARTNER_STORE = 'ankavisual.partners.applications';
+  var configLoading = false;
+  var myConfigs = [];
+
+  function readStore(key, fallback) {
+    try {
+      var raw = localStorage.getItem(key);
+      if (!raw) return fallback;
+      var parsed = JSON.parse(raw);
+      return parsed == null ? fallback : parsed;
+    } catch (ignored) {
+      return fallback;
+    }
+  }
+
+  function writeStore(key, value) {
+    try { localStorage.setItem(key, JSON.stringify(value)); } catch (ignored) { /* приватный режим */ }
+  }
+
+  function isUnsupported(error) {
+    return !error || error.status === 0 || error.status === 404 || error.status === 405 || error.status === 501;
+  }
+
+  function sessionExpired() {
+    clearSession();
+    showGuest();
+    switchMode('login');
+    setMessage(authMsg, 'Сессия истекла, войди заново', true);
+  }
+
+  function ownerKey() {
+    return accountId || 'local';
+  }
+
+  function configOwner(item) {
+    return String((item && (item.authorId || item.owner)) || '');
+  }
+
+  function localConfigs() {
+    var owner = ownerKey();
+    return readStore(CONFIG_STORE, []).filter(function (item) {
+      return configOwner(item) === owner;
+    });
+  }
+
+  function saveLocalConfig(item) {
+    var list = readStore(CONFIG_STORE, []).filter(function (entry) {
+      return entry.id !== item.id;
+    });
+    list.push(item);
+    writeStore(CONFIG_STORE, list);
+  }
+
+  function removeLocalConfig(id) {
+    writeStore(CONFIG_STORE, readStore(CONFIG_STORE, []).filter(function (item) {
+      return item.id !== id;
+    }));
+  }
+
+  function configListFrom(data) {
+    if (Array.isArray(data)) return data;
+    if (data && Array.isArray(data.configs)) return data.configs;
+    if (data && Array.isArray(data.items)) return data.items;
+    return [];
+  }
+
+  function priceText(value) {
+    var n = Number(value || 0);
+    return n > 0 ? n + ' ₽' : 'Бесплатно';
+  }
+
+  function generateConfigCode() {
+    var alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    var out = 'ANKA-';
+    for (var i = 0; i < 6; i++) {
+      out += alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+    }
+    return out;
+  }
+
+  function parseTags(value) {
+    return String(value || '').split(',').map(function (tag) {
+      return tag.trim().toLowerCase();
+    }).filter(Boolean).slice(0, 6);
+  }
+
+  function configRow(item) {
+    var row = document.createElement('div');
+    row.className = 'config-row';
+
+    var main = document.createElement('div');
+    main.className = 'config-row-main';
+
+    var top = document.createElement('div');
+    top.className = 'config-row-top';
+
+    var name = document.createElement('strong');
+    name.className = 'config-name';
+    name.textContent = item.name || 'Конфиг';
+
+    var price = document.createElement('span');
+    price.className = 'config-price';
+    price.textContent = priceText(item.price);
+
+    top.append(name, price);
+
+    var note = document.createElement('p');
+    note.className = 'config-note';
+    note.textContent = item.description || 'Без описания.';
+
+    var meta = document.createElement('div');
+    meta.className = 'config-meta';
+
+    var category = document.createElement('span');
+    category.className = 'config-tag';
+    category.textContent = item.category ? String(item.category).toUpperCase() : 'КОНФИГ';
+    meta.append(category);
+
+    (Array.isArray(item.tags) ? item.tags : []).slice(0, 4).forEach(function (tag) {
+      var tagNode = document.createElement('span');
+      tagNode.className = 'config-tag';
+      tagNode.textContent = '#' + tag;
+      meta.append(tagNode);
+    });
+
+    if (item.code) {
+      var code = document.createElement('span');
+      code.className = 'config-code mono';
+      code.textContent = item.code;
+      meta.append(code);
+    }
+
+    if (item.local) {
+      var localBadge = document.createElement('span');
+      localBadge.className = 'config-tag is-local';
+      localBadge.textContent = 'локально';
+      meta.append(localBadge);
+    }
+
+    main.append(top, note, meta);
+
+    var actions = document.createElement('div');
+    actions.className = 'config-actions';
+
+    if (item.code) {
+      var copy = document.createElement('button');
+      copy.type = 'button';
+      copy.className = 'friend-btn';
+      copy.textContent = 'Код';
+      copy.addEventListener('click', function () {
+        copyText(String(item.code), function () {
+          copy.textContent = 'Скопировано';
+          setTimeout(function () { copy.textContent = 'Код'; }, 1400);
+        });
+      });
+      actions.append(copy);
+    }
+
+    var remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'friend-btn is-danger';
+    remove.textContent = 'Удалить';
+    remove.addEventListener('click', function () {
+      deleteConfig(item, remove);
+    });
+    actions.append(remove);
+
+    row.append(main, actions);
+    return row;
+  }
+
+  function renderConfigs(list) {
+    myConfigs = Array.isArray(list) ? list : [];
+
+    var count = myConfigs.length;
+    Array.prototype.forEach.call(document.querySelectorAll('[data-config-list-count]'), function (node) {
+      node.textContent = String(count);
+    });
+
+    var empty = document.querySelector('[data-config-empty]');
+    if (empty) empty.hidden = count > 0;
+
+    if (!configList) return;
+    configList.replaceChildren();
+    myConfigs.forEach(function (item) {
+      configList.append(configRow(item));
+    });
+  }
+
+  function loadMyConfigs() {
+    if (!configList || configLoading) return;
+
+    if (!token) {
+      renderConfigs(localConfigs());
+      return;
+    }
+
+    configLoading = true;
+    api('/api/shop/my-configs').then(function (data) {
+      renderConfigs(configListFrom(data));
+    }).catch(function (error) {
+      if (error.status === 401) {
+        sessionExpired();
+        return;
+      }
+      renderConfigs(localConfigs());
+    }).finally(function () {
+      configLoading = false;
+    });
+  }
+
+  function createConfig(event) {
+    event.preventDefault();
+    if (!configForm) return;
+
+    var form = new FormData(configForm);
+    var name = String(form.get('name') || '').trim();
+    var description = String(form.get('description') || '').trim();
+    var price = Math.max(0, Math.min(99999, parseInt(form.get('price'), 10) || 0));
+    var code = String(form.get('code') || '').trim().toUpperCase();
+    var category = String(form.get('category') || 'other');
+
+    if (name.length < 2) {
+      setMessage(configMsg, 'Название должно быть не короче 2 символов', true);
+      return;
+    }
+    if (description.length < 5) {
+      setMessage(configMsg, 'Добавь описание — хотя бы пару слов', true);
+      return;
+    }
+    if (!code) code = generateConfigCode();
+
+    var payload = {
+      id: 'local-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7),
+      name: name,
+      description: description,
+      category: category,
+      tags: parseTags(form.get('tags')),
+      price: price,
+      code: code,
+      author: accountData.username || 'AnkaVisual',
+      authorId: ownerKey(),
+      version: '1.21.11',
+      status: 'published',
+      created: Math.floor(Date.now() / 1000)
+    };
+
+    var submit = configForm.querySelector('button[type="submit"]');
+    if (submit) submit.disabled = true;
+    setMessage(configMsg, 'Публикую…', false);
+
+    api('/api/shop/configs', {
+      method: 'POST',
+      body: { action: 'create', config: payload }
+    }).then(function (data) {
+      var saved = (data && data.config) || payload;
+      renderConfigs([saved].concat(myConfigs));
+      configForm.reset();
+      setMessage(configMsg, data && data.message ? data.message : 'Конфиг опубликован', false);
+    }).catch(function (error) {
+      if (error.status === 401) {
+        sessionExpired();
+        return;
+      }
+      if (isUnsupported(error)) {
+        payload.local = true;
+        saveLocalConfig(payload);
+        renderConfigs([payload].concat(myConfigs));
+        configForm.reset();
+        setMessage(configMsg, 'Конфиг сохранён локально. Публикация на сервере включится вместе с API магазина.', false);
+        return;
+      }
+      setMessage(configMsg, error.message, true);
+    }).finally(function () {
+      if (submit) submit.disabled = false;
+    });
+  }
+
+  function deleteConfig(item, button) {
+    if (button) button.disabled = true;
+
+    function finish() {
+      removeLocalConfig(item.id);
+      renderConfigs(myConfigs.filter(function (entry) { return entry.id !== item.id; }));
+      setMessage(configMsg, 'Конфиг удалён', false);
+    }
+
+    if (item.local || String(item.id || '').indexOf('local-') === 0 || !token) {
+      finish();
+      return;
+    }
+
+    api('/api/shop/configs', {
+      method: 'POST',
+      body: { action: 'delete', id: item.id }
+    }).then(finish).catch(function (error) {
+      if (error.status === 401) {
+        sessionExpired();
+        return;
+      }
+      if (isUnsupported(error)) {
+        finish();
+        return;
+      }
+      setMessage(configMsg, error.message, true);
+      if (button) button.disabled = false;
+    });
+  }
+
+  function copyText(text, done) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, function () { fallback(); });
+      return;
+    }
+    fallback();
+
+    function fallback() {
+      var area = document.createElement('textarea');
+      area.value = text;
+      area.setAttribute('readonly', '');
+      area.style.position = 'fixed';
+      area.style.opacity = '0';
+      document.body.appendChild(area);
+      area.select();
+      try { document.execCommand('copy'); } catch (ignored) { /* ignore */ }
+      document.body.removeChild(area);
+      done();
+    }
+  }
+
+  /* ── Партнёрство ──────────────────────────────────────────────── */
+
+  var PARTNER_LABEL = {
+    pending: 'На проверке',
+    approved: 'Партнёр',
+    rejected: 'Отклонена'
+  };
+
+  function partnerApplications() {
+    return readStore(PARTNER_STORE, []);
+  }
+
+  function myPartnerApplication() {
+    var owner = ownerKey();
+    return partnerApplications().filter(function (item) {
+      return String(item.authorId || item.owner || '') === owner;
+    }).sort(function (a, b) {
+      return Number(b.created || 0) - Number(a.created || 0);
+    })[0] || null;
+  }
+
+  function savePartnerApplication(item) {
+    var list = partnerApplications().filter(function (entry) {
+      return String(entry.authorId || entry.owner || '') !== ownerKey();
+    });
+    list.push(item);
+    writeStore(PARTNER_STORE, list);
+  }
+
+  function renderPartner(application) {
+    var status = application && application.status ? String(application.status) : 'none';
+    if (!PARTNER_LABEL[status]) status = application ? 'pending' : 'none';
+
+    if (partnerStatus) {
+      partnerStatus.textContent = status === 'none' ? 'Не подана' : PARTNER_LABEL[status];
+      partnerStatus.setAttribute('data-state', status);
+    }
+
+    var submitted = application && status !== 'rejected';
+    if (partnerFormCard) partnerFormCard.hidden = submitted;
+    if (partnerApplied) partnerApplied.hidden = !submitted;
+
+    if (submitted && partnerAppliedText) {
+      partnerAppliedText.textContent = 'Заявка от ' + date(application.created) +
+        '. Статус: ' + PARTNER_LABEL[status] + '. Мы свяжемся с тобой по указанному контакту.';
+    }
+
+    if (partnerAgain) partnerAgain.hidden = status !== 'rejected';
+  }
+
+  function loadPartnership() {
+    if (!partnerStatus) return;
+
+    if (!token) {
+      renderPartner(myPartnerApplication());
+      return;
+    }
+
+    api('/api/partners/me').then(function (data) {
+      var application = data && (data.application || data.partner) ? (data.application || data.partner) : null;
+      renderPartner(application || myPartnerApplication());
+    }).catch(function (error) {
+      if (error.status === 401) {
+        sessionExpired();
+        return;
+      }
+      renderPartner(myPartnerApplication());
+    });
+  }
+
+  function submitPartner(event) {
+    event.preventDefault();
+    if (!partnerForm) return;
+
+    var form = new FormData(partnerForm);
+    var name = String(form.get('name') || '').trim();
+    var contact = String(form.get('contact') || '').trim();
+    var about = String(form.get('about') || '').trim();
+
+    if (name.length < 2) {
+      setMessage(partnerMsg, 'Укажи имя или название проекта', true);
+      return;
+    }
+    if (contact.length < 3) {
+      setMessage(partnerMsg, 'Нужен контакт для связи', true);
+      return;
+    }
+    if (about.length < 10) {
+      setMessage(partnerMsg, 'Расскажи о проекте чуть подробнее', true);
+      return;
+    }
+
+    var payload = {
+      name: name,
+      contact: contact,
+      audience: Math.max(0, parseInt(form.get('audience'), 10) || 0),
+      link: String(form.get('link') || '').trim(),
+      about: about,
+      authorId: ownerKey(),
+      status: 'pending',
+      created: Math.floor(Date.now() / 1000)
+    };
+
+    var submit = partnerForm.querySelector('button[type="submit"]');
+    if (submit) submit.disabled = true;
+    setMessage(partnerMsg, 'Отправляю заявку…', false);
+
+    api('/api/partners/apply', {
+      method: 'POST',
+      body: payload
+    }).then(function (data) {
+      var application = (data && (data.application || data.partner)) || payload;
+      if (!application.status) application.status = 'pending';
+      if (!application.created) application.created = payload.created;
+      partnerForm.reset();
+      renderPartner(application);
+      setMessage(partnerMsg, '', false);
+    }).catch(function (error) {
+      if (error.status === 401) {
+        sessionExpired();
+        return;
+      }
+      if (isUnsupported(error)) {
+        savePartnerApplication(payload);
+        partnerForm.reset();
+        renderPartner(payload);
+        setMessage(partnerMsg, '', false);
+        return;
+      }
+      setMessage(partnerMsg, error.message, true);
+    }).finally(function () {
+      if (submit) submit.disabled = false;
+    });
+  }
+
+  if (configForm) configForm.addEventListener('submit', createConfig);
+  if (partnerForm) partnerForm.addEventListener('submit', submitPartner);
+  if (partnerAgain) {
+    partnerAgain.addEventListener('click', function () {
+      renderPartner(myPartnerApplication());
+      setMessage(partnerMsg, '', false);
+    });
+  }
+
   function finishRegister(data) {
     saveSession(data);
     setMessage(authMsg, '');
@@ -1140,6 +1631,8 @@
       setPanel(name, true);
       if (name === 'security') setMessage(profileMsg, '');
       if (name === 'friends') friendMessage('', false);
+      if (name === 'configs') setMessage(configMsg, '');
+      if (name === 'partners') setMessage(partnerMsg, '');
     });
   });
 
