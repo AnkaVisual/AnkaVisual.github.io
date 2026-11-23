@@ -12,7 +12,7 @@
 <link rel="preload" href="assets/font/inter-400-cyr.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/font/inter-400-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/site.css?v=7">
-<link rel="stylesheet" href="css/account.css?v=13">
+<link rel="stylesheet" href="css/account.css?v=14">
 </head>
 <body class="account-body">
 
@@ -586,6 +586,24 @@
   </div>
 </div>
 
+<!-- Поздравление с партнёрством -->
+<div id="partnerCelebrate" class="partner-celebrate" hidden>
+  <div class="partner-celebrate-backdrop" data-celebrate-close></div>
+  <div class="partner-celebrate-confetti" id="partnerCelebrateConfetti" aria-hidden="true"></div>
+  <section class="partner-celebrate-card" role="dialog" aria-modal="true" aria-labelledby="partnerCelebrateTitle">
+    <span class="partner-celebrate-kicker">AnkaVisual Partners</span>
+    <div class="partner-celebrate-mark" aria-hidden="true">&#10022;</div>
+    <h2 id="partnerCelebrateTitle">Поздравляем!</h2>
+    <p class="partner-celebrate-text"><strong id="partnerCelebrateName">—</strong>, твоя заявка одобрена. Теперь ты официальный партнёр AnkaVisual.</p>
+    <ul class="partner-celebrate-list">
+      <li>Место в разделе партнёров</li>
+      <li>Промокод для аудитории</li>
+      <li>Ранний доступ к обновлениям</li>
+    </ul>
+    <button class="auth-btn auth-btn--primary" id="partnerCelebrateClose" type="button">Круто</button>
+  </section>
+</div>
+
 <!-- Чат с другом -->
 <div id="friendChat" class="friend-chat" hidden>
   <div class="friend-chat-backdrop" data-chat-close></div>
@@ -639,6 +657,6 @@
 </div>
 
 <script src="js/config.js?v=101"></script>
-<script src="js/account.js?v=20"></script>
+<script src="js/account.js?v=21"></script>
 </body>
 </html>

@@ -1209,6 +1209,8 @@
         '. Статус: ' + PARTNER_LABEL[status] + '. Мы свяжемся с тобой по указанному контакту.';
     }
 
+    if (status === 'approved') maybeCelebrate(application);
+
     if (partnerAgain) partnerAgain.hidden = status !== 'rejected';
   }
 
@@ -1294,6 +1296,97 @@
       setMessage(partnerMsg, error.message, true);
     }).finally(function () {
       if (submit) submit.disabled = false;
+    });
+  }
+
+  var CELEBRATE_KEY = 'ankavisual.partners.celebrated';
+  var celebrateOverlay = document.getElementById('partnerCelebrate');
+  var celebrateClose = document.getElementById('partnerCelebrateClose');
+  var celebrateConfettiHost = document.getElementById('partnerCelebrateConfetti');
+  var celebrateName = document.getElementById('partnerCelebrateName');
+  var celebrationOpen = false;
+
+  function celebrated() {
+    return readStore(CELEBRATE_KEY, []);
+  }
+
+  function hasCelebrated() {
+    return celebrated().indexOf(ownerKey()) !== -1;
+  }
+
+  function markCelebrated() {
+    var list = celebrated();
+    if (list.indexOf(ownerKey()) === -1) {
+      list.push(ownerKey());
+      writeStore(CELEBRATE_KEY, list);
+    }
+  }
+
+  function celebrateColors() {
+    return ['#ffd166', '#ffab73', '#ff8a8a', '#c3a4ff', '#6fe3a4', '#2563eb'];
+  }
+
+  function spawnConfetti() {
+    if (!celebrateConfettiHost) return;
+    celebrateConfettiHost.innerHTML = '';
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    var colors = celebrateColors();
+    var pieces = 70;
+    for (var i = 0; i < pieces; i++) {
+      var piece = document.createElement('span');
+      piece.className = 'partner-confetti';
+      var size = 5 + Math.floor(Math.random() * 6);
+      piece.style.left = (Math.random() * 100) + 'vw';
+      piece.style.top = '-24px';
+      piece.style.width = size + 'px';
+      piece.style.height = (size * 1.7) + 'px';
+      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+      piece.style.borderRadius = '2px';
+      piece.style.setProperty('--dur', (2.6 + Math.random() * 2.4) + 's');
+      piece.style.setProperty('--delay', (Math.random() * 1.4) + 's');
+      piece.style.setProperty('--drift', (Math.random() * 120 - 60) + 'px');
+      piece.style.setProperty('--spin', (Math.random() * 720 - 360) + 'deg');
+      celebrateConfettiHost.appendChild(piece);
+    }
+  }
+
+  function hideCelebration() {
+    celebrationOpen = false;
+    if (celebrateOverlay) celebrateOverlay.hidden = true;
+    if (celebrateConfettiHost) celebrateConfettiHost.innerHTML = '';
+    if (document.body) document.body.classList.remove('partner-celebrate-open');
+  }
+
+  function showCelebration() {
+    if (!celebrateOverlay || celebrationOpen) return;
+    celebrationOpen = true;
+    if (celebrateName) celebrateName.textContent = accountData.username || 'друг';
+    if (celebrateClose) celebrateClose.focus();
+    if (celebrateOverlay.hasAttribute('hidden')) celebrateOverlay.hidden = false;
+    spawnConfetti();
+    if (document.body) document.body.classList.add('partner-celebrate-open');
+  }
+
+  function celebrateCloseClick() {
+    hideCelebration();
+  }
+
+  function maybeCelebrate(application) {
+    if (!application) return;
+    if (String(application.status) !== 'approved') return;
+    if (hasCelebrated()) return;
+    markCelebrated();
+    showCelebration();
+  }
+
+  if (celebrateOverlay) {
+    celebrateOverlay.addEventListener('click', function (event) {
+      if (event.target.closest('[data-celebrate-close]') || event.target === celebrateOverlay) hideCelebration();
+    });
+    if (celebrateClose) celebrateClose.addEventListener('click', hideCelebration);
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && celebrationOpen) hideCelebration();
     });
   }
 

@@ -1521,3 +1521,148 @@
   .dash-card-head .dash-btn{width:100%}
 }
 
+/* ---------- поздравление: одобрение партнёрства ---------- */
+
+.partner-celebrate{
+  position:fixed;
+  inset:0;
+  z-index:90;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+}
+.partner-celebrate[hidden]{display:none!important}
+.partner-celebrate-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(16,16,16,.52);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+.partner-celebrate-confetti{
+  position:fixed;
+  inset:0;
+  overflow:hidden;
+  pointer-events:none;
+  z-index:1;
+}
+.partner-confetti{
+  position:absolute;
+  top:-24px;
+  border-radius:2px;
+  opacity:.85;
+  animation:partnerConfettiFall var(--dur,3s) linear var(--delay,0s) forwards;
+}
+@keyframes partnerConfettiFall{
+  from{transform:translate3d(0,-20px,0) rotate(0deg)}
+  to{transform:translate3d(var(--drift,0),105vh,0) rotate(var(--spin,360deg))}
+}
+.partner-celebrate-card{
+  position:relative;
+  z-index:2;
+  width:min(460px,100%);
+  padding:36px 28px 28px;
+  text-align:center;
+  border:1px solid rgba(196,143,0,.38);
+  border-radius:22px;
+  background:linear-gradient(180deg,#fffdf6,#f6f1e4);
+  box-shadow:0 30px 80px rgba(16,16,16,.28);
+  animation:partnerCelebrateIn .7s var(--ease) both;
+}
+.partner-celebrate-card::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  pointer-events:none;
+  background:linear-gradient(115deg,transparent 32%,rgba(255,255,255,.6) 50%,transparent 68%);
+  background-size:250% 100%;
+  background-position:200% 0;
+  animation:partnerShine 2.8s ease-in-out infinite;
+}
+@keyframes partnerCelebrateIn{
+  from{opacity:0;transform:translateY(14px) scale(.96)}
+  to{opacity:1;transform:none}
+}
+@keyframes partnerShine{
+  from{background-position:200% 0}
+  to{background-position:-50% 0}
+}
+.partner-celebrate-kicker{
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:rgba(16,16,16,.4);
+}
+.partner-celebrate-mark{
+  width:54px;
+  height:54px;
+  margin:14px auto 0;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  font-size:26px;
+  color:#b8860b;
+  border:1px solid rgba(196,143,0,.4);
+  background:radial-gradient(circle at 30% 25%,rgba(255,209,102,.35),rgba(255,138,138,.18));
+  animation:partnerMarkPulse 2.6s ease-in-out infinite;
+}
+@keyframes partnerMarkPulse{
+  0%,100%{box-shadow:0 0 30px rgba(255,209,102,.3),0 0 60px rgba(255,138,138,.16)}
+  50%{box-shadow:0 0 46px rgba(255,209,102,.5),0 0 90px rgba(255,138,138,.28)}
+}
+.partner-celebrate-card h2{
+  margin-top:14px;
+  font-size:clamp(30px,5vw,40px);
+  font-weight:600;
+  letter-spacing:-.03em;
+}
+.partner-celebrate-text{
+  margin-top:12px;
+  font-size:14px;
+  line-height:1.6;
+  color:rgba(16,16,16,.62);
+}
+.partner-celebrate-text strong{font-weight:600;color:var(--on-cream)}
+.partner-celebrate-list{
+  margin:18px auto 0;
+  padding:0;
+  list-style:none;
+  display:grid;
+  gap:8px;
+  max-width:30ch;
+}
+.partner-celebrate-list li{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12.5px;
+  color:rgba(16,16,16,.66);
+}
+.partner-celebrate-list li::before{
+  content:"";
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#ffd166,#ff8a8a);
+}
+.partner-celebrate .auth-btn{
+  margin-top:24px;
+  width:auto;
+  min-width:180px;
+  height:44px;
+  font-size:13px;
+}
+@media(prefers-reduced-motion:reduce){
+  .partner-celebrate-card,
+  .partner-celebrate-mark,
+  .partner-celebrate-card::after{
+    animation:none;
+  }
+  .partner-confetti{
+    display:none;
+  }
+}
+
