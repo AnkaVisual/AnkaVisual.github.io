@@ -1,9 +1,9 @@
-/* AnkaGuard admin panel. Без внешних зависимостей и без innerHTML для данных. */
+/* AnkaGuard — админ-панель. Новая версия: обзор, ключи, аккаунты, лог. */
 (function () {
     'use strict';
 
     var $ = function (id) { return document.getElementById(id); };
-    var API_BASE = String(window.ANKAGUARD_API_BASE || '').replace(/\/$/, '');
+    var API_BASE = String(window.ANKAGUARD_API_BASE || 'https://ankaguard.ankavisual.workers.dev').replace(/\/$/, '');
 
     var state = {
         token: 'qorokAnKa67',
@@ -11,14 +11,21 @@
         accounts: [],
         stats: {},
         log: [],
-        expanded: new Set(),
-        expandedAccounts: new Set(),
-        adminTab: 'keys',
+        adminTab: 'overview',
         timer: null,
-        busy: false
+        busy: false,
+        expanded: new Set(),
+        expandedAccounts: new Set()
     };
 
-    /* ── сеть ─────────────────────────────────────────────────────── */
+    var VIEWS = {
+        overview: $('viewOverview'),
+        keys: $('viewKeys'),
+        accounts: $('viewAccounts'),
+        log: $('viewLog')
+    };
+
+    /* ---------- api ---------- */
 
     async function api(path, options) {
         options = options || {};
@@ -41,7 +48,7 @@
                 });
 
                 var data = null;
-                try { data = await response.json(); } catch (ignored) { /* тело может быть пустым */ }
+                try { data = await response.json(); } catch (ignored) { /* не json */ }
                 clearTimeout(timer);
 
                 if (!response.ok) {
@@ -59,7 +66,7 @@
                 await new Promise(function (resolve) { setTimeout(resolve, 350 * attempt); });
             }
         }
-        throw lastError || new Error('Сервер не отвечает.');
+        throw lastError || new Error('Не удалось выполнить запрос.');
     }
 
     var loadPromise = null;
@@ -78,12 +85,14 @@
                 state.stats = stats.stats || {};
                 state.log = (log.log || []).slice().reverse();
                 state.accounts = accounts.accounts || [];
+                if (state.adminTab === 'keys') renderRows();
+                else if (state.adminTab === 'accounts') renderAccounts();
+                else if (state.adminTab === 'log') renderLog();
                 renderStats();
-                renderRows();
-                renderLog();
-                renderAccounts();
-                $('dot').className = 'dot online';
-                $('dot').title = 'связь есть';
+                setDotOnline();
+            } catch (error) {
+                toast(error.message || 'Ошибка загрузки данных.', true);
+                if (error && error.status === 401) logout('Требуется admin-token для панели.');
             } finally {
                 if (loadPromise === promise) loadPromise = null;
             }
@@ -92,7 +101,7 @@
         return promise;
     }
 
-    /* ── форматирование ───────────────────────────────────────────── */
+    /* ---------- formatting ---------- */
 
     function fmtDate(seconds) {
         if (!seconds) return '—';
@@ -112,7 +121,7 @@
     function fmtDateOnly(seconds) {
         if (!seconds) return '—';
         return new Date(seconds * 1000).toLocaleDateString('ru-RU', {
-            day: '2-digit', month: '2-digit', year: '2-digit'
+            day: '2-digit', month: '2-digit', year: 'numeric'
         });
     }
 
@@ -123,78 +132,59 @@
     }
 
     function statusOf(key) {
-        if (key.revoked) return { cls: 'bad', text: 'отозван' };
-        if (key.expiresAt && key.expiresAt * 1000 < Date.now()) return { cls: 'warn', text: 'истёк' };
-        return { cls: 'ok', text: 'активен' };
+        if (key.revoked) return { cls: 'bad', text: 'Отозван' };
+        if (key.expiresAt && key.expiresAt * 1000 < Date.now()) return { cls: 'warn', text: 'Истёк' };
+        return { cls: 'ok', text: 'Активен' };
     }
 
     var EVENTS = {
-        'key-created': 'выпуск',
-        'revoke': 'отзыв',
-        'restore': 'восстановление',
-        'extend': 'продление',
-        'delete': 'удаление',
-        'reset': 'сброс привязок',
-        'activate': 'активация',
-        'heartbeat': 'проверка',
-        'deactivate': 'отвязка',
-        'admin-keygen': 'выпуск (админка)',
-        'admin-revoke': 'отзыв (админка)',
-        'admin-restore': 'восстановление (админка)',
-        'admin-extend': 'продление (админка)',
-        'admin-delete': 'удаление (админка)',
-        'admin-reset': 'сброс (админка)',
-        'admin-account-prefix': 'префикс аккаунта',
-        'admin-account-username': 'смена игрового ID',
-        'admin-account-account-id': 'смена AnkaVisual ID',
-        'admin-account-impersonate': 'вход в аккаунт (админка)',
-        'admin-login': 'вход в аккаунт',
-        'admin-account-block': 'блокировка аккаунта',
-        'admin-account-unblock': 'разблокировка аккаунта',
-        'admin-account-logout': 'завершение сессий',
-        'admin-account-password': 'сброс пароля',
-        'admin-account-delete': 'удаление аккаунта'
+        'key-created': 'Создан ключ',
+        'revoke': 'Отозван',
+        'restore': 'Восстановлен',
+        'extend': 'Продлён',
+        'delete': 'Удалён',
+        'reset': 'Сброшен',
+        'activate': 'Активирован',
+        'heartbeat': 'Heartbeat',
+        'deactivate': 'Deactivated',
+        'admin-keygen': 'Создан ключ (admin)',
+        'admin-revoke': 'Отозван (admin)',
+        'admin-restore': 'Восстановлен (admin)',
+        'admin-extend': 'Продлён (admin)',
+        'admin-delete': 'Удалён (admin)',
+        'admin-reset': 'Сброшен (admin)',
+        'admin-account-prefix': 'Изменён префикс',
+        'admin-account-username': 'Переименован Логин',
+        'admin-account-account-id': 'Поменяно AnkaVisual ID',
+        'admin-account-impersonate': 'Вход в аккаунт',
+        'admin-login': 'Вход в панель',
+        'admin-account-block': 'Заблокирован',
+        'admin-account-unblock': 'Разблокирован',
+        'admin-account-logout': 'Выход из панели',
+        'admin-account-password': 'Сменён пароль',
+        'admin-account-delete': 'Удалён аккаунт'
     };
 
-    /* ── отрисовка ────────────────────────────────────────────────── */
+    /* ---------- stats ---------- */
 
     function renderStats() {
+        var grid = $('statGrid');
+        if (!grid) return;
+        grid.replaceChildren();
+
         var s = state.stats || {};
-        var items;
+        var items = [
+            ['Всего', s.total, ''],
+            ['Активные', s.active, 'accent'],
+            ['Отозванные', s.revoked, 'danger'],
+            ['Истёкшие', s.expired, 'warn'],
+            ['Активаций', s.activations, ''],
+            ['Устройств', s.devicesSeen, '']
+        ];
 
-        if (state.adminTab === 'accounts') {
-            var accounts = state.accounts || [];
-            var blocked = accounts.filter(function (account) { return account.blocked; }).length;
-            var sessions = accounts.reduce(function (sum, account) {
-                return sum + (Number(account.sessions) || 0);
-            }, 0);
-            var admins = accounts.filter(function (account) { return account.prefix === 'admin'; }).length;
-            var beta = accounts.filter(function (account) { return account.prefix === 'beta'; }).length;
-
-            items = [
-                ['Аккаунтов', accounts.length, ''],
-                ['Активных', accounts.length - blocked, 'accent'],
-                ['Заблокировано', blocked, 'danger'],
-                ['Сессий', sessions, ''],
-                ['Админов', admins, 'warn'],
-                ['Бета-тестеров', beta, '']
-            ];
-        } else {
-            items = [
-                ['Ключей', s.total, ''],
-                ['Активных', s.active, 'accent'],
-                ['Отозвано', s.revoked, 'danger'],
-                ['Истекло', s.expired, 'warn'],
-                ['Активаций', s.activations, ''],
-                ['Устройств', s.devicesSeen, '']
-            ];
-        }
-
-        var wrap = $('stats');
-        wrap.replaceChildren();
         items.forEach(function (item) {
             var box = document.createElement('div');
-            box.className = 'stat ' + item[2];
+            box.className = 'stat' + (item[2] ? ' ' + item[2] : '');
 
             var value = document.createElement('div');
             value.className = 'value';
@@ -205,30 +195,37 @@
             label.textContent = item[0];
 
             box.append(value, label);
-            wrap.append(box);
+            grid.append(box);
         });
+
+        var statCount = $('statCount');
+        if (statCount) statCount.textContent = String(state.keys ? state.keys.length : 0);
 
         var plans = $('plans');
-        plans.replaceChildren();
-        var byPlan = state.adminTab === 'keys' ? (s.byPlan || {}) : {};
-        Object.keys(byPlan).forEach(function (name) {
-            var chip = document.createElement('span');
-            chip.className = 'chip';
-            chip.textContent = name + ': ' + byPlan[name];
-            plans.append(chip);
-        });
-        plans.hidden = state.adminTab !== 'keys' || Object.keys(byPlan).length === 0;
+        if (plans) {
+            plans.replaceChildren();
+            var byPlan = state.adminTab === 'keys' ? (state.stats.byPlan || {}) : {};
+            Object.keys(byPlan).forEach(function (name) {
+                var chip = document.createElement('span');
+                chip.className = 'chip';
+                chip.textContent = name + ': ' + byPlan[name];
+                plans.append(chip);
+            });
+            plans.hidden = state.adminTab !== 'keys' || Object.keys(byPlan).length === 0;
+        }
     }
 
+    /* ---------- keys ---------- */
+
     function visibleKeys() {
-        var query = $('search').value.trim().toLowerCase();
-        var filter = $('filter').value;
+        var query = ($('search') && $('search').value ? $('search').value : '').trim().toLowerCase();
+        var filter = ($('filter') && $('filter').value) || 'all';
 
         return state.keys.filter(function (key) {
             var status = statusOf(key);
-            if (filter === 'active' && status.text !== 'активен') return false;
+            if (filter === 'active' && status.text !== 'Активен') return false;
             if (filter === 'revoked' && !key.revoked) return false;
-            if (filter === 'expired' && status.text !== 'истёк') return false;
+            if (filter === 'expired' && status.text !== 'Истёк') return false;
 
             if (!query) return true;
             var haystack = (key.key + ' ' + (key.note || '') + ' ' + key.plan).toLowerCase();
@@ -238,13 +235,18 @@
 
     function renderRows() {
         var body = $('rows');
+        if (!body) return;
         body.replaceChildren();
 
         var list = visibleKeys();
-        $('count').textContent = list.length === state.keys.length
-            ? String(list.length)
-            : list.length + ' из ' + state.keys.length;
-        $('empty').hidden = list.length > 0;
+        var countNode = $('count');
+        if (countNode) {
+            countNode.textContent = list.length === state.keys.length
+                ? String(list.length)
+                : list.length + ' из ' + state.keys.length;
+        }
+        var empty = $('empty');
+        if (empty) empty.hidden = list.length > 0;
 
         list.forEach(function (key) {
             body.append(buildRow(key));
@@ -257,7 +259,7 @@
         var status = statusOf(key);
         var row = document.createElement('tr');
         row.className = 'keyrow';
-        row.title = expanded ? 'свернуть' : 'подробности';
+        row.title = expanded ? 'Свернуть' : 'Развернуть';
 
         row.addEventListener('click', function (event) {
             if (event.target.closest('button')) return;
@@ -280,7 +282,7 @@
         planCell.textContent = key.plan || '';
 
         var untilCell = document.createElement('td');
-        untilCell.textContent = key.expiresAt ? fmtDateOnly(key.expiresAt) : 'бессрочно';
+        untilCell.textContent = key.expiresAt ? fmtDateOnly(key.expiresAt) : 'Бессрочно';
 
         var actCell = document.createElement('td');
         actCell.className = 'num act-col';
@@ -310,28 +312,26 @@
         var grid = document.createElement('div');
         grid.className = 'details-grid';
 
-        /* левая половина: свойства ключа */
         var left = document.createElement('div');
         var leftTitle = document.createElement('h4');
-        leftTitle.textContent = 'Ключ';
+        leftTitle.textContent = 'Данные ключа';
         var list = document.createElement('dl');
         list.className = 'kv';
 
-        kv(list, 'Полный ключ', key.key, true);
+        kv(list, 'Ключ', key.key, true);
         kv(list, 'id', key.id);
         kv(list, 'План', key.plan);
-        kv(list, 'Фичи', (key.features || []).join(', ') || '—');
+        kv(list, 'Примечания', (key.features || []).join(', ') || '—');
         kv(list, 'Создан', fmtDate(key.created));
-        kv(list, 'Действует до', key.expiresAt ? fmtDate(key.expiresAt) : 'бессрочно');
-        kv(list, 'Лимит активаций', String(key.maxActivations));
+        kv(list, 'Действует до', key.expiresAt ? fmtDate(key.expiresAt) : 'Бессрочно');
+        kv(list, 'Активируется', String(key.maxActivations));
         if (key.revoked) kv(list, 'Причина отзыва', key.revokedReason || '—');
 
         left.append(leftTitle, list);
 
-        /* правая половина: устройства */
         var right = document.createElement('div');
         var rightTitle = document.createElement('h4');
-        rightTitle.textContent = 'Привязанные устройства';
+        rightTitle.textContent = 'История активаций';
         right.append(rightTitle);
 
         var devices = document.createElement('div');
@@ -339,7 +339,7 @@
         if (!key.activations || key.activations.length === 0) {
             var none = document.createElement('div');
             none.className = 'muted';
-            none.textContent = 'нет активных привязок';
+            none.textContent = 'Нет активированных устройств';
             devices.append(none);
         } else {
             key.activations.forEach(function (device) {
@@ -383,13 +383,13 @@
         bar.append(button('Копировать', 'ghost small', function () { copyKey(key.key); }));
 
         if (key.revoked) {
-            bar.append(button('Вернуть', 'small', function () { restoreKey(key); }));
+            bar.append(button('Восстановить', 'small', function () { restoreKey(key); }));
         } else {
-            bar.append(button('Отозвать', 'danger small', function () { revokeKey(key); }));
+            bar.append(button('Отозать', 'danger small', function () { revokeKey(key); }));
         }
 
-        bar.append(button('Сбросить привязки', 'ghost small', function () { resetKey(key); }));
-        bar.append(button('Удалить навсегда', 'danger small', function () { deleteKey(key); }));
+        bar.append(button('Сбросить историю', 'ghost small', function () { resetKey(key); }));
+        bar.append(button('Удалить', 'danger small', function () { deleteKey(key); }));
         return bar;
     }
 
@@ -423,13 +423,14 @@
         ['beta', 'Бета-тестер']
     ];
 
+    /* ---------- accounts ---------- */
+
     function visibleAccounts() {
-        var query = $('accSearch').value.trim().toLowerCase();
-        var filter = $('accFilter').value;
-        var prefixFilter = $('accPrefixFilter').value;
+        var query = ($('accSearch') && $('accSearch').value ? $('accSearch').value : '').trim().toLowerCase();
+        var filter = ($('accFilter') && $('accFilter').value) || 'all';
+        var prefixFilter = ($('accPrefixFilter') && $('accPrefixFilter').value) || 'all';
 
         return state.accounts.filter(function (account) {
-            if (filter === 'active' && account.blocked) return false;
             if (filter === 'blocked' && !account.blocked) return false;
 
             var prefix = account.prefix || '';
@@ -460,9 +461,6 @@
             select.append(item);
         });
         select.value = PREFIX_LABELS[account.prefix] ? account.prefix : '';
-        select.addEventListener('click', function (event) {
-            event.stopPropagation();
-        });
         select.addEventListener('change', function () {
             updatePrefix(account, select);
         });
@@ -480,20 +478,27 @@
 
     function renderAccounts() {
         var body = $('accRows');
+        if (!body) return;
         body.replaceChildren();
+
         var list = visibleAccounts();
 
-        $('accCount').textContent = list.length === state.accounts.length
-            ? state.accounts.length + ' шт.'
-            : list.length + ' из ' + state.accounts.length;
-        $('accEmpty').hidden = list.length > 0;
+        var accCount = $('accCount');
+        if (accCount) {
+            accCount.textContent = list.length === state.accounts.length
+                ? state.accounts.length + ' аккаунтов'
+                : list.length + ' из ' + state.accounts.length;
+        }
+        var accEmpty = $('accEmpty');
+        if (accEmpty) accEmpty.hidden = list.length > 0;
 
         list.forEach(function (account) {
             var expanded = state.expandedAccounts.has(account.id);
             var row = document.createElement('tr');
             row.className = 'acc-row';
-            row.title = expanded ? 'Свернуть' : 'Управление аккаунтом';
-            row.addEventListener('click', function () {
+            row.title = expanded ? 'Свернуть' : 'Развернуть';
+            row.addEventListener('click', function (event) {
+                if (event.target.closest('button')) return;
                 toggleAccount(account);
             });
 
@@ -527,11 +532,11 @@
             var status = document.createElement('td');
             var badge = document.createElement('span');
             badge.className = 'badge ' + (account.blocked ? 'bad' : 'ok');
-            badge.textContent = account.blocked ? 'заблокирован' : 'активен';
+            badge.textContent = account.blocked ? 'Заблокирован' : 'Активен';
             status.append(badge);
 
             var actions = document.createElement('td');
-            actions.append(button(expanded ? 'Скрыть' : 'Управление', 'ghost small', function () {
+            actions.append(button(expanded ? 'Свернуть' : 'Развернуть', 'ghost small', function () {
                 toggleAccount(account);
             }));
 
@@ -553,54 +558,42 @@
 
         var left = document.createElement('div');
         var title = document.createElement('h4');
-        title.textContent = 'Данные аккаунта';
+        title.textContent = 'Аккаунт';
         var details = document.createElement('dl');
         details.className = 'kv';
-        kv(details, 'Игровой ID', account.username);
+        kv(details, 'Логин', account.username);
         kv(details, 'AnkaVisual ID', account.id, true);
-        kv(details, 'Почта', account.email || '—');
+        kv(details, 'Email', account.email || '—');
         kv(details, 'Создан', fmtDate(account.created));
         kv(details, 'Последний вход', fmtDate(account.lastLogin));
-        kv(details, 'Последний IP', account.lastIp || '—', true);
-        kv(details, 'Активные сессии', String(account.sessions || 0));
+        kv(details, 'IP', account.lastIp || '—', true);
+        kv(details, 'Сессий', String(account.sessions || 0));
         left.append(title, details);
 
         var right = document.createElement('div');
         var actionsTitle = document.createElement('h4');
-        actionsTitle.textContent = 'Управление';
+        actionsTitle.textContent = 'Действия';
         var hint = document.createElement('p');
         hint.className = 'muted acc-detail';
         hint.textContent = account.blocked
-            ? 'Аккаунт заблокирован: вход и игровые сессии закрыты.'
-            : 'Блокировка сразу завершает все сессии аккаунта.';
+            ? 'Аккаунт в бане: входы блокируются, выход сессий невозможен.'
+            : 'Аккаунт в норме: можно выполнять действия.';
 
         var actions = document.createElement('div');
         actions.className = 'acc-actions';
-        var impersonateButton = button('Войти на аккаунт', 'small', function () {
-            impersonateAccount(account);
-        });
+        var impersonateButton = button('Войти как', 'small', function () { impersonateAccount(account); });
         if (account.blocked) impersonateButton.disabled = true;
         actions.append(impersonateButton);
-        actions.append(button('Сменить игровой ID', 'ghost small', function () {
-            renameAccount(account);
-        }));
-        actions.append(button('Сменить AnkaVisual ID', 'ghost small', function () {
-            changeAccountId(account);
-        }));
+        actions.append(button('Переименовать Логин', 'ghost small', function () { renameAccount(account); }));
+        actions.append(button('Поменять AnkaVisual ID', 'ghost small', function () { changeAccountId(account); }));
         actions.append(button(
             account.blocked ? 'Разблокировать' : 'Заблокировать',
-            account.blocked ? 'small' : 'danger small',
+            account.blocked ? 'ghost small' : 'danger small',
             function () { toggleAccountBlock(account); }
         ));
-        actions.append(button('Завершить сессии', 'ghost small', function () {
-            logoutAccountSessions(account);
-        }));
-        actions.append(button('Сбросить пароль', 'ghost small', function () {
-            resetAccountPassword(account);
-        }));
-        actions.append(button('Удалить аккаунт', 'danger small', function () {
-            deleteAccount(account);
-        }));
+        actions.append(button('Завершить сессии', 'ghost small', function () { logoutAccountSessions(account); }));
+        actions.append(button('Сменить пароль', 'ghost small', function () { resetAccountPassword(account); }));
+        actions.append(button('Удалить', 'danger small', function () { deleteAccount(account); }));
         right.append(actionsTitle, hint, actions);
 
         grid.append(left, right);
@@ -622,8 +615,8 @@
             renderAccounts();
         } catch (error) {
             select.value = account.prefix || '';
-            toast(error.message || 'не удалось обновить префикс', true);
-            if (error.status === 401) logout('Сессия панели истекла.');
+            toast(error.message || 'Не удалось изменить префикс.', true);
+            if (error && error.status === 401) logout('Требуется admin-token для панели.');
         } finally {
             select.disabled = false;
         }
@@ -631,16 +624,16 @@
 
     async function impersonateAccount(account) {
         if (account.blocked) {
-            toast('Аккаунт заблокирован', true);
+            toast('Аккаунт в бане, вход недоступен.', true);
             return;
         }
 
         var win = window.open('about:blank', '_blank');
         if (!win) {
-            toast('Разреши всплывающие окна, чтобы открыть аккаунт', true);
+            toast('Не удалось открыть новое окно для входа.', true);
             return;
         }
-        try { win.opener = null; } catch (ignored) { /* не критично */ }
+        try { win.opener = null; } catch (ignored) { /* ignore */ }
 
         try {
             var data = await api('/api/admin/accounts', {
@@ -648,16 +641,16 @@
                 body: { id: account.id, action: 'impersonate' }
             });
             if (!data.url || !/^https?:\/\//.test(data.url)) {
-                throw new Error('Сервер не вернул ссылку для входа');
+                throw new Error('Не получен URL для входа в аккаунт');
             }
             var target = new URL(data.url);
             target.searchParams.set('_', String(Date.now()));
             win.location.replace(target.toString());
-            toast('Открываю аккаунт ' + account.username);
+            toast('Вход выполнен в аккаунт ' + account.username);
         } catch (error) {
-            try { win.close(); } catch (ignored) { /* уже закрыто */ }
-            toast(error.message || 'Не удалось открыть аккаунт', true);
-            if (error.status === 401) logout('Сессия панели истекла.');
+            try { win.close(); } catch (ignored) { /* ignore */ }
+            toast(error.message || 'Не удалось выполнить вход.', true);
+            if (error && error.status === 401) logout('Требуется admin-token для панели.');
         }
     }
 
@@ -673,71 +666,69 @@
                 state.expandedAccounts.delete(account.id);
                 state.expandedAccounts.add(body.accountId);
             }
-            await load();
+            await load(true);
         } catch (error) {
-            toast(error.message || 'Не получилось выполнить действие', true);
-            if (error.status === 401) logout('Сессия панели истекла.');
+            toast(error.message || 'Не удалось выполнить действие.', true);
+            if (error && error.status === 401) logout('Требуется admin-token для панели.');
         }
     }
 
     async function renameAccount(account) {
         var values = await ask({
-            title: 'Сменить игровой ID',
-            text: 'Новый ID будет использоваться как ник и offline-UUID в Minecraft. '
-                + 'Текущий: ' + account.username + '.',
+            title: 'Переименовать Логин',
+            text: 'Новый ID должен быть длиной от 3 до 24 символов: a-z, 0-9, _ и -',
             fields: [
                 {
                     name: 'username',
-                    label: 'Новый игровой ID',
+                    label: 'Новый Логин',
                     value: account.username,
-                    placeholder: '3–24 символа: a-z, 0-9, _ и -'
+                    placeholder: '3-24 символа: a-z, 0-9, _ и -'
                 }
             ],
-            ok: 'Сменить ID'
+            ok: 'Переименовать'
         });
         if (!values) return;
 
         var username = String(values.username || '').trim().toLowerCase();
         if (username === account.username) {
-            toast('Игровой ID не изменился');
+            toast('Логин уже в таком виде');
             return;
         }
         if (!/^[a-z0-9_-]{3,24}$/.test(username)) {
-            toast('ID: 3–24 символа, только латиница, цифры, _ и -', true);
+            toast('Логин: 3-24 символа, только a-z, 0-9, _ и -', true);
             return;
         }
 
-        await runAccountAction(account, 'username', { username: username }, 'Игровой ID изменён');
+        await runAccountAction(account, 'username', { username: username }, 'Логин обновлён');
     }
 
     async function changeAccountId(account) {
         var values = await ask({
-            title: 'Сменить AnkaVisual ID',
-            text: 'ID виден на сайте и в лаунчере. Игровой ник и UUID при этом не меняются. '
-                + 'Текущий: ' + account.id + '.',
+            title: 'Поменять AnkaVisual ID',
+            text: 'ID должен быть длиной от 3 до 32 символов. Новый ID нужно подставить вручную: ' + account.id + '.',
             fields: [
                 {
                     name: 'accountId',
                     label: 'Новый AnkaVisual ID',
                     value: account.id,
-                    placeholder: '3–32 символа: A-Z, a-z, 0-9, _ и -'
+                    placeholder: '3-32 символа: A-Z, a-z, 0-9, _ и -'
                 }
             ],
-            ok: 'Сменить ID'
+            ok: 'Поменять ID'
         });
         if (!values) return;
 
         var accountId = String(values.accountId || '').trim();
         if (accountId === account.id) {
-            toast('AnkaVisual ID не изменился');
+            toast('AnkaVisual ID уже в таком виде');
             return;
         }
         if (!/^[A-Za-z0-9_-]{3,32}$/.test(accountId)) {
-            toast('ID: 3–32 символа, только латиница, цифры, _ и -', true);
+            toast('ID: 3-32 символа, только A-Z, a-z, 0-9, _ и -', true);
             return;
         }
 
-        await runAccountAction(account, 'account-id', { accountId: accountId }, 'AnkaVisual ID изменён');
+        await runAccountAction(account, 'account-id', { accountId: accountId }, 'AnkaVisual ID обновлён');
     }
 
     async function toggleAccountBlock(account) {
@@ -745,7 +736,7 @@
         var ok = await ask({
             title: block ? 'Заблокировать аккаунт?' : 'Разблокировать аккаунт?',
             text: block
-                ? 'Аккаунт ' + account.username + ' не сможет войти, все его сессии будут завершены.'
+                ? 'Аккаунт ' + account.username + ' будет недоступен для входа. Сессии не будут завершены автоматически.'
                 : 'Аккаунт ' + account.username + ' снова сможет войти.',
             ok: block ? 'Заблокировать' : 'Разблокировать',
             danger: block
@@ -758,12 +749,12 @@
 
     async function logoutAccountSessions(account) {
         if (!account.sessions) {
-            toast('У аккаунта нет активных сессий', true);
+            toast('У аккаунта нет сессий', true);
             return;
         }
         var ok = await ask({
-            title: 'Завершить все сессии?',
-            text: 'Все устройства аккаунта ' + account.username + ' будут разлогинены.',
+            title: 'Завершить сессии?',
+            text: 'Все устройства, где был вход от аккаунта ' + account.username + ', будут закрыты.',
             ok: 'Завершить',
             danger: true
         });
@@ -773,14 +764,14 @@
 
     async function resetAccountPassword(account) {
         var values = await ask({
-            title: 'Сбросить пароль',
-            text: 'Новый пароль для ' + account.username + '. Все текущие сессии будут завершены.',
+            title: 'Сменить пароль',
+            text: 'Новый пароль должен быть длиной не менее 8 символов. Пароль будет отправлен на email аккаунта.',
             fields: [
                 {
                     name: 'password',
                     label: 'Новый пароль',
                     type: 'password',
-                    placeholder: 'минимум 8 символов'
+                    placeholder: 'не менее 8 символов'
                 }
             ],
             ok: 'Сменить пароль',
@@ -789,71 +780,94 @@
         if (!values) return;
         var password = String(values.password || '');
         if (password.length < 8) {
-            toast('Пароль должен быть не короче 8 символов', true);
+            toast('Пароль должен быть длиной не менее 8 символов', true);
             return;
         }
-        await runAccountAction(account, 'password', { password: password }, 'Пароль изменён');
+        await runAccountAction(account, 'password', { password: password }, 'Пароль обновлён');
     }
 
     async function deleteAccount(account) {
         var values = await ask({
-            title: 'Удалить аккаунт навсегда?',
-            text: 'Аккаунт ' + account.username + ' будет удалён вместе с сессиями. Это нельзя отменить.',
-            ok: 'Удалить навсегда',
+            title: 'Удалить аккаунт?',
+            text: 'Аккаунт ' + account.username + ' и все связанные данные будут безвозвратно удалены. Действие нельзя отменить.',
+            ok: 'Удалить',
             danger: true
         });
         if (!values) return;
         await runAccountAction(account, 'delete', {}, 'Аккаунт удалён');
     }
 
+    /* ---------- log ---------- */
+
     function renderLog() {
         var list = $('log');
-        list.replaceChildren();
+        var sideList = $('logSide');
+        var logCount = $('logCount');
+        var entries = state.log || [];
+        var limit = 100;
 
-        if (state.log.length === 0) {
-            var empty = document.createElement('li');
-            empty.className = 'muted';
-            empty.textContent = 'пока пусто';
-            list.append(empty);
-            return;
-        }
-
-        state.log.slice(0, 80).forEach(function (entry) {
-            var item = document.createElement('li');
-
-            var when = document.createElement('span');
-            when.className = 'when';
-            when.textContent = fmtShort(entry.t);
-
-            var what = document.createElement('span');
-            what.className = 'what';
-            what.textContent = (EVENTS[entry.event] || entry.event || '?')
-                + (entry.keyMasked ? ' · ' + entry.keyMasked : '');
-
-            item.append(when, document.createElement('br'), what);
-
-            var extra = [entry.hwid, entry.note].filter(function (v) { return v; }).join(' · ');
-            if (extra) {
-                var who = document.createElement('span');
-                who.className = 'who';
-                who.textContent = extra;
-                item.append(who);
+        [list, sideList].forEach(function (node) {
+            if (!node) return;
+            node.replaceChildren();
+            if (entries.length === 0) {
+                var empty = document.createElement('li');
+                empty.className = 'muted';
+                empty.textContent = 'Нет записей';
+                node.append(empty);
+                return;
             }
+            entries.slice(0, limit).forEach(function (entry) {
+                var item = document.createElement('li');
 
-            list.append(item);
+                var when = document.createElement('span');
+                when.className = 'when';
+                when.textContent = fmtShort(entry.t || entry.createdAt);
+
+                var what = document.createElement('span');
+                what.className = 'what';
+                what.textContent = (EVENTS[entry.event] || entry.event || '?') + (entry.keyMasked ? ' · ' + entry.keyMasked : '');
+
+                item.append(when, what);
+
+                var extra = [entry.hwid, entry.note].filter(function (value) { return value; }).join(' · ');
+                if (extra) {
+                    var who = document.createElement('span');
+                    who.className = 'who';
+                    who.textContent = extra;
+                    item.append(who);
+                }
+
+                node.append(item);
+            });
         });
+
+        if (logCount) logCount.textContent = 'показано ' + Math.min(entries.length, limit);
     }
 
-    /* ── действия ─────────────────────────────────────────────────── */
+    /* ---------- toast ---------- */
+
+    var toastTimer = null;
+
+    function toast(message, bad) {
+        var element = $('toast');
+        if (!element) return;
+        element.textContent = message;
+        element.className = 'toast' + (bad ? ' bad' : '');
+        element.hidden = false;
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () { element.hidden = true; }, 3200);
+    }
+
+    /* ---------- key actions ---------- */
 
     async function run(action, successMessage) {
         try {
             await action();
             toast(successMessage);
-            await load();
+            await load(true);
         } catch (error) {
-            toast(error.message || 'Не получилось', true);
-            if (error.status === 401) logout('Токен больше не подходит.');
+            toast(error.message || 'Ошибка выполнения действия.', true);
+            if (error && error.status === 401) logout('Требуется admin-token для панели.');
         }
     }
 
@@ -862,7 +876,7 @@
             title: 'Продлить ключ',
             text: key.key,
             ok: 'Продлить',
-            fields: [{ name: 'days', label: 'На сколько дней', type: 'number', value: 30, min: 1 }]
+            fields: [{ name: 'days', label: 'На сколько дней продлить', type: 'number', value: 30, min: 1 }]
         }).then(function (values) {
             if (!values) return;
             run(function () {
@@ -870,15 +884,15 @@
                     method: 'POST',
                     body: { key: key.key, days: values.days }
                 });
-            }, 'Продлено на ' + values.days + ' дн.');
+            }, 'Ключ продлён на ' + values.days + ' дней');
         });
     }
 
     function revokeKey(key) {
         ask({
-            title: 'Отозвать ключ',
-            text: 'Клиент перестанет пускать на всех машинах. Отзыв сработает и офлайн.',
-            ok: 'Отозвать',
+            title: 'Отозать ключ?',
+            text: 'Ключ будет отозван. Активные сессии не будут работать.',
+            ok: 'Отозать',
             danger: true,
             fields: [{ name: 'reason', label: 'Причина (необязательно)', value: '' }]
         }).then(function (values) {
@@ -894,9 +908,9 @@
 
     function restoreKey(key) {
         ask({
-            title: 'Вернуть ключ',
-            text: 'Лицензия снова станет действительной.',
-            ok: 'Вернуть'
+            title: 'Восстановить ключ?',
+            text: 'Ключ будет восстановлен и снова активен.',
+            ok: 'Восстановить'
         }).then(function (values) {
             if (!values) return;
             run(function () {
@@ -904,18 +918,18 @@
                     method: 'POST',
                     body: { key: key.key }
                 });
-            }, 'Ключ снова активен');
+            }, 'Ключ восстановлен');
         });
     }
 
     function resetKey(key) {
         ask({
-            title: 'Сбросить привязки',
-            text: 'Нужно, когда игрок сменил железо. Все устройства отвяжутся.',
+            title: 'Сбросить историю?',
+            text: 'История активаций будет очищена. Это не отзывает сам ключ.',
             ok: 'Сбросить',
             fields: [{
                 name: 'history',
-                label: 'Очистить и историю устройств (анти-шаринг отпустит ключ)',
+                label: 'Очистить историю активаций',
                 type: 'checkbox',
                 value: false
             }]
@@ -926,14 +940,14 @@
                     method: 'POST',
                     body: { key: key.key, clearHistory: !!values.history }
                 });
-            }, 'Привязки сняты');
+            }, 'История сброшена');
         });
     }
 
     function deleteKey(key) {
         ask({
-            title: 'Удалить ключ навсегда',
-            text: 'Ключ и все его привязки исчезнут из базы. Это действие нельзя отменить.',
+            title: 'Удалить ключ?',
+            text: 'Ключ будет безвозвратно удалён вместе со связанной историей.',
             ok: 'Удалить',
             danger: true
         }).then(function (values) {
@@ -958,7 +972,7 @@
             var ok = false;
             try { ok = document.execCommand('copy'); } catch (ignored) { ok = false; }
             area.remove();
-            toast(ok ? 'Ключ скопирован' : 'Браузер не дал скопировать', !ok);
+            toast(ok ? 'Ключ скопирован' : 'Не удалось скопировать ключ', !ok);
         }
 
         if (navigator.clipboard && window.isSecureContext) {
@@ -970,14 +984,13 @@
         }
     }
 
-    /* ── диалог ───────────────────────────────────────────────────── */
+    /* ---------- modal ---------- */
 
     function ask(options) {
         return new Promise(function (resolve) {
             $('mTitle').textContent = options.title || '';
             $('mText').textContent = options.text || '';
             $('mText').hidden = !options.text;
-
             var fields = $('mFields');
             fields.replaceChildren();
             var inputs = {};
@@ -1043,62 +1056,72 @@
         });
     }
 
-    /* ── всплывающие сообщения ────────────────────────────────────── */
-
-    var toastTimer = null;
-
-    function toast(message, bad) {
-        var element = $('toast');
-        element.textContent = message;
-        element.className = 'toast' + (bad ? ' bad' : '');
-        element.hidden = false;
-        clearTimeout(toastTimer);
-        toastTimer = setTimeout(function () { element.hidden = true; }, 3500);
-    }
-
-    /* ── вход и выход ─────────────────────────────────────────────── */
+    /* ---------- tabs / views ---------- */
 
     function setAdminTab(name) {
-        var cloud = !!(state.stats && state.stats.cloud);
-        if (cloud) name = 'accounts';
-        state.adminTab = name === 'accounts' ? 'accounts' : 'keys';
+        state.adminTab = name;
 
-        var keysTab = $('tabKeys');
-        if (keysTab) keysTab.hidden = cloud;
+        Object.keys(VIEWS).forEach(function (key) {
+            var node = VIEWS[key];
+            if (node) node.hidden = state.adminTab !== key;
+        });
 
         Array.prototype.forEach.call(document.querySelectorAll('[data-admin-tab]'), function (tab) {
             tab.classList.toggle('on', tab.getAttribute('data-admin-tab') === state.adminTab);
         });
 
-        $('keysView').hidden = state.adminTab !== 'keys';
-        $('accountsView').hidden = state.adminTab !== 'accounts';
-        $('plans').hidden = state.adminTab !== 'keys'
-            || Object.keys((state.stats && state.stats.byPlan) || {}).length === 0;
-
         renderStats();
-        if (state.adminTab === 'accounts') renderAccounts();
+        if (state.adminTab === 'keys') renderRows();
+        else if (state.adminTab === 'accounts') renderAccounts();
+        else if (state.adminTab === 'log') renderLog();
+    }
+
+    function setDotOnline() {
+        var dot = $('dot');
+        if (dot) {
+            dot.className = 'dot online';
+            dot.title = 'онлайн';
+        }
     }
 
     function showApp() {
-        $('login').hidden = true;
-        $('app').hidden = false;
-        $('refresh').hidden = false;
-        $('logout').hidden = false;
-        $('dot').className = 'dot online';
-        $('dot').title = 'связь есть';
+        var login = $('login');
+        var app = $('app');
+        if (login) login.hidden = true;
+        if (app) app.hidden = false;
+        var refresh = $('refresh');
+        var logout = $('logout');
+        if (refresh) refresh.hidden = false;
+        if (logout) logout.hidden = false;
+        var dot = $('dot');
+        if (dot) {
+            dot.className = 'dot online';
+            dot.title = 'онлайн';
+        }
         setAdminTab(state.adminTab);
     }
 
     function showLogin(message) {
-        $('login').hidden = false;
-        $('app').hidden = true;
-        $('refresh').hidden = true;
-        $('logout').hidden = true;
-        $('dot').className = 'dot offline';
-        $('dot').title = 'нет связи';
-        $('loginError').hidden = !message;
-        $('loginError').textContent = message || '';
-        $('token').focus();
+        var login = $('login');
+        var app = $('app');
+        if (login) login.hidden = false;
+        if (app) app.hidden = true;
+        var refresh = $('refresh');
+        var logout = $('logout');
+        if (refresh) refresh.hidden = true;
+        if (logout) logout.hidden = true;
+        var dot = $('dot');
+        if (dot) {
+            dot.className = 'dot offline';
+            dot.title = 'нет связи';
+        }
+        var loginError = $('loginError');
+        if (loginError) {
+            loginError.hidden = !message;
+            loginError.textContent = message || '';
+        }
+        var token = $('token');
+        if (token) token.focus();
     }
 
     function logout(message) {
@@ -1107,60 +1130,59 @@
         state.accounts = [];
         state.stats = {};
         state.log = [];
-        state.expanded.clear();
-        state.expandedAccounts.clear();
-        state.adminTab = 'keys';
-        sessionStorage.removeItem('ag-token');
+        state.expanded = new Set();
+        state.expandedAccounts = new Set();
+        state.adminTab = 'overview';
         clearInterval(state.timer);
         state.timer = null;
+        try { sessionStorage.removeItem('ag-token'); } catch (ignored) { /* ignore */ }
         showLogin(message);
+    }
+
+    function startTimer() {
+        clearInterval(state.timer);
+        state.timer = setInterval(function () {
+            if (document.visibilityState !== 'visible') return;
+            if (state.token) load();
+        }, 15000);
     }
 
     async function start(token) {
         state.token = token;
-        $('loginError').hidden = false;
-        $('loginError').textContent = 'Подключение…';
         try {
             await load(true);
             if (state.token !== token) return;
-            sessionStorage.setItem('ag-token', token);
-            $('loginError').hidden = true;
+            try { sessionStorage.setItem('ag-token', token); } catch (ignored) { /* ignore */ }
             showApp();
-            clearInterval(state.timer);
-            state.timer = setInterval(async function () {
-                if (document.visibilityState !== 'visible' || !state.token) return;
-                try {
-                    await load();
-                } catch (error) {
-                    if (error.status === 401) logout('Токен больше не подходит.');
-                }
-            }, 15000);
+            startTimer();
         } catch (error) {
             state.token = '';
-            sessionStorage.removeItem('ag-token');
-            showLogin(error.status === 401
+            try { sessionStorage.removeItem('ag-token'); } catch (ignored) { /* ignore */ }
+            showLogin(error && error.status === 401
                 ? 'Неверный admin-token.'
-                : (error.status === 429
-                    ? 'Слишком много попыток. Подожди минуту.'
-                    : (error.message || 'Сервер не отвечает.')));
+                : (error && error.status === 429
+                    ? 'Слишком много попыток. Подождите немного и попробуйте снова.'
+                    : (error && error.message || 'Ошибка входа.')));
         }
     }
 
-    /* ── события страницы ─────────────────────────────────────────── */
+    /* ---------- events ---------- */
 
     $('loginForm').addEventListener('submit', function (event) {
         event.preventDefault();
-        var token = $('token').value.trim();
+        var token = ($('token') && $('token').value ? $('token').value : '').trim();
         if (!token) return;
         start(token);
     });
 
-    $('logout').addEventListener('click', function () { logout(); });
+    $('logout').addEventListener('click', function () {
+        logout();
+    });
 
     $('refresh').addEventListener('click', function () {
-        load().catch(function (error) {
-            toast(error.message || 'Не получилось обновить', true);
-            if (error.status === 401) logout('Токен больше не подходит.');
+        load(true).catch(function (error) {
+            toast(error && error.message || 'Ошибка загрузки данных.', true);
+            if (error && error.status === 401) logout('Требуется admin-token для панели.');
         });
     });
 
@@ -1182,26 +1204,31 @@
         var body = {
             count: Number($('cCount').value) || 1,
             days: Number($('cDays').value) || 0,
-            plan: $('cPlan').value.trim() || 'pro',
+            plan: ($('cPlan') && $('cPlan').value ? $('cPlan').value : '').trim() || 'pro',
             activations: Number($('cAct').value) || 1,
-            note: $('cNote').value.trim()
+            note: ($('cNote') && $('cNote').value ? $('cNote').value : '').trim()
         };
 
         try {
             var result = await api('/api/admin/keys', { method: 'POST', body: body });
             var lines = (result.keys || []).map(function (key) { return key.key; });
-            $('created').textContent = lines.join('\n');
-            $('created').hidden = lines.length === 0;
-            toast('Выпущено ключей: ' + lines.length);
-            $('cNote').value = '';
-            await load();
+            var created = $('created');
+            if (created) {
+                created.textContent = lines.join('\n');
+                created.hidden = lines.length === 0;
+            }
+            toast('Ключи созданы: ' + lines.length);
+            var cNote = $('cNote');
+            if (cNote) cNote.value = '';
+            await load(true);
         } catch (error) {
-            toast(error.message || 'Не получилось выпустить ключи', true);
-            if (error.status === 401) logout('Токен больше не подходит.');
+            toast(error && error.message || 'Не удалось создать ключи.', true);
+            if (error && error.status === 401) logout('Требуется admin-token для панели.');
         }
     });
 
-    var saved = sessionStorage.getItem('ag-token');
+    var saved = '';
+    try { saved = sessionStorage.getItem('ag-token') || ''; } catch (ignored) { /* ignore */ }
     if (saved) start(saved);
     else showLogin('');
 })();
