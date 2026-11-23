@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Магазин конфигов — AnkaVisual</title>
+<meta name="description" content="Магазин конфигов AnkaVisual: готовые конфиги от сообщества, быстрая установка по коду.">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="../assets/ankavisual/icon.ico" sizes="any">
+<link rel="apple-touch-icon" href="../assets/ankavisual/logo-round.png">
+<link rel="preload" href="../assets/font/inter-400-cyr.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/font/inter-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/font/prata-cyr-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../css/site.css?v=7">
+<link rel="stylesheet" href="../css/shop.css?v=1">
+</head>
+<body>
+<header class="nav" id="nav">
+  <div class="shell nav-inner">
+    <a class="logo" href="../index.html" aria-label="AnkaVisual">
+      <img src="../assets/ankavisual/logo.svg" alt="AnkaVisual">
+    </a>
+    <nav class="nav-links" aria-label="Главная навигация">
+      <a href="../index.html#features">Возможности</a>
+      <a href="../index.html#pricing">Цены</a>
+      <a href="./" aria-current="page">Магазин</a>
+      <a href="../account/">Аккаунт</a>
+    </nav>
+    <a class="btn btn-ghost" href="../account/">Войти</a>
+  </div>
+</header>
+
+<main>
+  <section class="section shop-hero">
+    <div class="shell">
+      <div class="section-head reveal">
+        <h1>Магазин конфигов</h1>
+        <p>Готовые конфиги от сообщества AnkaVisual. Скопируй код и импортируй его в клиенте через менеджер конфигов.</p>
+      </div>
+      <div class="shop-toolbar reveal">
+        <input id="shopSearch" class="shop-search" type="search" placeholder="Поиск по названию, автору или тегу..." autocomplete="off">
+        <div class="shop-filters" id="shopFilters">
+          <button class="shop-filter is-active" data-filter="all" type="button">Все</button>
+          <button class="shop-filter" data-filter="pvp" type="button">PvP</button>
+          <button class="shop-filter" data-filter="visual" type="button">Visual</button>
+          <button class="shop-filter" data-filter="utility" type="button">Utility</button>
+          <button class="shop-filter" data-filter="free" type="button">Бесплатные</button>
+        </div>
+      </div>
+      <div id="shopStatus" class="shop-status reveal">Загрузка конфигов...</div>
+      <div id="shopGrid" class="shop-grid" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="shell">
+      <div class="shop-publish reveal">
+        <div>
+          <h2>Хочешь выложить свой конфиг?</h2>
+          <p>Опубликуй конфиг через аккаунт AnkaVisual. После проверки он появится в магазине.</p>
+        </div>
+        <a class="btn btn-primary" href="../account/">Открыть аккаунт</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="shell footer-inner">
+    <span>© AnkaVisual</span>
+    <div class="footer-links">
+      <a href="../index.html">Главная</a>
+      <a href="../account/">Аккаунт</a>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/config.js?v=7"></script>
+<script src="../js/shop.js?v=1"></script>
+</body>
+</html>
