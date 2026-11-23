@@ -2,9 +2,21 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
+<script>
+(function () {
+  var d = document.documentElement;
+  d.classList.add('intro');
+  setTimeout(function () {
+    if (!d.classList.contains('ht-ready')) {
+      d.classList.add('app-ready');
+      d.classList.remove('intro');
+    }
+  }, 4000);
+})();
+</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Магазин конфигов — AnkaVisual</title>
-<meta name="description" content="Магазин конфигов AnkaVisual: готовые конфиги от сообщества, быстрая установка по коду.">
+<meta name="description" content="Магазин конфигов AnkaVisual: готовые конфиги от клиента и сообщества. Выбери, скопируй код и импортируй его в игре.">
 <meta name="theme-color" content="#000000">
 <link rel="icon" href="../assets/ankavisual/icon.ico" sizes="any">
 <link rel="apple-touch-icon" href="../assets/ankavisual/logo-round.png">
@@ -12,70 +24,195 @@
 <link rel="preload" href="../assets/font/inter-400-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../assets/font/prata-cyr-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../css/site.css?v=7">
-<link rel="stylesheet" href="../css/shop.css?v=1">
+<link rel="stylesheet" href="../css/shop.css?v=2">
 </head>
 <body>
-<header class="nav" id="nav">
-  <div class="shell nav-inner">
-    <a class="logo" href="../index.html" aria-label="AnkaVisual">
-      <img src="../assets/ankavisual/logo.svg" alt="AnkaVisual">
+
+<noscript><style>
+html.intro body{visibility:visible}
+html.intro::before{display:none}
+html.intro .hero-title{opacity:1}
+html.intro .ht-ch{opacity:1;filter:none;transform:none}
+</style></noscript>
+
+<!-- ============================== ШАПКА ============================== -->
+<header class="site-header" id="top">
+  <div class="shell header-inner">
+    <a class="brand" href="../index.html" aria-label="AnkaVisual — на главную">
+      <img class="mark" src="../assets/ankavisual/logo.svg" alt="" width="26" height="26">
+      <span>AnkaVisual</span>
     </a>
+
     <nav class="nav-links" aria-label="Главная навигация">
       <a href="../index.html#features">Возможности</a>
       <a href="../index.html#pricing">Цены</a>
       <a href="./" aria-current="page">Магазин</a>
+      <a href="../index.html#faq">FAQ</a>
       <a href="../account/">Аккаунт</a>
     </nav>
-    <a class="btn btn-ghost" href="../account/">Войти</a>
+
+    <div class="header-actions">
+      <a class="login" href="../account/">Войти</a>
+      <a class="btn btn-light btn-sm" href="https://github.com/AnkaVisual/AnkaVisual.github.io/releases/download/v1.0.0/AnkaLauncher.exe">
+        Скачать
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
   </div>
 </header>
 
 <main>
-  <section class="section shop-hero">
-    <div class="shell">
-      <div class="section-head reveal">
-        <h1>Магазин конфигов</h1>
-        <p>Готовые конфиги от сообщества AnkaVisual. Скопируй код и импортируй его в клиенте через менеджер конфигов.</p>
-      </div>
-      <div class="shop-toolbar reveal">
-        <input id="shopSearch" class="shop-search" type="search" placeholder="Поиск по названию, автору или тегу..." autocomplete="off">
-        <div class="shop-filters" id="shopFilters">
-          <button class="shop-filter is-active" data-filter="all" type="button">Все</button>
-          <button class="shop-filter" data-filter="pvp" type="button">PvP</button>
-          <button class="shop-filter" data-filter="visual" type="button">Visual</button>
-          <button class="shop-filter" data-filter="utility" type="button">Utility</button>
-          <button class="shop-filter" data-filter="free" type="button">Бесплатные</button>
-        </div>
-      </div>
-      <div id="shopStatus" class="shop-status reveal">Загрузка конфигов...</div>
-      <div id="shopGrid" class="shop-grid" aria-live="polite"></div>
-    </div>
-  </section>
 
-  <section class="section">
-    <div class="shell">
-      <div class="shop-publish reveal">
-        <div>
-          <h2>Хочешь выложить свой конфиг?</h2>
-          <p>Опубликуй конфиг через аккаунт AnkaVisual. После проверки он появится в магазине.</p>
-        </div>
-        <a class="btn btn-primary" href="../account/">Открыть аккаунт</a>
+<!-- =============================== ГЕРОЙ ============================== -->
+<section class="hero shop-hero">
+  <div class="shell">
+    <div class="hero-badge reveal">
+      <span class="live-dot" aria-hidden="true"></span>
+      <span>Конфиги</span>
+      <span class="badge-sep" aria-hidden="true"></span>
+      <span>1.21.11 · Fabric</span>
+    </div>
+
+    <h1 class="hero-title" id="heroTitle">Магазин<br>конфигов</h1>
+
+    <p class="hero-sub reveal">
+      Готовые конфиги от AnkaVisual и сообщества. Выбери нужный,
+      скопируй код и импортируй его в клиенте.
+    </p>
+
+    <div class="hero-cta reveal">
+      <a class="btn btn-light" href="#configs">
+        Смотреть конфиги
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <a class="btn btn-ghost" href="../account/">Мои конфиги</a>
+    </div>
+
+    <p class="hero-meta reveal">Импорт по коду &nbsp;·&nbsp; без установки &nbsp;·&nbsp; под 1.21.11</p>
+  </div>
+</section>
+
+<!-- ============================== КАТАЛОГ ============================= -->
+<section class="section shop-catalog" id="configs">
+  <div class="shell">
+    <div class="section-head reveal">
+      <h2>Каталог</h2>
+      <p>Конфиги проверены и подписаны. Бесплатные копируются сразу,
+        платные привязываются к аккаунту AnkaVisual.</p>
+    </div>
+
+    <div class="price-badges reveal">
+      <span class="price-badge"><b>КАТАЛОГ</b><span>конфиги клиента и сообщества</span></span>
+      <span class="price-badge"><b>ИМПОРТ</b><span>по коду в клиенте</span></span>
+    </div>
+
+    <div class="shop-tools reveal">
+      <label class="shop-search-wrap">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
+        <input id="shopSearch" class="shop-search" type="search" placeholder="Поиск по названию, автору или тегу" autocomplete="off" aria-label="Поиск конфигов">
+      </label>
+
+      <div class="shop-filters" id="shopFilters" role="group" aria-label="Фильтр конфигов">
+        <button class="shop-filter is-active" data-filter="all" type="button" aria-pressed="true">Все</button>
+        <button class="shop-filter" data-filter="pvp" type="button" aria-pressed="false">PvP</button>
+        <button class="shop-filter" data-filter="visual" type="button" aria-pressed="false">Visual</button>
+        <button class="shop-filter" data-filter="utility" type="button" aria-pressed="false">Utility</button>
+        <button class="shop-filter" data-filter="free" type="button" aria-pressed="false">Бесплатные</button>
       </div>
     </div>
-  </section>
+
+    <p id="shopStatus" class="shop-status" role="status" aria-live="polite">Загрузка конфигов…</p>
+
+    <div id="shopGrid" class="shop-grid" aria-live="polite"></div>
+  </div>
+</section>
+
+<!-- ============================ КАК ЭТО РАБОТАЕТ ====================== -->
+<section class="section shop-steps-section">
+  <div class="shell">
+    <div class="section-head reveal">
+      <h2>Как это работает</h2>
+      <p>Три шага — и конфиг уже в клиенте. Ничего скачивать вручную не нужно.</p>
+    </div>
+
+    <div class="shop-steps">
+      <article class="shop-step reveal">
+        <span class="num">01</span>
+        <h3>Выбери конфиг</h3>
+        <p>Открой каталог, найди подходящий стиль и нажми на карточку.</p>
+      </article>
+
+      <article class="shop-step reveal">
+        <span class="num">02</span>
+        <h3>Скопируй код</h3>
+        <p>Бесплатный конфиг выдаёт код сразу. Платный привязывается к аккаунту.</p>
+      </article>
+
+      <article class="shop-step reveal">
+        <span class="num">03</span>
+        <h3>Импортируй в игре</h3>
+        <p>В клиенте открой менеджер конфигов и вставь код в поле импорта.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== ФИНАЛ ============================== -->
+<section class="section closing-section">
+  <div class="shell">
+    <div class="closing reveal">
+      <span class="closing-kicker">Авторы · сообщество</span>
+      <h2>Хочешь выложить свой конфиг?</h2>
+      <p>Опубликуй конфиг через аккаунт AnkaVisual. После проверки
+        он появится в каталоге.</p>
+      <a class="btn btn-light" href="../account/">
+        Открыть аккаунт
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <span class="closing-meta">Публикация бесплатная · модерация вручную</span>
+    </div>
+  </div>
+</section>
+
 </main>
 
+<!-- ============================== ПОДВАЛ ============================= -->
 <footer class="footer">
-  <div class="shell footer-inner">
-    <span>© AnkaVisual</span>
-    <div class="footer-links">
-      <a href="../index.html">Главная</a>
-      <a href="../account/">Аккаунт</a>
+  <div class="shell">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="../index.html">
+          <img class="mark" src="../assets/ankavisual/logo.svg" alt="" width="26" height="26">
+          <span>AnkaVisual</span>
+        </a>
+        <p>Визуальный клиент для Minecraft на Fabric. После первого запуска
+          работает офлайн.</p>
+      </div>
+
+      <div class="footer-col">
+        <h5>Продукт</h5>
+        <a href="../index.html#features">Возможности</a>
+        <a href="../index.html#pricing">Цены</a>
+        <a href="./">Магазин</a>
+        <a href="../index.html#faq">Вопросы</a>
+      </div>
+
+      <div class="footer-col">
+        <h5>Аккаунт</h5>
+        <a href="../account/">Личный кабинет</a>
+        <a href="../account/">Войти</a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© <span id="year">2026</span> AnkaVisual</span>
+      <span>Minecraft и Fabric принадлежат их владельцам</span>
     </div>
   </div>
 </footer>
 
+<script src="../js/site.js?v=5"></script>
 <script src="../js/config.js?v=7"></script>
-<script src="../js/shop.js?v=1"></script>
+<script src="../js/shop.js?v=2"></script>
 </body>
 </html>

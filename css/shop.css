@@ -1,46 +1,158 @@
-/* Shop */
-.shop-hero { padding-top: 120px; }
-.shop-toolbar { display:flex; flex-direction:column; gap:14px; margin:24px 0 18px; }
-.shop-search {
-  width:100%; max-width:520px; padding:14px 16px; border-radius:14px;
-  border:1px solid rgba(255,255,255,.10); background:rgba(255,255,255,.04);
-  color:#fff; font:inherit; outline:none;
+/* ============================================================
+   Магазин конфигов — стиль основной страницы AnkaVisual
+   ============================================================ */
+
+/* активный пункт навигации */
+.nav-links a[aria-current="page"]{color:#fff}
+.nav-links a[aria-current="page"]::after{
+  content:"";display:block;width:4px;height:4px;margin:5px auto 0;border-radius:50%;
+  background:#7ef0a4;box-shadow:0 0 8px rgba(126,240,164,.8);
 }
-.shop-search:focus { border-color: rgba(255,255,255,.24); background:rgba(255,255,255,.06); }
-.shop-filters { display:flex; flex-wrap:wrap; gap:10px; }
-.shop-filter {
-  padding:10px 14px; border-radius:999px; border:1px solid rgba(255,255,255,.10);
-  background:rgba(255,255,255,.03); color:rgba(255,255,255,.78); font:inherit; cursor:pointer;
+
+/* ------------------------------ герой ------------------------------ */
+.shop-hero{padding:158px 0 0;position:relative;text-align:center}
+.shop-hero .hero-title{max-width:13ch}
+
+/* ----------------------------- каталог ----------------------------- */
+.shop-catalog{padding-top:110px}
+.shop-catalog .price-badges{margin-bottom:30px}
+
+.shop-tools{
+  display:flex;flex-direction:column;align-items:center;gap:14px;
+  margin:0 auto 14px;max-width:760px;
 }
-.shop-filter.is-active, .shop-filter:hover { background:rgba(255,255,255,.10); color:#fff; }
-.shop-status { color:rgba(255,255,255,.62); margin:8px 0 20px; min-height:24px; }
-.shop-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:18px; }
-.shop-card {
-  border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.03);
-  border-radius:22px; padding:20px; display:flex; flex-direction:column; gap:14px;
-  backdrop-filter: blur(10px);
+
+.shop-search-wrap{
+  display:flex;align-items:center;gap:10px;height:44px;width:min(430px,100%);
+  padding:0 16px;border:1px solid var(--line-2);border-radius:999px;
+  background:rgba(255,255,255,.025);color:rgba(255,255,255,.4);
+  transition:border-color .25s var(--ease),background .25s var(--ease);
 }
-.shop-card:hover { border-color:rgba(255,255,255,.16); background:rgba(255,255,255,.05); }
-.shop-card-top { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
-.shop-card h3 { margin:0; font-size:20px; line-height:1.2; color:#fff; }
-.shop-badge { font-size:12px; padding:6px 10px; border-radius:999px; background:rgba(255,255,255,.08); color:rgba(255,255,255,.86); white-space:nowrap; }
-.shop-badge.is-free { background:rgba(80,200,120,.16); color:#8ff0ad; }
-.shop-meta { color:rgba(255,255,255,.58); font-size:14px; display:flex; gap:10px; flex-wrap:wrap; }
-.shop-desc { color:rgba(255,255,255,.72); font-size:14px; line-height:1.55; margin:0; min-height:44px; }
-.shop-tags { display:flex; flex-wrap:wrap; gap:8px; }
-.shop-tag { font-size:12px; color:rgba(255,255,255,.72); background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); padding:5px 9px; border-radius:999px; }
-.shop-actions { display:flex; gap:10px; margin-top:auto; }
-.shop-btn {
-  flex:1; padding:11px 12px; border-radius:12px; border:1px solid rgba(255,255,255,.10);
-  background:rgba(255,255,255,.04); color:#fff; font:inherit; cursor:pointer; text-decoration:none; text-align:center;
+.shop-search-wrap:focus-within{border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.05)}
+.shop-search-wrap svg{flex:none}
+.shop-search{
+  flex:1;min-width:0;height:100%;border:0;background:none;outline:none;
+  color:#fff;font:400 13.5px/1 'Inter',sans-serif;
 }
-.shop-btn:hover { background:rgba(255,255,255,.09); }
-.shop-btn.primary { background:#fff; color:#000; border-color:#fff; font-weight:600; }
-.shop-btn.primary:hover { opacity:.92; }
-.shop-publish {
-  display:flex; align-items:center; justify-content:space-between; gap:20px;
-  padding:28px; border-radius:24px; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.03);
+.shop-search::placeholder{color:rgba(255,255,255,.32)}
+.shop-search::-webkit-search-cancel-button{filter:invert(1);opacity:.4}
+
+.shop-filters{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.shop-filter{
+  height:32px;padding:0 14px;border:1px solid var(--line);border-radius:999px;
+  background:rgba(255,255,255,.02);color:rgba(255,255,255,.42);
+  font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  transition:color .25s var(--ease),background .25s var(--ease),border-color .25s var(--ease);
 }
-.shop-publish h2 { margin:0 0 8px; color:#fff; font-size:clamp(24px,4vw,34px); }
-.shop-publish p { margin:0; color:rgba(255,255,255,.66); }
-@media (max-width: 720px) { .shop-publish { flex-direction:column; align-items:flex-start; } .shop-hero{padding-top:100px;} }
+.shop-filter:hover{color:#fff;border-color:rgba(255,255,255,.22);background:rgba(255,255,255,.06)}
+.shop-filter.is-active{background:#fff;border-color:#fff;color:#000}
+
+.shop-status{
+  min-height:18px;margin:0 0 26px;text-align:center;
+  font-size:11.5px;color:rgba(255,255,255,.32);
+}
+.shop-status:empty{display:none}
+
+/* ------------------------------ сетка ------------------------------ */
+.shop-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:stretch}
+
+.shop-card{
+  position:relative;display:flex;flex-direction:column;min-height:326px;padding:24px;
+  border:1px solid var(--line);border-radius:var(--radius);background-color:#070707;
+  background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px);
+  background-size:12px 12px;
+  transition:border-color .35s var(--ease),transform .45s var(--ease);
+  animation:shopIn .7s var(--ease) backwards;
+  animation-delay:calc(var(--i,0) * 45ms);
+}
+.shop-card:hover{border-color:rgba(255,255,255,.16);transform:translateY(-2px)}
+
+@keyframes shopIn{
+  from{opacity:0;transform:translateY(14px)}
+  to{opacity:1;transform:none}
+}
+
+.shop-card-top{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  font-size:11px;color:rgba(255,255,255,.4);
+}
+.shop-author{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.shop-state{
+  flex:none;padding:4px 9px;border:1px solid rgba(255,255,255,.11);border-radius:999px;
+  font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:rgba(255,255,255,.52);
+}
+.shop-state.is-free{border-color:rgba(126,240,164,.3);color:#7ef0a4}
+.shop-state.is-paid{border-color:rgba(255,209,102,.32);color:#ffd166}
+
+.shop-card h3{
+  margin-top:22px;font-size:26px;font-weight:500;line-height:1.05;letter-spacing:-.035em;
+  color:#fff;
+}
+.shop-note{
+  margin-top:10px;font-size:13px;line-height:1.6;color:rgba(255,255,255,.52);
+  min-height:62px;
+}
+.shop-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+.shop-tag{
+  padding:4px 9px;border:1px solid rgba(255,255,255,.09);border-radius:999px;
+  font-size:10px;letter-spacing:.04em;color:rgba(255,255,255,.5);
+  background:rgba(255,255,255,.02);
+}
+.shop-meta{
+  margin-top:auto;padding-top:18px;display:flex;flex-wrap:wrap;gap:4px 14px;
+  font-size:11px;color:rgba(255,255,255,.3);
+}
+.shop-meta span::before{content:"";display:inline-block;width:3px;height:3px;margin-right:7px;border-radius:50%;background:rgba(255,255,255,.25);vertical-align:2px}
+
+.shop-card .plan-cta{margin-top:16px}
+.shop-card .plan-cta.is-copy{background:transparent;border-color:rgba(255,255,255,.14);color:#fff}
+.shop-card .plan-cta.is-copy:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.24)}
+
+.shop-empty{
+  grid-column:1 / -1;display:flex;flex-direction:column;align-items:center;gap:8px;
+  padding:64px 24px;border:1px dashed rgba(255,255,255,.12);border-radius:var(--radius);
+  text-align:center;color:rgba(255,255,255,.42);font-size:13.5px;
+}
+.shop-empty b{font-weight:600;color:rgba(255,255,255,.72)}
+
+/* --------------------------- как это работает --------------------------- */
+.shop-steps-section{padding-top:0}
+.shop-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.shop-step{
+  padding:26px;border:1px solid var(--line);border-radius:var(--radius);
+  background-color:#070707;
+  background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px);
+  background-size:12px 12px;
+  transition:border-color .35s var(--ease);
+}
+.shop-step:hover{border-color:rgba(255,255,255,.16)}
+.shop-step .num{
+  font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10.5px;font-weight:500;
+  letter-spacing:.08em;color:rgba(255,255,255,.32);
+}
+.shop-step h3{margin-top:16px;font-size:20px;font-weight:600;letter-spacing:-.025em}
+.shop-step p{margin-top:9px;font-size:13px;line-height:1.55;color:rgba(255,255,255,.48)}
+
+/* ------------------------------ адаптив ------------------------------ */
+@media(max-width:980px){
+  .shop-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .shop-steps{grid-template-columns:1fr}
+  .shop-card{min-height:0}
+}
+@media(max-width:760px){
+  .shop-hero{padding-top:118px}
+  .shop-catalog{padding-top:76px}
+  .shop-grid{grid-template-columns:1fr;max-width:520px;margin-inline:auto}
+  .shop-card{padding:20px}
+  .shop-card h3{font-size:23px}
+  .shop-note{min-height:0}
+  .shop-search-wrap{width:100%}
+}
+@media(max-width:420px){
+  .shop-tools{gap:12px}
+  .shop-filter{height:30px;padding:0 11px;font-size:9.5px}
+}
+@media(prefers-reduced-motion:reduce){
+  .shop-card{animation:none}
+}
