@@ -794,6 +794,11 @@ html.intro .hero-title.ht-ready{animation:ht-rise 1.9s var(--ease-out) .05s both
 }
 .pay-modal-close:hover{background:rgba(255,255,255,.08);color:#fff}
 .pay-modal-kicker{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+.pay-soon{
+  display:inline-block;margin-left:6px;padding:2px 7px;border-radius:999px;
+  background:rgba(126,240,164,.12);border:1px solid rgba(126,240,164,.28);
+  color:var(--accent-2);font-size:9px;font-weight:700;letter-spacing:.1em;vertical-align:1px;
+}
 .pay-modal-card h2{margin-top:10px;font-size:28px;letter-spacing:-.03em}
 .pay-modal-lede{margin-top:10px;font-size:13px;line-height:1.6;color:var(--muted)}
 .pay-term{

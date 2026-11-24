@@ -156,7 +156,7 @@
     } else if (!free) {
       action = '<button class="plan-cta" type="button" data-pay-item="' + esc(item.id) + '"'
         + ' data-pay-name="' + esc(name) + '" data-pay-price="' + price + '">'
-        + 'Купить · ' + esc(fmtPrice(price)) + ' (демо)</button>';
+        + 'Купить · ' + esc(fmtPrice(price)) + ' · скоро</button>';
     } else if (kind === 'resource' && url) {
       action = '<a class="plan-cta" href="' + esc(url) + '" target="_blank" rel="noopener">Скачать ресурспак</a>';
     } else if (code) {

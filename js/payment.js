@@ -84,9 +84,9 @@
       '<div class="pay-modal-backdrop" data-pay-close></div>' +
       '<section class="pay-modal-card" role="dialog" aria-modal="true" aria-labelledby="payModalTitle">' +
         '<button type="button" class="pay-modal-close" data-pay-close aria-label="Закрыть">×</button>' +
-        '<span class="pay-modal-kicker">Демо-оплата</span>' +
+        '<span class="pay-modal-kicker">Оплата <b class="pay-soon">скоро</b></span>' +
         '<h2 id="payModalTitle">Оплата</h2>' +
-        '<p class="pay-modal-lede">Деньги не списываются. Это демонстрация: после подтверждения покупка появится в твоих покупках.</p>' +
+        '<p class="pay-modal-lede">Способы оплаты появятся скоро. Сейчас можно оформить заказ — он сохранится, а доступ откроется, когда подключим приём платежей.</p>' +
 
         '<div class="pay-term" id="payTermBox" hidden>' +
           '<div class="pay-term-head"><span>Срок подписки</span>' +
@@ -107,10 +107,10 @@
         '</label>' +
         '<p id="payMsg" class="pay-msg" role="status" hidden></p>' +
         '<div id="payActions">' +
-          '<button type="button" class="pay-submit" id="paySubmit">Подтвердить демо-оплату</button>' +
+          '<button type="button" class="pay-submit" id="paySubmit">Оформить заказ</button>' +
         '</div>' +
         '<div id="paySuccess" class="pay-success" hidden>' +
-          '<b>Оплата прошла (демо)</b>' +
+          '<b>Заказ оформлен</b>' +
           '<p id="paySuccessText"></p>' +
           '<button type="button" class="pay-submit" data-pay-close>Готово</button>' +
         '</div>' +
@@ -224,7 +224,7 @@
         return data.order;
       });
     }).then(function (order) {
-      setMsg('Подтверждаю демо-оплату…', false);
+      setMsg('Оформляю заказ…', false);
       return fetch(API + '/api/payments/confirm', {
         method: 'POST', headers: headers(true),
         body: JSON.stringify({ orderId: order.id, contact: contact }),
@@ -242,7 +242,7 @@
         var label = kind === 'plus'
           ? (selectedDays === 0 ? 'AnkaVisual Plus · навсегда' : 'AnkaVisual Plus · ' + selectedDays + ' дн.')
           : kind === 'beta' ? 'Бета-Версия' : itemName;
-        successText.textContent = label + ' · заказ ' + data.order.id + ' · ' + data.order.amount + ' ₽ (демо)';
+        successText.textContent = label + ' · заказ ' + data.order.id + ' · ' + data.order.amount + ' ₽';
       }
       setMsg('', false);
       document.dispatchEvent(new CustomEvent('ankapay:paid', {
