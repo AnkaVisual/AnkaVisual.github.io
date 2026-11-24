@@ -132,3 +132,78 @@
 @media(prefers-reduced-motion:reduce){
   .pk-primary{transition:none}
 }
+
+/* ── полноэкранный редактор промо-видео ───────────────────────── */
+
+.pk-video-poster{position:relative;margin-top:18px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#0c0a16}
+.pk-video-poster canvas{display:block;width:100%;height:auto;aspect-ratio:16/9}
+.pk-video-badge{
+  position:absolute;right:10px;bottom:10px;padding:5px 10px;border-radius:999px;
+  background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.12);
+  font-size:10.5px;color:rgba(255,255,255,.8);
+}
+.pk-video-modal{position:fixed;inset:0;z-index:1100;display:flex;flex-direction:column;background:#08080a;color:#fff}
+.pk-video-modal[hidden]{display:none}
+.pkv-header{display:flex;align-items:center;gap:20px;padding:13px 20px;border-bottom:1px solid var(--line)}
+.pkv-title{font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-2)}
+.pkv-shortcuts{margin-left:auto;font-size:11px;color:var(--muted-3)}
+.pkv-close{
+  width:30px;height:30px;border:0;border-radius:8px;background:transparent;
+  color:var(--muted-2);font-size:21px;line-height:1;cursor:pointer;
+}
+.pkv-close:hover{background:rgba(255,255,255,.06);color:#fff}
+.pkv-body{display:grid;grid-template-columns:minmax(0,1fr) 350px;flex:1;min-height:0}
+.pkv-stage{display:flex;flex-direction:column;min-width:0;gap:14px;padding:20px;border-right:1px solid var(--line)}
+.pkv-canvas-wrap{
+  flex:1;min-height:0;display:grid;place-items:center;padding:14px;
+  border:1px solid var(--line);border-radius:14px;background:#0a0a0c;overflow:hidden;
+}
+.pkv-canvas-wrap canvas{max-width:100%;max-height:100%;width:auto;height:auto;display:block}
+.pkv-timeline{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.02)}
+.pkv-play{
+  width:36px;height:36px;flex:none;border:0;border-radius:50%;
+  background:var(--accent);color:#0a0a0a;font-size:12px;cursor:pointer;
+}
+.pkv-time{font:500 11px/1 'JetBrains Mono',ui-monospace,monospace;color:var(--muted-2);white-space:nowrap}
+.pkv-scrub{flex:1;min-width:80px;accent-color:var(--accent);cursor:pointer}
+.pkv-frame,.pkv-seg,.pkv-stepper button{
+  min-height:34px;padding:0 10px;border:1px solid var(--line-2);border-radius:9px;
+  background:rgba(255,255,255,.02);color:var(--muted-2);font:inherit;font-size:11px;font-weight:600;cursor:pointer;
+}
+.pkv-frame:hover,.pkv-seg:hover,.pkv-stepper button:hover{color:#fff;border-color:rgba(255,255,255,.22)}
+.pkv-sidebar{display:grid;gap:18px;align-content:start;overflow:auto;padding:18px 18px 40px}
+.pkv-group{display:grid;gap:8px}
+.pkv-group--export{border-top:1px solid var(--line);padding-top:16px}
+.pkv-label{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted-2)}
+.pkv-label-row{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.pkv-label-row small{font-size:10.5px;color:var(--muted-3)}
+.pkv-desc{margin:0;font-size:10.5px;line-height:1.5;color:var(--muted-3)}
+.pkv-templates{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.pkv-template{
+  min-height:38px;padding:0 8px;border:1px solid var(--line-2);border-radius:9px;
+  background:rgba(255,255,255,.02);color:var(--muted-2);
+  font:inherit;font-size:11.5px;font-weight:600;cursor:pointer;
+}
+.pkv-template:hover{color:#fff;border-color:rgba(255,255,255,.22)}
+.pkv-template.is-active{background:#ededf0;color:#070708;border-color:#ededf0}
+.pkv-input{
+  width:100%;padding:10px 12px;border:1px solid var(--line-2);border-radius:9px;
+  background:rgba(255,255,255,.03);color:#fff;font:inherit;font-size:13px;outline:none;
+}
+.pkv-input:focus{border-color:rgba(177,140,255,.6)}
+.pkv-input--promo{font-family:'JetBrains Mono',ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase}
+.pkv-stepper{display:grid;grid-template-columns:38px 1fr 38px;gap:6px}
+.pkv-stepper input{
+  height:34px;min-width:0;padding:0 6px;text-align:center;color:#fff;
+  border:1px solid var(--line-2);border-radius:9px;background:rgba(255,255,255,.03);
+  font:inherit;font-size:12.5px;outline:none;
+}
+.pkv-segments{display:flex;flex-wrap:wrap;gap:6px}
+.pkv-seg.is-active{background:#ededf0;color:#070708;border-color:#ededf0}
+.pkv-export-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:900px){
+  .pkv-body{grid-template-columns:1fr;overflow:auto}
+  .pkv-sidebar{overflow:visible}
+  .pkv-stage{min-height:420px}
+  .pkv-shortcuts{display:none}
+}

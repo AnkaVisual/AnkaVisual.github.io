@@ -13,7 +13,7 @@
 <link rel="icon" href="../assets/ankavisual/icon.ico" sizes="any">
 <link rel="apple-touch-icon" href="../assets/ankavisual/logo-round.png">
 <link rel="stylesheet" href="../css/site.css?v=17">
-<link rel="stylesheet" href="../css/presskit.css?v=1">
+<link rel="stylesheet" href="../css/presskit.css?v=3">
 </head>
 <body>
 
@@ -221,63 +221,12 @@
         <span class="pk-kicker">60 КАДРОВ/С · WEBM</span>
         <h3>Промо-ролик</h3>
         <p class="pk-card-text">Ваш промокод в анимации с сайта — вставьте её в своё видео.</p>
-        <div class="pk-video-stage">
-          <canvas id="pkVideoPreview" width="1280" height="720" aria-label="Предпросмотр промо-видео"></canvas>
-          <div class="pk-time" id="pkTime">0:00.00 / 0:06.00 · кадр 0/180</div>
+        <div class="pk-video-poster">
+          <canvas id="pkVideoPoster" width="1280" height="720" aria-label="Предпросмотр промо-видео"></canvas>
+          <span class="pk-video-badge">Окно оплаты · 60 кадров/с</span>
         </div>
-        <div class="pk-playbar">
-          <button type="button" class="pk-seg" id="pkPlay">▶ Воспроизвести</button>
-          <button type="button" class="pk-seg" id="pkPrev">◀ кадр</button>
-          <button type="button" class="pk-seg" id="pkNext">кадр ▶</button>
-        </div>
-        <div class="pk-controls">
-          <div class="pk-control-row">
-            <span class="pk-control-label">Шаблон</span>
-            <div class="pk-segments pk-segments--wrap" id="pkTemplates">
-              <button type="button" class="pk-seg is-active" data-template="payment">Окно оплаты</button>
-              <button type="button" class="pk-seg" data-template="plate">Плашка</button>
-              <button type="button" class="pk-seg" data-template="strip">Полоса</button>
-              <button type="button" class="pk-seg" data-template="coupon">Купон</button>
-              <button type="button" class="pk-seg" data-template="terminal">Терминал</button>
-              <button type="button" class="pk-seg" data-template="big">Крупный текст</button>
-              <button type="button" class="pk-seg" data-template="qr">QR-код</button>
-            </div>
-          </div>
-          <div class="pk-control-row">
-            <span class="pk-control-label">Промокод</span>
-            <input id="pkPromoInput" class="pk-input pk-input--promo" type="text" maxlength="14" placeholder="PART-ABC123" value="PART-ABC123">
-          </div>
-          <div class="pk-control-row">
-            <span class="pk-control-label">Скидка</span>
-            <input id="pkDiscountInput" class="pk-input" type="text" maxlength="8" placeholder="−8%" value="−8%">
-          </div>
-          <div class="pk-control-row">
-            <span class="pk-control-label">Цвет</span>
-            <div class="pk-swatches" id="pkVideoColors"></div>
-          </div>
-          <div class="pk-control-row">
-            <span class="pk-control-label">Анимация</span>
-            <div class="pk-segments" id="pkSpeed">
-              <button type="button" class="pk-seg" data-speed="0.8">0.8×</button>
-              <button type="button" class="pk-seg is-active" data-speed="1">1×</button>
-              <button type="button" class="pk-seg" data-speed="1.25">1.25×</button>
-            </div>
-          </div>
-          <div class="pk-control-row">
-            <span class="pk-control-label">Фон</span>
-            <div class="pk-segments" id="pkBackground">
-              <button type="button" class="pk-seg" data-bg="none">Без фона</button>
-              <button type="button" class="pk-seg is-active" data-bg="dark">Тёмный</button>
-              <button type="button" class="pk-seg" data-bg="site">Сайт</button>
-              <button type="button" class="pk-seg" data-bg="green">Зелёный</button>
-            </div>
-          </div>
-        </div>
-        <p class="pk-fine">Пробел — пуск и пауза · ← → — кадр, с Shift — секунда. В WebM можно сохранить прозрачный фон, в MP4 прозрачности нет.</p>
-        <div class="pk-video-actions">
-          <button type="button" class="pk-primary" id="pkExportVideo">Скачать ролик · WebM</button>
-          <button type="button" class="pk-secondary" id="pkSaveFrame">Сохранить кадр</button>
-        </div>
+        <button type="button" class="pk-primary" id="pkOpenVideoEditor">Открыть редактор</button>
+        <p class="pk-fine">В редакторе — 7 шаблонов, промокод, скидка, пауза в конце и экспорт ролика. Войди в аккаунт, чтобы сохранить результат.</p>
       </article>
     </div>
   </div>
@@ -330,9 +279,117 @@
   </div>
 </footer>
 
+<!-- ========================= РЕДАКТОР ПРОМО-РОЛИКА ================== -->
+<div class="pk-video-modal" id="pkVideoModal" hidden>
+  <div class="pkv-header">
+    <span class="pkv-title">— РЕДАКТОР ПРОМО-РОЛИКА</span>
+    <span class="pkv-shortcuts">Пробел — пуск и пауза · ← → — кадр, с Shift — секунда</span>
+    <button type="button" class="pkv-close" id="pkvClose" aria-label="Закрыть">×</button>
+  </div>
+
+  <div class="pkv-body">
+    <div class="pkv-stage">
+      <div class="pkv-canvas-wrap">
+        <canvas id="pkVideoPreview" width="1280" height="720" aria-label="Предпросмотр промо-видео"></canvas>
+      </div>
+      <div class="pkv-timeline">
+        <button type="button" class="pkv-play" id="pkPlay" aria-label="Воспроизвести">▶</button>
+        <span class="pkv-time" id="pkTime">0:00.00 / 0:08.20 · кадр 0/492</span>
+        <input type="range" id="pkScrub" class="pkv-scrub" min="0" max="820" step="1" value="0">
+        <button type="button" class="pkv-frame" id="pkPrev" aria-label="Предыдущий кадр">−кадр</button>
+        <button type="button" class="pkv-frame" id="pkNext" aria-label="Следующий кадр">кадр+</button>
+      </div>
+    </div>
+
+    <aside class="pkv-sidebar">
+      <div class="pkv-group">
+        <label class="pkv-label">Шаблон</label>
+        <div class="pkv-templates" id="pkTemplates">
+          <button type="button" class="pkv-template is-active" data-template="payment">Окно оплаты</button>
+          <button type="button" class="pkv-template" data-template="plate">Плашка</button>
+          <button type="button" class="pkv-template" data-template="strip">Полоса</button>
+          <button type="button" class="pkv-template" data-template="coupon">Купон</button>
+          <button type="button" class="pkv-template" data-template="terminal">Терминал</button>
+          <button type="button" class="pkv-template" data-template="big">Крупный текст</button>
+          <button type="button" class="pkv-template" data-template="qr">QR-код</button>
+        </div>
+        <p class="pkv-desc" id="pkTemplateDesc">Карточка цены и поле промокода, курсор · 60 кадров/с</p>
+      </div>
+
+      <div class="pkv-group">
+        <div class="pkv-label-row"><label class="pkv-label" for="pkPromoInput">Промокод</label><small>до 14 символов</small></div>
+        <input id="pkPromoInput" class="pkv-input pkv-input--promo" type="text" maxlength="14" placeholder="ВАШ КОД" value="PART-ABC123">
+      </div>
+
+      <div class="pkv-group">
+        <div class="pkv-label-row"><label class="pkv-label" for="pkDiscountInput">Скидка</label><small>Как у вашего промокода</small></div>
+        <input id="pkDiscountInput" class="pkv-input" type="text" maxlength="8" placeholder="−8%" value="−8%">
+      </div>
+
+      <div class="pkv-group">
+        <label class="pkv-label">Пауза в конце</label>
+        <div class="pkv-stepper">
+          <button type="button" id="pkPauseMinus" aria-label="Уменьшить">−</button>
+          <input id="pkEndPause" type="text" value="3.5 c" readonly>
+          <button type="button" id="pkPausePlus" aria-label="Увеличить">+</button>
+        </div>
+        <p class="pkv-desc">Сколько ролик держится после применения кода — подгоните под озвучку.</p>
+      </div>
+
+      <div class="pkv-group">
+        <div class="pkv-label-row"><label class="pkv-label">Промо-конфиг</label><small>Как в окне оплаты</small></div>
+        <div class="pkv-segments" id="pkPromoConfig">
+          <button type="button" class="pkv-seg is-active">Нет</button>
+          <button type="button" class="pkv-seg">Сколько · 0</button>
+          <button type="button" class="pkv-seg">Название</button>
+        </div>
+        <p class="pkv-desc">К промокоду не привязаны промо-конфиги — их добавляют в разделе «Промокод».</p>
+      </div>
+
+      <div class="pkv-group">
+        <label class="pkv-label">Цвет</label>
+        <div class="pk-swatches" id="pkVideoColors"></div>
+      </div>
+
+      <div class="pkv-group">
+        <label class="pkv-label">Анимация</label>
+        <div class="pkv-segments" id="pkSpeed">
+          <button type="button" class="pkv-seg" data-speed="0.8">0.8×</button>
+          <button type="button" class="pkv-seg is-active" data-speed="1">1×</button>
+          <button type="button" class="pkv-seg" data-speed="1.25">1.25×</button>
+        </div>
+      </div>
+
+      <div class="pkv-group">
+        <label class="pkv-label">Фон</label>
+        <div class="pkv-segments" id="pkBackground">
+          <button type="button" class="pkv-seg" data-bg="none">Без фона</button>
+          <button type="button" class="pkv-seg is-active" data-bg="dark">Тёмный</button>
+          <button type="button" class="pkv-seg" data-bg="site">Сайт</button>
+          <button type="button" class="pkv-seg" data-bg="green">Зелёный</button>
+        </div>
+      </div>
+
+      <div class="pkv-group pkv-group--export">
+        <label class="pkv-label">Экспорт</label>
+        <div class="pkv-segments">
+          <button type="button" class="pkv-seg is-active">WebM</button>
+          <button type="button" class="pkv-seg">Кадр PNG</button>
+        </div>
+        <p class="pkv-desc">Для монтажа: зелёный фон убирается хромакеем. Прозрачный фон сохраняется в WebM.</p>
+        <div class="pkv-export-actions">
+          <button type="button" class="pk-primary" id="pkExportVideo">Скачать ролик</button>
+          <button type="button" class="pk-secondary" id="pkSaveFrame">Сохранить кадр</button>
+        </div>
+        <p class="pkv-desc">Войдите, чтобы сделать ролик.</p>
+      </div>
+    </aside>
+  </div>
+</div>
+
 <script src="../js/site.js?v=5"></script>
 <script src="../js/config.js?v=7"></script>
-<script src="../js/presskit.js?v=1"></script>
+<script src="../js/presskit.js?v=2"></script>
 <script src="../js/guard.js?v=2"></script>
 </body>
 </html>

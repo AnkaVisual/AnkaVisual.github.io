@@ -159,10 +159,20 @@
 
   var videoState = {
     template: 'payment', promo: 'PART-ABC123', discount: '−8%',
-    color: PALETTE[0].color, speed: 1, bg: 'dark', time: 0, playing: false
+    color: PALETTE[0].color, speed: 1, bg: 'dark', time: 0, playing: false, endPause: 3.5
   };
-  var DURATION = 6;
-  var FRAMES = 180;
+  var BLOCK_DURATION = 4.7;
+  var TEMPLATE_DESC = {
+    payment: 'Карточка цены и поле промокода, курсор · 60 кадров/с',
+    plate: 'Плашка с промокодом и скидкой · 60 кадров/с',
+    strip: 'Полоса с бегущим промокодом · 60 кадров/с',
+    coupon: 'Купон с перфорацией и крупной скидкой · 60 кадров/с',
+    terminal: 'Терминал с набором кода и подтверждением · 60 кадров/с',
+    big: 'Крупный текст с подсветкой · 60 кадров/с',
+    qr: 'QR-код и промокод под ним · 60 кадров/с'
+  };
+  function videoTotal() { return BLOCK_DURATION + videoState.endPause; }
+  function videoFrames() { return Math.round(videoTotal() * 60); }
   var playbackTimer = null;
   var lastFrameAt = 0;
 
@@ -325,32 +335,48 @@
     }
   }
 
-  function drawVideo(time) {
-    var canvas = $('pkVideoPreview');
+  function drawVideo(time, canvasOverride) {
+    var canvas = canvasOverride || $('pkVideoPreview');
     if (!canvas) return;
     var ctx = canvas.getContext('2d');
     var w = canvas.width, h = canvas.height;
+    var blockProgress = Math.min(1, (time * videoState.speed) / BLOCK_DURATION);
     ctx.save();
     ctx.clearRect(0, 0, w, h);
-    drawBackground(ctx, w, h, Math.min(1, time / DURATION));
+    drawBackground(ctx, w, h, blockProgress);
     ctx.save();
     ctx.scale(w / 1280, h / 720);
-    drawTemplate(ctx, 1280, 720, Math.min(1, (time * videoState.speed) / DURATION));
+    drawTemplate(ctx, 1280, 720, blockProgress);
     ctx.restore();
     ctx.restore();
+
+    if (canvasOverride) return;
     var label = $('pkTime');
+    var total = videoTotal();
     if (label) {
       var secs = Math.floor(time);
       var cs = Math.floor((time - secs) * 100);
       label.textContent = '0:' + String(secs).padStart(2, '0') + '.' + String(cs).padStart(2, '0')
-        + ' / 0:06.00 · кадр ' + Math.round((time / DURATION) * FRAMES) + '/' + FRAMES;
+        + ' / 0:' + String(Math.floor(total)).padStart(2, '0') + '.' + String(Math.round((total % 1) * 100)).padStart(2, '0')
+        + ' · кадр ' + Math.round((time / total) * videoFrames()) + '/' + videoFrames();
     }
+    var scrub = $('pkScrub');
+    if (scrub) {
+      var max = Math.round(total * 100);
+      if (Number(scrub.max) !== max) scrub.max = String(max);
+      scrub.value = String(Math.round(time * 100));
+    }
+  }
+
+  function renderPoster() {
+    var poster = $('pkVideoPoster');
+    if (poster) drawVideo(BLOCK_DURATION * 0.72, poster);
   }
 
   function setPlaying(on) {
     videoState.playing = on;
     var btn = $('pkPlay');
-    if (btn) btn.textContent = on ? '❚❚ Пауза' : '▶ Воспроизвести';
+    if (btn) btn.textContent = on ? '❚❚' : '▶';
     if (playbackTimer) { clearInterval(playbackTimer); playbackTimer = null; }
     if (!on) return;
     lastFrameAt = Date.now();
@@ -359,7 +385,7 @@
       var dt = (now - lastFrameAt) / 1000;
       lastFrameAt = now;
       videoState.time += dt * videoState.speed;
-      if (videoState.time >= DURATION) videoState.time = 0;
+      if (videoState.time >= videoTotal()) videoState.time = 0;
       drawVideo(videoState.time);
     }, 1000 / 30);
   }
@@ -378,16 +404,16 @@
       downloadUrl(URL.createObjectURL(new Blob(chunks, { type: 'video/webm' })),
         'ankavisual-promo-' + String(videoState.promo || 'code').replace(/[^a-z0-9_-]/gi, '') + '.webm');
     };
-    var totalMs = (DURATION / videoState.speed) * 1000;
+    var totalMs = videoTotal() * 1000;
     var started = Date.now();
     setPlaying(false);
     videoState.time = 0;
     drawVideo(0);
     recorder.start(250);
     var timer = setInterval(function () {
-      videoState.time = Math.min(DURATION, ((Date.now() - started) / 1000) * videoState.speed);
+      videoState.time = Math.min(videoTotal(), (Date.now() - started) / 1000);
       drawVideo(videoState.time);
-    }, 1000 / 30);
+    }, 1000 / 60);
     setTimeout(function () {
       clearInterval(timer);
       if (recorder.state !== 'inactive') recorder.stop();
@@ -468,8 +494,13 @@
       root.addEventListener('click', function (event) {
         var button = event.target.closest('[data-' + attr + ']');
         if (!button) return;
-        Array.prototype.forEach.call(root.querySelectorAll('.pk-seg'), function (node) { node.classList.toggle('is-active', node === button); });
+        Array.prototype.forEach.call(root.querySelectorAll('button'), function (node) { node.classList.toggle('is-active', node === button); });
         videoState[key] = button.getAttribute('data-' + attr);
+        if (key === 'template') {
+          var desc = $('pkTemplateDesc');
+          if (desc) desc.textContent = TEMPLATE_DESC[videoState.template] || '';
+          renderPoster();
+        }
         drawVideo(videoState.time);
       });
     }
@@ -477,9 +508,36 @@
     seg('pkSpeed', 'speed', 'speed');
     seg('pkBackground', 'bg', 'bg');
 
+    var promoConfig = $('pkPromoConfig');
+    if (promoConfig) promoConfig.addEventListener('click', function (event) {
+      var button = event.target.closest('button');
+      if (!button) return;
+      Array.prototype.forEach.call(promoConfig.querySelectorAll('button'), function (node) { node.classList.toggle('is-active', node === button); });
+    });
+
+    var pauseInput = $('pkEndPause');
+    function updatePause() {
+      if (pauseInput) pauseInput.value = videoState.endPause + ' c';
+      var total = videoTotal();
+      var scrub = $('pkScrub');
+      if (scrub) scrub.max = String(Math.round(total * 100));
+      drawVideo(videoState.time);
+    }
+    var minus = $('pkPauseMinus');
+    if (minus) minus.addEventListener('click', function () {
+      videoState.endPause = Math.max(0, Math.round((videoState.endPause - 0.5) * 10) / 10);
+      updatePause();
+    });
+    var plus = $('pkPausePlus');
+    if (plus) plus.addEventListener('click', function () {
+      videoState.endPause = Math.min(8, Math.round((videoState.endPause + 0.5) * 10) / 10);
+      updatePause();
+    });
+
     var promo = $('pkPromoInput');
     if (promo) promo.addEventListener('input', function () {
       videoState.promo = promo.value.trim().slice(0, 14);
+      renderPoster();
       drawVideo(videoState.time);
     });
     var discount = $('pkDiscountInput');
@@ -488,18 +546,24 @@
       drawVideo(videoState.time);
     });
 
+    var scrub = $('pkScrub');
+    if (scrub) scrub.addEventListener('input', function () {
+      videoState.time = Number(scrub.value) / 100;
+      drawVideo(videoState.time);
+    });
+
     var play = $('pkPlay');
     if (play) play.addEventListener('click', function () { setPlaying(!videoState.playing); });
     var prev = $('pkPrev');
     if (prev) prev.addEventListener('click', function () {
       setPlaying(false);
-      videoState.time = Math.max(0, videoState.time - 1 / 30);
+      videoState.time = Math.max(0, videoState.time - 1 / 60);
       drawVideo(videoState.time);
     });
     var next = $('pkNext');
     if (next) next.addEventListener('click', function () {
       setPlaying(false);
-      videoState.time = Math.min(DURATION, videoState.time + 1 / 30);
+      videoState.time = Math.min(videoTotal(), videoState.time + 1 / 60);
       drawVideo(videoState.time);
     });
     var exportBtn = $('pkExportVideo');
@@ -507,18 +571,39 @@
     var frameBtn = $('pkSaveFrame');
     if (frameBtn) frameBtn.addEventListener('click', saveFrame);
 
+    var modal = $('pkVideoModal');
+    var openEditor = $('pkOpenVideoEditor');
+    if (openEditor && modal) openEditor.addEventListener('click', function () {
+      modal.hidden = false;
+      document.body.style.overflow = 'hidden';
+      drawVideo(videoState.time);
+    });
+    var closeEditor = $('pkvClose');
+    if (closeEditor && modal) closeEditor.addEventListener('click', function () {
+      modal.hidden = true;
+      document.body.style.overflow = '';
+      setPlaying(false);
+    });
+
     document.addEventListener('keydown', function (event) {
+      if (!modal || modal.hidden) return;
       if (event.target && /INPUT|TEXTAREA/.test(event.target.tagName)) return;
       if (event.key === ' ') { event.preventDefault(); setPlaying(!videoState.playing); }
-      else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+      else if (event.key === 'Escape') {
+        modal.hidden = true;
+        document.body.style.overflow = '';
+        setPlaying(false);
+      } else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
         event.preventDefault();
-        var step = event.shiftKey ? 1 : 1 / 30;
-        videoState.time = Math.max(0, Math.min(DURATION, videoState.time + (event.key === 'ArrowRight' ? step : -step)));
+        var step = event.shiftKey ? 1 : 1 / 60;
+        videoState.time = Math.max(0, Math.min(videoTotal(), videoState.time + (event.key === 'ArrowRight' ? step : -step)));
         drawVideo(videoState.time);
       }
     });
 
     drawVideo(0);
+    renderPoster();
+    updatePause();
   }
 
   function init() {
