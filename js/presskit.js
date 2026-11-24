@@ -886,7 +886,7 @@
       font(25, 500); ctx.fillStyle = 'rgba(255,255,255,.45)';
       ctx.fillText('в месяц · все возможности', 640, 320);
       glass(392, 366, 496, 102, 16, 0.01);
-      ctx.fillStyle = '#fff'; fit(typed, 56, 700, 440); ctx.fillText(typed, 640, 417);
+      ctx.fillStyle = '#fff'; fit(typed, 52, 700, 440, true); ctx.fillText(typed, 640, 417);
       caret(640 + ctx.measureText(typed).width / 2 + 9, 417, 46);
       if (applied > 0) {
         ctx.save(); ctx.globalAlpha = applied;
@@ -910,7 +910,7 @@
       ctx.fillStyle = c; font(76, 800); ctx.fillText(discount, 300, 352);
       font(23, 600); ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.fillText('скидка по коду', 300, 410);
       glass(470, 310, 530, 104, 16, 0.01);
-      ctx.fillStyle = '#fff'; fit(typed, 54, 700, 470); ctx.fillText(typed, 735, 362);
+      ctx.fillStyle = '#fff'; fit(typed, 50, 700, 470, true); ctx.fillText(typed, 735, 362);
       caret(735 + ctx.measureText(typed).width / 2 + 8, 362, 44);
       if (applied > 0) {
         ctx.save(); ctx.globalAlpha = applied; ctx.translate(870, 215);
@@ -934,7 +934,7 @@
       ctx.textAlign = 'left'; font(24, 650); ctx.fillStyle = 'rgba(255,255,255,.62)';
       ctx.fillText('AnkaVisual', 108, 627);
       ctx.textAlign = 'center'; ctx.fillStyle = '#fff';
-      fit(typed, 66, 700, 690); ctx.fillText(typed, 650, 618);
+      fit(typed, 58, 700, 690, true); ctx.fillText(typed, 650, 618);
       caret(650 + ctx.measureText(typed).width / 2 + 8, 618, 52);
       rr(ctx, 1030, 586, 180, 62, 31);
       ctx.fillStyle = hexAlpha(c, 0.18); ctx.fill();
@@ -952,9 +952,11 @@
       glowLine.addColorStop(1, 'rgba(255,255,255,0)');
       ctx.fillStyle = glowLine; ctx.fillRect(164, 186, 952, 348);
       ctx.restore();
+      mark(242, 250, 30, c);
       ctx.textAlign = 'left';
-      font(24, 700); ctx.fillStyle = hexAlpha(c, 0.9); ctx.fillText('ПРОМОКОД ANKAVISUAL', 216, 244);
-      font(76, 750); ctx.fillStyle = '#fff'; fit(typed, 76, 750, 560); ctx.fillText(typed, 216, 342);
+      font(25, 700); ctx.fillStyle = '#fff'; ctx.fillText('AnkaVisual', 268, 250);
+      font(20, 600); ctx.fillStyle = hexAlpha(c, 0.9); ctx.fillText('· промокод', 412, 250);
+      fit(typed, 64, 750, 520, true); ctx.fillStyle = '#fff'; ctx.fillText(typed, 216, 342);
       caret(216 + ctx.measureText(typed).width + 8, 342, 60);
       font(22, 500); ctx.fillStyle = 'rgba(255,255,255,.42)';
       ctx.fillText('ankavisual.github.io', 216, 462);
@@ -976,7 +978,7 @@
     } else if (t === 'big') {
       var chars = code.split('');
       var size = Math.max(42, Math.min(148, Math.floor(1020 / chars.length * 1.6)));
-      font(size, 780);
+      font(size, 780, true);
       var widths = chars.map(function (ch) { return ctx.measureText(ch).width; });
       var totalW = widths.reduce(function (a, b) { return a + b; }, 0);
       var x = 640 - totalW / 2;
@@ -998,38 +1000,42 @@
       ctx.fillText('AnkaVisual · ' + discount, 640, 520);
       mark(640, 580, 36, hexAlpha(c, 0.8));
     } else if (t === 'qr') {
-      var cell = 17, n = 17, x0 = 640 - (n * cell) / 2, y0 = 138;
-      rr(ctx, x0 - 18, y0 - 18, n * cell + 36, n * cell + 36, 20);
-      ctx.fillStyle = 'rgba(255,255,255,.96)'; ctx.fill();
-      ctx.strokeStyle = hexAlpha(c, 0.5); ctx.lineWidth = 2; ctx.stroke();
-      var link = String(videoState.qrLink || 'https://ankavisual.github.io/partnership/').trim();
-      var seed = 0;
-      for (var s = 0; s < link.length; s++) seed = (seed * 31 + link.charCodeAt(s)) >>> 0;
-      function finder(ox, oy) {
+      var link = String(videoState.qrLink || '').trim() || 'https://ankavisual.github.io/partnership/';
+      var qr = null;
+      try {
+        if (typeof window.qrcode === 'function') {
+          qr = window.qrcode(0, 'H');
+          qr.addData(link);
+          qr.make();
+        }
+      } catch (err) { qr = null; }
+
+      var n = qr ? qr.getModuleCount() : 21;
+      var cell = Math.max(4, Math.floor(300 / n));
+      var size = cell * n;
+      var x0 = 640 - size / 2, y0 = 140;
+      var quiet = Math.ceil(cell * 2);
+      rr(ctx, x0 - quiet, y0 - quiet, size + quiet * 2, size + quiet * 2, 18);
+      ctx.fillStyle = 'rgba(255,255,255,.97)'; ctx.fill();
+      ctx.strokeStyle = hexAlpha(c, 0.45); ctx.lineWidth = 2; ctx.stroke();
+
+      if (qr) {
         ctx.fillStyle = '#0c0a14';
-        ctx.fillRect(x0 + ox * cell, y0 + oy * cell, 7 * cell, 7 * cell);
-        ctx.fillStyle = '#fff';
-        ctx.fillRect(x0 + (ox + 1) * cell, y0 + (oy + 1) * cell, 5 * cell, 5 * cell);
-        ctx.fillStyle = '#0c0a14';
-        ctx.fillRect(x0 + (ox + 2) * cell, y0 + (oy + 2) * cell, 3 * cell, 3 * cell);
-      }
-      for (var yy = 0; yy < n; yy++) {
-        for (var xx = 0; xx < n; xx++) {
-          if ((xx < 8 && yy < 8) || (xx > n - 9 && yy < 8) || (xx < 8 && yy > n - 9)) continue;
-          if (((seed >>> ((xx * 7 + yy * 3) % 24)) + xx * yy) % 3 === 0) {
-            ctx.fillStyle = '#0c0a14';
-            ctx.fillRect(x0 + xx * cell, y0 + yy * cell, cell - 2, cell - 2);
+        for (var row = 0; row < n; row++) {
+          for (var col = 0; col < n; col++) {
+            if (qr.isDark(row, col)) ctx.fillRect(x0 + col * cell, y0 + row * cell, cell, cell);
           }
         }
       }
-      finder(0, 0); finder(n - 7, 0); finder(0, n - 7);
-      var cx = 640, cy = y0 + (n * cell) / 2;
-      ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.4)'; ctx.shadowBlur = 26;
-      ctx.fillStyle = 'rgba(255,255,255,.72)';
-      ctx.beginPath(); ctx.arc(cx, cy, 66, 0, 6.28); ctx.fill();
+
+      var cx = 640, cy = y0 + size / 2;
+      var logoSize = Math.min(56, Math.round(size * 0.18));
+      ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.4)'; ctx.shadowBlur = 22;
+      ctx.fillStyle = 'rgba(255,255,255,.82)';
+      ctx.beginPath(); ctx.arc(cx, cy, logoSize * 0.72, 0, 6.28); ctx.fill();
       ctx.restore();
-      mark(cx, cy, 74, c);
-      font(40, 700); ctx.fillStyle = '#fff'; ctx.fillText(typed, 640, 500);
+      mark(cx, cy, logoSize, c);
+      font(36, 700, true); ctx.fillStyle = '#fff'; ctx.fillText(typed, 640, 500);
       font(22, 500); ctx.fillStyle = hexAlpha(c, 0.9);
       ctx.fillText(link.replace(/^https?:\/\//, '').slice(0, 48), 640, 552);
     }
