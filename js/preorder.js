@@ -1,5 +1,5 @@
 /* AnkaVisual — предзаказ платных тарифов.
- * Открывает окно, отправляет заявку в AnkaGuard и показывает результат.
+ * Ползунок срока, расчёт суммы и отправка заявки в AnkaGuard.
  */
 (function () {
   'use strict';
@@ -9,10 +9,22 @@
   var form = document.getElementById('preorderForm');
   if (!modal || !form) return;
 
+  /* 30 дней — 99 ₽, максимум ползунка — «навсегда» за 699 ₽. */
+  var MIN_DAYS = 30;
+  var MAX_DAYS = 365;
+  var MIN_PRICE = 99;
+  var MAX_PRICE = 699;
+
   var title = document.getElementById('poTitle');
   var status = document.getElementById('poStatus');
   var submit = form.querySelector('.po-submit');
+  var daysRange = document.getElementById('poDays');
+  var daysNum = document.getElementById('poDaysNum');
+  var termLabel = document.getElementById('poTermLabel');
+  var totalLabel = document.getElementById('poTotal');
+
   var plan = 'plus';
+  var selectedDays = MIN_DAYS;
   var lastFocus = null;
   var successTimer = 0;
 
@@ -22,12 +34,66 @@
     status.classList.toggle('is-error', !!isError);
   }
 
+  function pluralDays(n) {
+    var mod10 = n % 10;
+    var mod100 = n % 100;
+    if (mod10 === 1 && mod100 !== 11) return 'день';
+    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return 'дня';
+    return 'дней';
+  }
+
+  function priceFor(days) {
+    if (days >= MAX_DAYS) return MAX_PRICE;
+    var d = Math.max(MIN_DAYS, Math.min(MAX_DAYS, days));
+    return Math.round(MIN_PRICE + (d - MIN_DAYS) * (MAX_PRICE - MIN_PRICE) / (MAX_DAYS - MIN_DAYS));
+  }
+
+  function render(days, syncNumber) {
+    days = Math.round(Number(days));
+    if (!isFinite(days)) days = MIN_DAYS;
+    days = Math.max(MIN_DAYS, Math.min(MAX_DAYS, days));
+
+    var forever = days >= MAX_DAYS;
+    selectedDays = forever ? 0 : days;
+
+    if (daysRange && Number(daysRange.value) !== days) daysRange.value = String(days);
+    if (syncNumber && daysNum && Number(daysNum.value) !== days) daysNum.value = String(days);
+
+    if (termLabel) {
+      termLabel.textContent = forever ? 'навсегда' : (days + ' ' + pluralDays(days));
+    }
+    if (totalLabel) {
+      totalLabel.textContent = (forever ? MAX_PRICE : priceFor(days)) + ' ₽';
+    }
+  }
+
+  if (daysRange) {
+    daysRange.addEventListener('input', function () {
+      render(Number(daysRange.value), true);
+    });
+  }
+
+  if (daysNum) {
+    daysNum.addEventListener('input', function () {
+      var value = parseInt(daysNum.value, 10);
+      if (isNaN(value)) return;
+      render(value, false);
+    });
+    daysNum.addEventListener('change', function () {
+      var value = parseInt(daysNum.value, 10);
+      render(isNaN(value) ? MIN_DAYS : value, true);
+    });
+  }
+
+  render(MIN_DAYS, true);
+
   function open(button) {
     clearTimeout(successTimer);
     plan = button.getAttribute('data-preorder') || 'plus';
     var planName = button.getAttribute('data-plan') || 'AnkaVisual Plus';
     if (title) title.textContent = planName;
     form.reset();
+    render(MIN_DAYS, true);
     setStatus('');
     if (submit) {
       submit.disabled = false;
@@ -77,6 +143,9 @@
       return;
     }
 
+    var chosenTerm = termLabel ? termLabel.textContent : '';
+    var chosenTotal = totalLabel ? totalLabel.textContent : '';
+
     var headers = { 'Content-Type': 'application/json' };
     var siteToken = '';
     try { siteToken = localStorage.getItem('ankavisual.account.token') || ''; } catch (ignored) { /* ignore */ }
@@ -88,7 +157,12 @@
     fetch(API + '/api/preorders', {
       method: 'POST',
       headers: headers,
-      body: JSON.stringify({ plan: plan, contact: contact, comment: comment }),
+      body: JSON.stringify({
+        plan: plan,
+        days: selectedDays,
+        contact: contact,
+        comment: comment
+      }),
       cache: 'no-store'
     }).then(function (response) {
       return response.text().then(function (text) {
@@ -105,12 +179,14 @@
       });
     }).then(function () {
       form.reset();
-      setStatus('Заявка принята. Напишем, когда откроется оплата.');
+      render(MIN_DAYS, true);
+      setStatus('Заявка принята: ' + chosenTerm + ' · ' + chosenTotal
+        + '. Напишем, когда откроется оплата.');
       if (submit) submit.textContent = 'Заявка отправлена';
       successTimer = window.setTimeout(function () {
         close();
         if (submit) submit.textContent = 'Отправить заявку';
-      }, 2600);
+      }, 2800);
     }).catch(function (error) {
       setStatus(error && error.status === 429
         ? 'Слишком много заявок. Попробуй позже.'

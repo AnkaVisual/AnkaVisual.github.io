@@ -15,7 +15,7 @@
 <link rel="preload" href="assets/font/inter-400-cyr.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/font/inter-400-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/font/prata-cyr-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/site.css?v=10">
+<link rel="stylesheet" href="css/site.css?v=11">
 </head>
 <body>
 
@@ -203,13 +203,13 @@ html.intro .ht-ch{opacity:1;filter:none;transform:none}
   <div class="shell">
     <div class="section-head reveal">
       <h2>Простые цены</h2>
-      <p>Сейчас клиент бесплатный. Платный тариф скоро — можно оставить
-        предзаказ, оплата появится позже.</p>
+      <p>Сейчас клиент бесплатный. Платный тариф скоро — выбери срок
+        и оставь предзаказ, оплата появится позже.</p>
     </div>
 
     <div class="price-badges reveal">
       <span class="price-badge"><b>ДОСТУПНО</b><span>0 ₽ · сейчас</span></span>
-      <span class="price-badge"><b>ПЛАТНО</b><span>скоро · 99 ₽/мес</span></span>
+      <span class="price-badge"><b>ПЛАТНО</b><span>скоро · от 99 ₽</span></span>
     </div>
 
     <div class="plans">
@@ -240,8 +240,8 @@ html.intro .ht-ch{opacity:1;filter:none;transform:none}
           <span>AnkaVisual Plus</span>
           <span class="plan-state">ПРЕДЗАКАЗ</span>
         </div>
-        <div class="price"><span class="amount">99 ₽</span><span class="per">/мес</span></div>
-        <p class="plan-note">Одна подписка: расширенные визуалы и ранний доступ.</p>
+        <div class="price"><span class="amount">от 99 ₽</span><span class="per">/30 дней</span></div>
+        <p class="plan-note">Выбери срок: от 30 дней до навсегда.</p>
         <ul class="plan-list">
           <li>Всё из бесплатной версии</li>
           <li>Расширенные визуалы</li>
@@ -417,9 +417,29 @@ html.intro .ht-ch{opacity:1;filter:none;transform:none}
     <button class="po-close" type="button" data-po-close aria-label="Закрыть">×</button>
     <span class="po-kicker">Предзаказ</span>
     <h2 id="poTitle">AnkaVisual Plus</h2>
-    <p class="po-lede">Оставь контакт — напишем, когда откроется оплата.
-      Заявка ни к чему не обязывает.</p>
+    <p class="po-lede">Выбери срок и оставь контакт — напишем, когда откроется
+      оплата. Заявка ни к чему не обязывает.</p>
     <form id="preorderForm" class="po-form" autocomplete="on">
+      <div class="po-term">
+        <div class="po-term-head">
+          <span>Срок подписки</span>
+          <label class="po-days">
+            <input id="poDaysNum" type="number" min="30" max="365" step="1" value="30"
+                   inputmode="numeric" aria-label="Количество дней">
+            <span>дн.</span>
+          </label>
+        </div>
+        <input id="poDays" class="po-range" type="range" min="30" max="365" step="1" value="30"
+               aria-label="Срок подписки в днях">
+        <div class="po-scale">
+          <span>30 дней · 99 ₽</span>
+          <span>навсегда · 699 ₽</span>
+        </div>
+        <div class="po-total">
+          <span id="poTermLabel">30 дней</span>
+          <b id="poTotal">99 ₽</b>
+        </div>
+      </div>
       <label class="po-field">
         <span>Почта или @telegram</span>
         <input name="contact" type="text" maxlength="120" autocomplete="email"
@@ -440,7 +460,7 @@ html.intro .ht-ch{opacity:1;filter:none;transform:none}
 <a class="promo-checker" href="https://ankavisual.github.io/ankachecker/">AnkaChecker</a>
 <script src="js/site.js?v=5"></script>
 <script src="js/config.js?v=7"></script>
-<script src="js/preorder.js?v=2"></script>
+<script src="js/preorder.js?v=3"></script>
 <script src="js/guard.js?v=2"></script>
 </body>
 </html>

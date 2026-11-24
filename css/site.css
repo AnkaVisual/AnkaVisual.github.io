@@ -615,6 +615,35 @@ html.intro .hero-title.ht-ready{animation:ht-rise 1.9s var(--ease-out) .05s both
 .po-dialog h2{margin-top:10px;font-size:26px;letter-spacing:-.03em}
 .po-lede{margin-top:10px;font-size:13px;line-height:1.6;color:var(--muted)}
 .po-form{margin-top:20px;display:grid;gap:14px}
+.po-term{
+  padding:15px 16px 13px;border:1px solid var(--line);border-radius:14px;
+  background:rgba(255,255,255,.02);
+}
+.po-term-head{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  font-size:12px;color:var(--muted);
+}
+.po-days{display:inline-flex;align-items:center;gap:6px;color:var(--muted-2)}
+.po-days input{
+  width:62px;padding:6px 8px;border:1px solid var(--line-2);border-radius:8px;
+  background:rgba(255,255,255,.04);color:#fff;font:inherit;font-size:13px;
+  text-align:center;outline:none;transition:border-color .2s;
+}
+.po-days input:focus{border-color:rgba(177,140,255,.6)}
+.po-range{
+  width:100%;margin:14px 0 7px;accent-color:var(--accent);
+  height:20px;cursor:pointer;background:transparent;
+}
+.po-scale{
+  display:flex;justify-content:space-between;gap:10px;
+  font-size:10.5px;color:var(--muted-3);
+}
+.po-total{
+  display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+  margin-top:13px;padding-top:13px;border-top:1px solid var(--line);
+}
+.po-total span{font-size:12px;color:var(--muted)}
+.po-total b{font-size:22px;letter-spacing:-.02em;color:#fff}
 .po-field{display:grid;gap:7px;font-size:12px;color:var(--muted)}
 .po-field>span{display:flex;justify-content:space-between;gap:10px}
 .po-field em{font-style:normal;color:var(--muted-3)}
