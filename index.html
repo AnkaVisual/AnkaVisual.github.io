@@ -15,7 +15,7 @@
 <link rel="preload" href="assets/font/inter-400-cyr.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/font/inter-400-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/font/prata-cyr-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/site.css?v=11">
+<link rel="stylesheet" href="css/site.css?v=12">
 </head>
 <body>
 
@@ -252,6 +252,24 @@ html.intro .ht-ch{opacity:1;filter:none;transform:none}
         <span class="plan-fine">Оплата появится позже · заявка ни к чему не обязывает</span>
         <button class="plan-cta plan-preorder" type="button" data-preorder="plus" data-plan="AnkaVisual Plus">Оформить предзаказ</button>
       </article>
+
+      <!-- Бета-Версия -->
+      <article class="plan reveal">
+        <div class="plan-top">
+          <span>Бета-Версия</span>
+          <span class="plan-state">ПРЕДЗАКАЗ</span>
+        </div>
+        <div class="price"><span class="amount">199 ₽</span><span class="per">разово</span></div>
+        <p class="plan-note">Ранний доступ к бета-сборкам и новым функциям.</p>
+        <ul class="plan-list">
+          <li>Всё из бесплатной версии</li>
+          <li>Доступ к бета-сборкам</li>
+          <li>Новые функции первыми</li>
+          <li>Отдельный канал обратной связи</li>
+        </ul>
+        <span class="plan-fine">Оплата появится позже · заявка ни к чему не обязывает</span>
+        <button class="plan-cta plan-preorder" type="button" data-preorder="beta" data-plan="Бета-Версия">Оформить предзаказ</button>
+      </article>
     </div>
 
     <p class="plans-fine reveal">Цены предварительные. Когда подключим оплату, здесь появятся СБП, карта и криптовалюта.</p>
@@ -422,7 +440,7 @@ html.intro .ht-ch{opacity:1;filter:none;transform:none}
     <form id="preorderForm" class="po-form" autocomplete="on">
       <div class="po-term">
         <div class="po-term-head">
-          <span>Срок подписки</span>
+          <span id="poTermTitle">Срок подписки</span>
           <label class="po-days">
             <input id="poDaysNum" type="number" min="30" max="365" step="1" value="30"
                    inputmode="numeric" aria-label="Количество дней">
@@ -460,7 +478,7 @@ html.intro .ht-ch{opacity:1;filter:none;transform:none}
 <a class="promo-checker" href="https://ankavisual.github.io/ankachecker/">AnkaChecker</a>
 <script src="js/site.js?v=5"></script>
 <script src="js/config.js?v=7"></script>
-<script src="js/preorder.js?v=3"></script>
+<script src="js/preorder.js?v=4"></script>
 <script src="js/guard.js?v=2"></script>
 </body>
 </html>

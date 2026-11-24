@@ -20,8 +20,13 @@
   var submit = form.querySelector('.po-submit');
   var daysRange = document.getElementById('poDays');
   var daysNum = document.getElementById('poDaysNum');
+  var termTitle = document.getElementById('poTermTitle');
   var termLabel = document.getElementById('poTermLabel');
   var totalLabel = document.getElementById('poTotal');
+  var daysBox = document.querySelector('.po-days');
+  var scale = document.querySelector('.po-scale');
+
+  var BETA_PRICE = 199;
 
   var plan = 'plus';
   var selectedDays = MIN_DAYS;
@@ -87,13 +92,28 @@
 
   render(MIN_DAYS, true);
 
+  function applyPlan(planKey) {
+    var isBeta = planKey === 'beta';
+    if (termTitle) termTitle.textContent = isBeta ? 'Бета-доступ' : 'Срок подписки';
+    if (daysBox) daysBox.hidden = isBeta;
+    if (daysRange) daysRange.hidden = isBeta;
+    if (scale) scale.hidden = isBeta;
+    if (isBeta) {
+      selectedDays = 0;
+      if (termLabel) termLabel.textContent = 'разово';
+      if (totalLabel) totalLabel.textContent = BETA_PRICE + ' ₽';
+    } else {
+      render(MIN_DAYS, true);
+    }
+  }
+
   function open(button) {
     clearTimeout(successTimer);
     plan = button.getAttribute('data-preorder') || 'plus';
     var planName = button.getAttribute('data-plan') || 'AnkaVisual Plus';
     if (title) title.textContent = planName;
     form.reset();
-    render(MIN_DAYS, true);
+    applyPlan(plan);
     setStatus('');
     if (submit) {
       submit.disabled = false;
@@ -179,7 +199,7 @@
       });
     }).then(function () {
       form.reset();
-      render(MIN_DAYS, true);
+      applyPlan(plan);
       setStatus('Заявка принята: ' + chosenTerm + ' · ' + chosenTotal
         + '. Напишем, когда откроется оплата.');
       if (submit) submit.textContent = 'Заявка отправлена';
