@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://ankaguard.ankavisual.workers.dev; media-src 'self' blob:; font-src 'self'; connect-src 'self' https://ankaguard.ankavisual.workers.dev http://127.0.0.1:8724 http://localhost:8724; base-uri 'self'; form-action 'self'; object-src 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<script src="js/intro.js?v=1"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Партнёрство — AnkaVisual</title>
+<meta name="description" content="Партнёрская программа AnkaVisual: промокод, комиссия с продаж, пресс-кит, редактор логотипа и промо-видео для партнёров.">
+<meta name="theme-color" content="#000000">
+<meta name="robots" content="index, follow, noarchive">
+<link rel="icon" href="../assets/ankavisual/icon.ico" sizes="any">
+<link rel="apple-touch-icon" href="../assets/ankavisual/logo-round.png">
+<link rel="stylesheet" href="../css/site.css?v=17">
+<link rel="stylesheet" href="../css/presskit.css?v=1">
+</head>
+<body>
+
+<header class="site-header" id="top">
+  <div class="shell header-inner">
+    <a class="brand" href="../index.html" aria-label="AnkaVisual — на главную">
+      <img class="mark" src="../assets/ankavisual/logo.svg" alt="" width="26" height="26">
+      <span>AnkaVisual</span>
+    </a>
+    <nav class="nav-links" aria-label="Главная навигация">
+      <a href="../index.html#features">Возможности</a>
+      <a href="../index.html#pricing">Цены</a>
+      <a href="../shop/">Магазин</a>
+      <a href="./" aria-current="page">Партнерство</a>
+      <a href="../index.html#faq">FAQ</a>
+      <a href="../account/">Аккаунт</a>
+    </nav>
+    <div class="header-actions">
+      <a class="login" href="../account/">Войти</a>
+      <a class="btn btn-light btn-sm" href="https://github.com/AnkaVisual/AnkaVisual.github.io/releases/download/v1.0.0/AnkaLauncher.exe">
+        Скачать
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- =============================== ГЕРОЙ ============================== -->
+<section class="hero pk-hero">
+  <div class="shell">
+    <div class="hero-badge reveal">
+      <span class="live-dot" aria-hidden="true"></span>
+      <span>AnkaVisual Partners</span>
+      <span class="badge-sep" aria-hidden="true"></span>
+      <span>Медиа-программа</span>
+    </div>
+    <h1 class="hero-title" id="heroTitle">Партнёрство<br>AnkaVisual</h1>
+    <p class="hero-sub reveal">Делись клиентом со своей аудиторией — получай промокод, комиссию с покупок и готовые материалы для роликов. Редактор логотипа и промо-видео уже внутри.</p>
+    <div class="hero-cta reveal">
+      <a class="btn btn-light" href="#apply">Стать партнёром
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <a class="btn btn-ghost" href="#presskit">Открыть пресс-кит</a>
+    </div>
+    <p class="hero-meta reveal">Ответ на заявку — в течение 48 часов &nbsp;·&nbsp; промокод и выплаты &nbsp;·&nbsp; готовые шаблоны для видео</p>
+  </div>
+</section>
+
+<!-- ============================ СТАТЬ ПАРТНЁРОМ ======================= -->
+<section class="section pk-section" id="apply">
+  <div class="shell">
+    <div class="section-head reveal">
+      <h2>Стать партнёром</h2>
+      <p>Расскажи немного о себе и своём сообществе. Мы отвечаем на каждую заявку в течение 48 часов.</p>
+    </div>
+
+    <div class="pk-apply-grid">
+      <article class="pk-card pk-apply-form-card reveal">
+        <span class="pk-kicker">— ЗАЯВКА</span>
+        <h3>Подать заявку на партнёрство</h3>
+        <form id="partnerApplyPageForm" class="pk-form">
+          <label class="pk-field">
+            <span>Ссылка на канал или проект</span>
+            <input name="link" type="url" class="pk-input" placeholder="https://youtube.com/@channel" maxlength="200" required>
+          </label>
+          <label class="pk-field">
+            <span>Желаемый промокод</span>
+            <input name="promo" type="text" class="pk-input pk-input--promo" placeholder="ANKAPARTNER" maxlength="24" autocomplete="off" required>
+          </label>
+          <label class="pk-field">
+            <span>Telegram для связи</span>
+            <input name="contact" type="text" class="pk-input" placeholder="@nickname" maxlength="80" required>
+          </label>
+          <label class="pk-field">
+            <span>О себе и аудитории</span>
+            <textarea name="about" class="pk-input pk-textarea" rows="4" placeholder="Ниша, примерное число подписчиков и просмотров, чем хочешь помочь" maxlength="600" required></textarea>
+          </label>
+          <label class="pk-check">
+            <input type="checkbox" name="program" required>
+            <span>Ознакомился с медиа-программой</span>
+          </label>
+          <label class="pk-check">
+            <input type="checkbox" name="terms" required>
+            <span>Принимаю условия выплат</span>
+          </label>
+          <p id="pkApplyMsg" class="pk-msg" role="status" hidden></p>
+          <button class="pk-primary" type="submit">Подать заявку</button>
+        </form>
+        <p class="pk-fine">Заявка с сайта — ответ придёт сюда же, в личный кабинет.</p>
+      </article>
+
+      <div class="pk-side">
+        <article class="pk-card reveal">
+          <span class="pk-kicker">— УСЛОВИЯ</span>
+          <h3>Минимальные требования</h3>
+          <p class="pk-card-text">Пороги просмотров и подписчиков по платформам. Для активных авторов требования мягче — пиши, даже если пока ниже порога.</p>
+          <ul class="pk-list">
+            <li>YouTube / TikTok — от 1 000 просмотров</li>
+            <li>Telegram — от 500 подписчиков</li>
+            <li>Активный контент про Minecraft</li>
+          </ul>
+        </article>
+        <article class="pk-card reveal">
+          <span class="pk-kicker">— МЕДИА-ПРОГРАММА</span>
+          <h3>Комиссия, выплаты и правила контента</h3>
+          <ul class="pk-list">
+            <li>Бесплатная подписка, пока вы активны</li>
+            <li>Личный промокод с долей от продаж</li>
+            <li>Прямой доступ к поддержке и обратной связи</li>
+            <li>Оплата за просмотры</li>
+          </ul>
+          <a class="pk-link" href="#program">Открыть программу →</a>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================== ПАРТНЁРСКАЯ ПРОГРАММА =================== -->
+<section class="section pk-section pk-section--alt" id="program">
+  <div class="shell">
+    <div class="section-head reveal">
+      <h2>Партнёрская программа</h2>
+      <p>Делись промокодом, получай процент с каждой покупки и выводи средства по достижении минимума.</p>
+    </div>
+    <div class="pk-steps">
+      <article class="pk-step reveal"><span class="pk-step-num">01</span><h3>Подай заявку</h3><p>Расскажи о канале и получи личный промокод.</p></article>
+      <article class="pk-step reveal"><span class="pk-step-num">02</span><h3>Делись кодом</h3><p>Вставляй промокод в ролики, описания и стримы.</p></article>
+      <article class="pk-step reveal"><span class="pk-step-num">03</span><h3>Получай выплаты</h3><p>Следи за доходом и выводи средства из кабинета.</p></article>
+    </div>
+    <div class="pk-badges reveal">
+      <span class="pk-badge"><b>ДО 20%</b><span>комиссии с продаж, крупным медиа — до 25%</span></span>
+      <span class="pk-badge"><b>ВИДЕО</b><span>оплата за просмотры по твоим роликам</span></span>
+      <span class="pk-badge"><b>СТАТИСТИКА</b><span>доход и клики в личном кабинете</span></span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== ПРЕСС-КИТ =========================== -->
+<section class="section pk-section" id="presskit">
+  <div class="shell">
+    <div class="section-head reveal">
+      <h2>Пресс-кит</h2>
+      <p>Логотип AnkaVisual и промо-ролик с твоим кодом. Настрой, скачай и вставь в своё видео.</p>
+    </div>
+
+    <div class="pk-editors">
+      <!-- редактор логотипа -->
+      <article class="pk-card pk-editor-card reveal">
+        <span class="pk-kicker">VECTOR · SVG / PNG / JPG</span>
+        <h3>Логотип бренда</h3>
+        <p class="pk-card-text">Настройте и скачайте знак AnkaVisual.</p>
+        <div class="pk-logo-preview"><img id="pkLogoPreview" alt="Логотип AnkaVisual" src=""></div>
+        <div class="pk-controls">
+          <div class="pk-control-row">
+            <span class="pk-control-label">Вид</span>
+            <div class="pk-segments" id="pkLogoMode">
+              <button type="button" class="pk-seg is-active" data-mode="static">Статика</button>
+              <button type="button" class="pk-seg" data-mode="animation">Анимация</button>
+            </div>
+          </div>
+          <div class="pk-control-row">
+            <span class="pk-control-label">Композиция</span>
+            <div class="pk-segments" id="pkLogoComposition">
+              <button type="button" class="pk-seg is-active" data-composition="mark">Знак</button>
+              <button type="button" class="pk-seg" data-composition="full">С названием</button>
+            </div>
+          </div>
+          <div class="pk-control-row">
+            <span class="pk-control-label">Цвет</span>
+            <div class="pk-swatches" id="pkLogoColors"></div>
+          </div>
+          <div class="pk-control-row">
+            <span class="pk-control-label">Стиль</span>
+            <div class="pk-segments" id="pkLogoStyle">
+              <button type="button" class="pk-seg is-active" data-style="fill">Заливка</button>
+              <button type="button" class="pk-seg" data-style="stroke">Контур</button>
+            </div>
+          </div>
+          <div class="pk-control-row">
+            <span class="pk-control-label">Формат</span>
+            <div class="pk-segments" id="pkLogoFormat">
+              <button type="button" class="pk-seg" data-format="svg">VECTOR · SVG</button>
+              <button type="button" class="pk-seg is-active" data-format="png">PNG</button>
+              <button type="button" class="pk-seg" data-format="jpg">JPG</button>
+            </div>
+          </div>
+          <div class="pk-control-row">
+            <span class="pk-control-label">Размер</span>
+            <div class="pk-segments" id="pkLogoSize">
+              <button type="button" class="pk-seg" data-size="256">256</button>
+              <button type="button" class="pk-seg is-active" data-size="512">512</button>
+              <button type="button" class="pk-seg" data-size="1024">1024</button>
+              <button type="button" class="pk-seg" data-size="2048">2048</button>
+            </div>
+          </div>
+        </div>
+        <button type="button" class="pk-primary" id="pkLogoDownload">Скачать логотип</button>
+      </article>
+
+      <!-- редактор промо-видео -->
+      <article class="pk-card pk-editor-card reveal">
+        <span class="pk-kicker">60 КАДРОВ/С · WEBM</span>
+        <h3>Промо-ролик</h3>
+        <p class="pk-card-text">Ваш промокод в анимации с сайта — вставьте её в своё видео.</p>
+        <div class="pk-video-stage">
+          <canvas id="pkVideoPreview" width="1280" height="720" aria-label="Предпросмотр промо-видео"></canvas>
+          <div class="pk-time" id="pkTime">0:00.00 / 0:06.00 · кадр 0/180</div>
+        </div>
+        <div class="pk-playbar">
+          <button type="button" class="pk-seg" id="pkPlay">▶ Воспроизвести</button>
+          <button type="button" class="pk-seg" id="pkPrev">◀ кадр</button>
+          <button type="button" class="pk-seg" id="pkNext">кадр ▶</button>
+        </div>
+        <div class="pk-controls">
+          <div class="pk-control-row">
+            <span class="pk-control-label">Шаблон</span>
+            <div class="pk-segments pk-segments--wrap" id="pkTemplates">
+              <button type="button" class="pk-seg is-active" data-template="payment">Окно оплаты</button>
+              <button type="button" class="pk-seg" data-template="plate">Плашка</button>
+              <button type="button" class="pk-seg" data-template="strip">Полоса</button>
+              <button type="button" class="pk-seg" data-template="coupon">Купон</button>
+              <button type="button" class="pk-seg" data-template="terminal">Терминал</button>
+              <button type="button" class="pk-seg" data-template="big">Крупный текст</button>
+              <button type="button" class="pk-seg" data-template="qr">QR-код</button>
+            </div>
+          </div>
+          <div class="pk-control-row">
+            <span class="pk-control-label">Промокод</span>
+            <input id="pkPromoInput" class="pk-input pk-input--promo" type="text" maxlength="14" placeholder="PART-ABC123" value="PART-ABC123">
+          </div>
+          <div class="pk-control-row">
+            <span class="pk-control-label">Скидка</span>
+            <input id="pkDiscountInput" class="pk-input" type="text" maxlength="8" placeholder="−8%" value="−8%">
+          </div>
+          <div class="pk-control-row">
+            <span class="pk-control-label">Цвет</span>
+            <div class="pk-swatches" id="pkVideoColors"></div>
+          </div>
+          <div class="pk-control-row">
+            <span class="pk-control-label">Анимация</span>
+            <div class="pk-segments" id="pkSpeed">
+              <button type="button" class="pk-seg" data-speed="0.8">0.8×</button>
+              <button type="button" class="pk-seg is-active" data-speed="1">1×</button>
+              <button type="button" class="pk-seg" data-speed="1.25">1.25×</button>
+            </div>
+          </div>
+          <div class="pk-control-row">
+            <span class="pk-control-label">Фон</span>
+            <div class="pk-segments" id="pkBackground">
+              <button type="button" class="pk-seg" data-bg="none">Без фона</button>
+              <button type="button" class="pk-seg is-active" data-bg="dark">Тёмный</button>
+              <button type="button" class="pk-seg" data-bg="site">Сайт</button>
+              <button type="button" class="pk-seg" data-bg="green">Зелёный</button>
+            </div>
+          </div>
+        </div>
+        <p class="pk-fine">Пробел — пуск и пауза · ← → — кадр, с Shift — секунда. В WebM можно сохранить прозрачный фон, в MP4 прозрачности нет.</p>
+        <div class="pk-video-actions">
+          <button type="button" class="pk-primary" id="pkExportVideo">Скачать ролик · WebM</button>
+          <button type="button" class="pk-secondary" id="pkSaveFrame">Сохранить кадр</button>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== ФИНАЛ ============================== -->
+<section class="section pk-final">
+  <div class="shell">
+    <div class="closing reveal">
+      <span class="closing-kicker">AnkaVisual Partners</span>
+      <h2>Готов стать партнёром?</h2>
+      <p>Оставь заявку — и мы пришлём промокод, доступ к статистике и все материалы для роликов.</p>
+      <a class="btn btn-light" href="#apply">Подать заявку
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="shell">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="../index.html">
+          <img class="mark" src="../assets/ankavisual/logo.svg" alt="" width="26" height="26">
+          <span>AnkaVisual</span>
+        </a>
+        <p>Визуальный клиент для Minecraft на Fabric. После первого запуска работает офлайн.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Продукт</h5>
+        <a href="../index.html#features">Возможности</a>
+        <a href="../index.html#pricing">Цены</a>
+        <a href="../shop/">Магазин</a>
+        <a href="../index.html#faq">Вопросы</a>
+      </div>
+      <div class="footer-col">
+        <h5>Партнёрство</h5>
+        <a href="./">Партнёрская программа</a>
+        <a href="#presskit">Пресс-кит</a>
+        <a href="../account/">Личный кабинет</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span id="year">2026</span> AnkaVisual</span>
+      <span>Minecraft и Fabric принадлежат их владельцам</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/site.js?v=5"></script>
+<script src="../js/config.js?v=7"></script>
+<script src="../js/presskit.js?v=1"></script>
+<script src="../js/guard.js?v=2"></script>
+</body>
+</html>
