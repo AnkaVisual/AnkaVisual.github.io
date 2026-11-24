@@ -136,6 +136,11 @@
 .shop-card .plan-cta{margin-top:16px}
 .shop-card .plan-cta.is-copy{background:transparent;border-color:rgba(255,255,255,.14);color:#fff}
 .shop-card .plan-cta.is-copy:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.24)}
+.shop-card .plan-cta.is-owned{
+  background:rgba(126,240,164,.1);border-color:rgba(126,240,164,.3);
+  color:#7ef0a4;cursor:default;
+}
+.shop-card .plan-cta.is-owned:hover{transform:none;background:rgba(126,240,164,.1)}
 
 .shop-empty{
   grid-column:1 / -1;display:flex;flex-direction:column;align-items:center;gap:8px;

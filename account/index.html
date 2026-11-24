@@ -14,7 +14,7 @@
 <link rel="apple-touch-icon" href="assets/ankavisual/logo-round.png">
 <link rel="preload" href="assets/font/inter-400-cyr.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/font/inter-400-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/site.css?v=14">
+<link rel="stylesheet" href="css/site.css?v=15">
 <link rel="stylesheet" href="css/account.css?v=17">
 </head>
 <body class="account-body">
@@ -158,6 +158,9 @@
 
         <p class="dash-nav-label">Сообщество</p>
         <button type="button" data-panel-nav="configs">Мои конфиги</button>
+
+        <p class="dash-nav-label">Покупки</p>
+        <button type="button" data-panel-nav="payments">Мои покупки</button>
       </nav>
 
       <a class="dash-side-download" href="https://github.com/AnkaVisual/AnkaVisual.github.io/releases/download/v1.0.0/AnkaLauncher.exe">
@@ -529,6 +532,20 @@
         </div>
       </section>
 
+      <!-- Покупки -->
+      <section class="dash-panel" data-panel="payments" hidden>
+        <div class="dash-grid">
+          <article class="dcard dcard--wide">
+            <h2 class="dcard-title">Мои покупки</h2>
+            <p class="dcard-lede">Заказы и купленные товары. Сейчас оплата работает в демо-режиме — деньги не списываются.</p>
+            <h3 class="pay-panel-title">Покупки</h3>
+            <div id="payPurchasesList" class="pay-panel-list"></div>
+            <h3 class="pay-panel-title">Заказы</h3>
+            <div id="payOrdersList" class="pay-panel-list"></div>
+          </article>
+        </div>
+      </section>
+
       <footer class="dash-foot">
         <span>© 2026 AnkaVisual</span>
         <a href="index.html">На главную</a>
@@ -608,7 +625,8 @@
 </div>
 
 <script src="js/config.js?v=101"></script>
-<script src="js/account.js?v=25"></script>
+<script src="js/account.js?v=26"></script>
+<script src="js/payment.js?v=1"></script>
 <script src="js/guard.js?v=2"></script>
 </body>
 </html>

@@ -14,12 +14,16 @@
   var promoBlock = null;
   var applyForm = null;
   var codeNode = null;
+  var saveCodeBtn = null;
+  var templatesRoot = null;
+  var previewCanvas = null;
   var videoNode = null;
   var downloadNode = null;
   var msgNode = null;
   var genCodeBtn = null;
   var copyBtn = null;
   var genVideoBtn = null;
+  var selectedTemplate = 'code';
 
   var ownerId = 'local';
   var current = null;
@@ -98,17 +102,34 @@
 
         '<div id="partnerPromoBlock" hidden>' +
           '<h3 class="partner-modal-h3">Промо-инструменты</h3>' +
-          '<div class="partner-promo-code-row">' +
-            '<code id="partnerPromoCode" class="partner-promo-code">—</code>' +
-            '<button type="button" class="dash-btn dash-btn--ghost" id="partnerPromoGenerate">Новый код</button>' +
-            '<button type="button" class="dash-btn dash-btn--ghost" id="partnerPromoCopy">Копировать</button>' +
+          '<label class="auth-field">' +
+            '<span class="partner-modal-label">Свой промокод — он будет в видео</span>' +
+            '<div class="partner-promo-code-row">' +
+              '<input id="partnerPromoInput" type="text" class="partner-promo-input" maxlength="24" placeholder="Например, PART-ABC123" autocomplete="off">' +
+              '<button type="button" class="dash-btn dash-btn--ghost" id="partnerPromoGenerate">Случайный</button>' +
+              '<button type="button" class="dash-btn dash-btn--ghost" id="partnerPromoCopy">Копировать</button>' +
+              '<button type="button" class="dash-btn dash-btn--ghost" id="partnerPromoSave">Сохранить</button>' +
+            '</div>' +
+          '</label>' +
+          '<p class="partner-modal-hint">Впиши любой код — именно он появится в кадре. Не забудь сохранить.</p>' +
+
+          '<div class="partner-editor">' +
+            '<h3 class="partner-modal-h3">Редактор видео</h3>' +
+            '<p class="partner-modal-hint">Выбери шаблон и посмотри предпросмотр.</p>' +
+            '<div class="partner-editor-templates" id="partnerTemplates">' +
+              '<button type="button" class="partner-template is-active" data-template="code"><b>Промокод</b><span>большой код на фоне</span></button>' +
+              '<button type="button" class="partner-template" data-template="download"><b>Как скачать</b><span>3 шага и код в конце</span></button>' +
+              '<button type="button" class="partner-template" data-template="sale"><b>Скидка</b><span>акцент на выгоде и код</span></button>' +
+            '</div>' +
+            '<canvas id="partnerPreview" class="partner-preview" width="640" height="360" aria-label="Предпросмотр промо-видео"></canvas>' +
           '</div>' +
+
           '<div class="partner-promo-video">' +
             '<video id="partnerPromoVideo" controls hidden></video>' +
             '<button type="button" class="auth-btn auth-btn--primary" id="partnerPromoVideoGenerate">Сгенерировать промо-видео</button>' +
             '<a class="dash-btn dash-btn--ghost" id="partnerPromoVideoDownload" hidden>Скачать .webm</a>' +
           '</div>' +
-          '<p class="partner-modal-hint">Видео рисуется с твоим промокодом. Референс можно прислать команде — подгрузим в рендер.</p>' +
+          '<p class="partner-modal-hint">Если есть референс — пришли его команде, и мы добавим новый шаблон в редактор.</p>' +
         '</div>' +
 
         '<p id="partnerModalMsg" class="partner-modal-msg" role="status" hidden></p>' +
@@ -123,7 +144,10 @@
     applyBlock = document.getElementById('partnerApplyBlock');
     promoBlock = document.getElementById('partnerPromoBlock');
     applyForm = document.getElementById('partnerApplyForm');
-    codeNode = document.getElementById('partnerPromoCode');
+    codeNode = document.getElementById('partnerPromoInput');
+    saveCodeBtn = document.getElementById('partnerPromoSave');
+    templatesRoot = document.getElementById('partnerTemplates');
+    previewCanvas = document.getElementById('partnerPreview');
     videoNode = document.getElementById('partnerPromoVideo');
     downloadNode = document.getElementById('partnerPromoVideoDownload');
     msgNode = document.getElementById('partnerModalMsg');
@@ -144,10 +168,21 @@
     if (genCodeBtn) genCodeBtn.addEventListener('click', function () {
       var code = generateCode();
       setMsg('Промокод сгенерирован: ' + code, false);
+      renderPreview();
+    });
+    if (saveCodeBtn) saveCodeBtn.addEventListener('click', savePromoCode);
+    if (codeNode) {
+      codeNode.addEventListener('input', renderPreview);
+      codeNode.addEventListener('change', savePromoCode);
+    }
+    if (templatesRoot) templatesRoot.addEventListener('click', function (event) {
+      var button = event.target.closest('[data-template]');
+      if (!button) return;
+      setTemplate(button.getAttribute('data-template'));
     });
     if (copyBtn) copyBtn.addEventListener('click', function () {
-      var code = String(codeNode ? codeNode.textContent : '').trim();
-      if (!code) return;
+      var code = String(codeNode ? codeNode.value : '').trim();
+      if (!code) { setMsg('Сначала введи промокод', true); return; }
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(code).then(function () { setMsg('Промокод скопирован', false); }).catch(function () { setMsg('Промокод: ' + code, false); });
       } else {
@@ -192,7 +227,14 @@
     if (status === 'approved') {
       var code = String((current && current.promoCode) || '').trim();
       if (!code) code = generateCode();
-      if (codeNode) codeNode.textContent = code;
+      if (codeNode) codeNode.value = code;
+      selectedTemplate = String((current && current.promoTemplate) || 'code');
+      if (templatesRoot) {
+        Array.prototype.forEach.call(templatesRoot.querySelectorAll('[data-template]'), function (button) {
+          button.classList.toggle('is-active', button.getAttribute('data-template') === selectedTemplate);
+        });
+      }
+      renderPreview();
     }
     setMsg('', false);
     renderReview();
@@ -313,57 +355,134 @@
     setMsg('Заявка отправлена. Статус можно посмотреть здесь же.', false);
   }
 
+  function promoField() {
+    return String(codeNode ? codeNode.value : '').trim().slice(0, 24);
+  }
+
+  function savePromoCode() {
+    var code = promoField();
+    if (!code) { setMsg('Введи промокод', true); return; }
+    if (codeNode) codeNode.value = code;
+    var list = read(STORE, []);
+    if (!Array.isArray(list)) list = [];
+    for (var i = 0; i < list.length; i++) {
+      if (current && String(list[i].id || '') === String(current.id)) {
+        list[i].promoCode = code;
+        current = list[i];
+        break;
+      }
+    }
+    save(list);
+    renderPreview();
+    setMsg('Промокод сохранён: ' + code, false);
+  }
+
   function generateCode() {
     var alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     var out = 'PART-';
     for (var i = 0; i < 6; i++) out += alphabet.charAt(Math.floor(Math.random() * alphabet.length));
-
     var list = read(STORE, []);
     if (!Array.isArray(list)) list = [];
     for (var j = 0; j < list.length; j++) {
-      if (list[j] === current || (current && list[j].id === current.id)) {
+      if (current && String(list[j].id || '') === String(current.id)) {
         list[j].promoCode = out;
         current = list[j];
         break;
       }
     }
     save(list);
-    if (codeNode) codeNode.textContent = out;
+    if (codeNode) codeNode.value = out;
     return out;
   }
 
-  function drawFrame(ctx, w, h, code, progress) {
-    var bg = ctx.createLinearGradient(0, 0, w, h);
+  function setTemplate(name) {
+    selectedTemplate = name || 'code';
+    if (templatesRoot) {
+      Array.prototype.forEach.call(templatesRoot.querySelectorAll('[data-template]'), function (button) {
+        button.classList.toggle('is-active', button.getAttribute('data-template') === selectedTemplate);
+      });
+    }
+    var list = read(STORE, []);
+    if (!Array.isArray(list)) list = [];
+    for (var i = 0; i < list.length; i++) {
+      if (current && String(list[i].id || '') === String(current.id)) {
+        list[i].promoTemplate = selectedTemplate;
+        current = list[i];
+        break;
+      }
+    }
+    save(list);
+    renderPreview();
+  }
+
+  function drawFrame(ctx, w, h, code, progress, template) {
+    ctx.save();
+    ctx.scale(w / 1280, h / 720);
+
+    var bg = ctx.createLinearGradient(0, 0, 1280, 720);
     bg.addColorStop(0, '#0c0a16');
     bg.addColorStop(1, '#171226');
     ctx.fillStyle = bg;
-    ctx.fillRect(0, 0, w, h);
+    ctx.fillRect(0, 0, 1280, 720);
 
-    var glow = ctx.createRadialGradient(w / 2, h / 2, 40, w / 2, h / 2, 420);
+    var glow = ctx.createRadialGradient(640, 360, 40, 640, 360, 420);
     glow.addColorStop(0, 'rgba(177,140,255,0.35)');
     glow.addColorStop(1, 'rgba(177,140,255,0)');
     ctx.fillStyle = glow;
-    ctx.fillRect(0, 0, w, h);
+    ctx.fillRect(0, 0, 1280, 720);
 
     ctx.textAlign = 'center';
-    ctx.fillStyle = 'rgba(255,255,255,0.75)';
-    ctx.font = '500 60px Inter, system-ui, sans-serif';
-    ctx.fillText('AnkaVisual', w / 2, h / 2 - 190);
 
-    ctx.fillStyle = '#b18cff';
-    ctx.font = '700 130px Inter, system-ui, sans-serif';
-    ctx.fillText(code, w / 2, h / 2 + 30);
+    if (template === 'download') {
+      ctx.fillStyle = 'rgba(255,255,255,0.85)';
+      ctx.font = '600 76px Inter, system-ui, sans-serif';
+      ctx.fillText('Как скачать AnkaVisual', 640, 150);
+      ctx.fillStyle = 'rgba(255,255,255,0.72)';
+      ctx.font = '400 50px Inter, system-ui, sans-serif';
+      ctx.fillText('1. Скачай AnkaLauncher', 640, 250);
+      ctx.fillText('2. Войди в аккаунт', 640, 320);
+      ctx.fillText('3. Введи промокод', 640, 390);
+      ctx.fillStyle = '#b18cff';
+      ctx.font = '700 110px Inter, system-ui, sans-serif';
+      ctx.fillText(code, 640, 520);
+    } else if (template === 'sale') {
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.font = '500 58px Inter, system-ui, sans-serif';
+      ctx.fillText('Скидка для твоей аудитории', 640, 210);
+      ctx.fillStyle = 'rgba(177,140,255,0.18)';
+      ctx.fillRect(240, 280, 800, 190);
+      ctx.fillStyle = '#fff';
+      ctx.font = '700 118px Inter, system-ui, sans-serif';
+      ctx.fillText(code, 640, 405);
+      ctx.fillStyle = '#b18cff';
+      ctx.font = '600 46px Inter, system-ui, sans-serif';
+      ctx.fillText('AnkaVisual · Partner', 640, 545);
+    } else {
+      ctx.fillStyle = 'rgba(255,255,255,0.75)';
+      ctx.font = '500 60px Inter, system-ui, sans-serif';
+      ctx.fillText('AnkaVisual', 640, 170);
+      ctx.fillStyle = '#b18cff';
+      ctx.font = '700 130px Inter, system-ui, sans-serif';
+      ctx.fillText(code, 640, 390);
+      ctx.fillStyle = 'rgba(255,255,255,0.55)';
+      ctx.font = '400 44px Inter, system-ui, sans-serif';
+      ctx.fillText('скидка для аудитории партнёра', 640, 510);
+    }
 
-    ctx.fillStyle = 'rgba(255,255,255,0.55)';
-    ctx.font = '400 44px Inter, system-ui, sans-serif';
-    ctx.fillText('скидка для аудитории партнёра', w / 2, h / 2 + 150);
-
-    var barW = Math.round(w * (0.25 + 0.75 * Math.min(1, progress)));
+    var barW = Math.round(1280 * (0.25 + 0.75 * Math.min(1, progress)));
     ctx.fillStyle = 'rgba(255,255,255,0.14)';
-    ctx.fillRect(w / 2 - barW / 2, h / 2 + 220, barW, 6);
+    ctx.fillRect(640 - barW / 2, 660, barW, 6);
+    ctx.restore();
   }
 
-  function makeVideo(code) {
+  function renderPreview() {
+    if (!previewCanvas) return;
+    var ctx = previewCanvas.getContext('2d');
+    if (!ctx) return;
+    drawFrame(ctx, previewCanvas.width, previewCanvas.height, promoField() || 'PART-XXXXXX', 1, selectedTemplate);
+  }
+
+  function makeVideo(code, template) {
     return new Promise(function (resolve, reject) {
       try {
         var canvas = document.createElement('canvas');
@@ -387,9 +506,9 @@
         recorder.start(250);
         var durationMs = 6000;
         var startedAt = Date.now();
-        drawFrame(ctx, canvas.width, canvas.height, code, 0);
+        drawFrame(ctx, canvas.width, canvas.height, code, 0, template);
         var drawTimer = window.setInterval(function () {
-          drawFrame(ctx, canvas.width, canvas.height, code, Math.min(1, (Date.now() - startedAt) / durationMs));
+          drawFrame(ctx, canvas.width, canvas.height, code, Math.min(1, (Date.now() - startedAt) / durationMs), template);
         }, 1000 / 30);
         window.setTimeout(function () {
           window.clearInterval(drawTimer);
@@ -401,10 +520,11 @@
 
   function startVideo() {
     if (!genVideoBtn) return;
-    var code = String(codeNode ? codeNode.textContent : '').trim() || 'PART-XXXXXX';
+    var code = promoField();
+    if (!code) { setMsg('Введи промокод для видео', true); return; }
     genVideoBtn.disabled = true;
     setMsg('Генерирую промо-видео…', false);
-    makeVideo(code).then(function (result) {
+    makeVideo(code, selectedTemplate).then(function (result) {
       if (lastVideoUrl) URL.revokeObjectURL(lastVideoUrl);
       lastVideoUrl = result.url;
       if (videoNode) { videoNode.src = result.url; videoNode.hidden = false; }

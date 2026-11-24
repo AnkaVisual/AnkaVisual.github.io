@@ -594,6 +594,13 @@ html.intro .hero-title.ht-ready{animation:ht-rise 1.9s var(--ease-out) .05s both
   margin-top:12px;width:100%;font:600 13px/1 'Inter',system-ui,sans-serif;
   cursor:pointer;appearance:none;
 }
+.plan-buy{
+  margin-top:8px;width:100%;height:42px;border:1px solid rgba(177,140,255,.45);
+  border-radius:10px;background:transparent;color:var(--accent);cursor:pointer;
+  font:600 13px/1 'Inter',system-ui,sans-serif;
+  transition:background .25s var(--ease),border-color .25s var(--ease);
+}
+.plan-buy:hover{background:rgba(177,140,255,.1);border-color:var(--accent)}
 .po-overlay{
   position:fixed;inset:0;z-index:1200;display:grid;place-items:center;padding:20px;
   background:rgba(0,0,0,.72);backdrop-filter:blur(8px);
@@ -727,6 +734,27 @@ html.intro .hero-title.ht-ready{animation:ht-rise 1.9s var(--ease-out) .05s both
   font:600 17px/1.2 'JetBrains Mono',ui-monospace,monospace;letter-spacing:.08em;color:#fff;
 }
 .partner-promo-video{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:14px}
+.partner-promo-input{
+  flex:1;min-width:220px;padding:11px 14px;border:1px solid var(--line-2);border-radius:11px;
+  background:rgba(255,255,255,.03);color:#fff;font:inherit;font-size:14px;
+  letter-spacing:.06em;outline:none;
+}
+.partner-promo-input:focus{border-color:rgba(177,140,255,.6)}
+.partner-editor{margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}
+.partner-editor-templates{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.partner-template{
+  display:grid;gap:3px;min-width:140px;padding:10px 12px;text-align:left;
+  border:1px solid var(--line-2);border-radius:12px;background:rgba(255,255,255,.02);
+  color:var(--muted);font:inherit;cursor:pointer;
+}
+.partner-template b{font-size:12.5px;color:#fff}
+.partner-template span{font-size:10.5px;color:var(--muted-2)}
+.partner-template:hover{border-color:rgba(255,255,255,.24)}
+.partner-template.is-active{border-color:var(--accent);background:rgba(177,140,255,.1)}
+.partner-preview{
+  width:100%;margin-top:12px;border:1px solid var(--line);border-radius:12px;
+  background:#0c0a16;aspect-ratio:16 / 9;
+}
 .partner-promo-video video{
   width:100%;max-width:520px;aspect-ratio:16/9;border-radius:12px;
   border:1px solid var(--line);background:#0c0a16;
@@ -749,6 +777,69 @@ html.intro .hero-title.ht-ready{animation:ht-rise 1.9s var(--ease-out) .05s both
 .partner-review-state[data-state="approved"]{color:var(--accent-2)}
 .partner-review-state[data-state="rejected"]{color:var(--danger)}
 .partner-review-actions{display:flex;flex-direction:column;flex:none;gap:6px}
+/* ── демо-оплата ─────────────────────────────────────────────── */
+
+.pay-modal{position:fixed;inset:0;z-index:101;display:grid;place-items:center;padding:20px}
+.pay-modal[hidden]{display:none}
+.pay-modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(6px)}
+.pay-modal-card{
+  position:relative;width:min(560px,100%);max-height:calc(100vh - 40px);overflow:auto;
+  padding:32px;border:1px solid var(--line-2);border-radius:var(--radius);
+  background:#070707;box-shadow:0 30px 90px rgba(0,0,0,.6);
+}
+.pay-modal-close{
+  position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:50%;
+  border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--muted);
+  font-size:20px;line-height:1;cursor:pointer;
+}
+.pay-modal-close:hover{background:rgba(255,255,255,.08);color:#fff}
+.pay-modal-kicker{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+.pay-modal-card h2{margin-top:10px;font-size:28px;letter-spacing:-.03em}
+.pay-modal-lede{margin-top:10px;font-size:13px;line-height:1.6;color:var(--muted)}
+.pay-term{
+  margin-top:18px;padding:15px 16px 13px;border:1px solid var(--line);
+  border-radius:14px;background:rgba(255,255,255,.02);
+}
+.pay-term-head{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12px;color:var(--muted)}
+.pay-days{display:inline-flex;align-items:center;gap:6px;color:var(--muted-2)}
+.pay-days input{
+  width:62px;padding:6px 8px;border:1px solid var(--line-2);border-radius:8px;
+  background:rgba(255,255,255,.04);color:#fff;font:inherit;font-size:13px;text-align:center;outline:none;
+}
+.pay-days input:focus{border-color:rgba(177,140,255,.6)}
+.pay-range{width:100%;margin:14px 0 7px;accent-color:var(--accent);height:20px;cursor:pointer;background:transparent}
+.pay-scale{display:flex;justify-content:space-between;gap:10px;font-size:10.5px;color:var(--muted-3)}
+.pay-total{
+  display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+  margin-top:13px;padding-top:13px;border-top:1px solid var(--line);
+}
+.pay-total span{font-size:12px;color:var(--muted)}
+.pay-total b{font-size:22px;color:#fff}
+.pay-item{
+  display:grid;gap:4px;margin-top:18px;padding:14px 16px;
+  border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.02);
+}
+.pay-item span{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-3)}
+.pay-item b{font-size:18px;color:#fff}
+.pay-item strong{font-size:22px;color:var(--accent)}
+.pay-label{display:block;margin:18px 0 7px;font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--muted-2)}
+.pay-input{
+  width:100%;padding:11px 13px;border:1px solid var(--line-2);border-radius:11px;
+  background:rgba(255,255,255,.03);color:#fff;font:inherit;font-size:13px;outline:none;
+}
+.pay-input:focus{border-color:rgba(177,140,255,.6)}
+.pay-msg{margin-top:14px;padding:10px 13px;border-radius:11px;background:rgba(255,255,255,.05);font-size:12.5px;line-height:1.5;color:var(--accent-2)}
+.pay-msg.is-bad{color:var(--danger)}
+.pay-submit{
+  width:100%;height:44px;margin-top:16px;border:0;border-radius:999px;
+  background:var(--accent);color:#0a0a0a;font:inherit;font-size:13.5px;font-weight:600;cursor:pointer;
+}
+.pay-submit:hover{filter:brightness(1.08)}
+.pay-submit:disabled{opacity:.6;cursor:default}
+.pay-success{margin-top:18px;padding:16px;border:1px solid rgba(126,240,164,.3);border-radius:14px;background:rgba(126,240,164,.06)}
+.pay-success b{color:var(--accent-2)}
+.pay-success p{margin:8px 0 0;font-size:12.5px;line-height:1.5;color:var(--muted)}
+
 .partner-review-actions .dash-btn{height:32px;padding:0 12px;font-size:11px}
 
 .po-submit:disabled{opacity:.6;cursor:default;transform:none}

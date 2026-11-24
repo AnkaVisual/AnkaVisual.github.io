@@ -14,6 +14,7 @@
   var activeTab = 'all';
   var activeFilter = 'all';
   var items = [];
+  var purchasedIds = {};
   var LOCAL_CONFIGS_KEY = 'ankavisual.shop.local.configs';
 
   function localConfigs() {
@@ -149,20 +150,19 @@
     }
 
     var action;
-    if (kind === 'resource') {
-      if (url && free) {
-        action = '<a class="plan-cta" href="' + esc(url) + '" target="_blank" rel="noopener">Скачать ресурспак</a>';
-      } else if (url) {
-        action = '<a class="plan-cta" href="../account/">Купить · ' + esc(fmtPrice(price)) + '</a>';
-      } else {
-        action = '<a class="plan-cta" href="../account/">В аккаунте</a>';
-      }
+    var owned = !!purchasedIds[String(item.id || '')];
+    if (!free && owned) {
+      action = '<span class="plan-cta is-owned">Куплено ✓</span>';
+    } else if (!free) {
+      action = '<button class="plan-cta" type="button" data-pay-item="' + esc(item.id) + '"'
+        + ' data-pay-name="' + esc(name) + '" data-pay-price="' + price + '">'
+        + 'Купить · ' + esc(fmtPrice(price)) + ' (демо)</button>';
+    } else if (kind === 'resource' && url) {
+      action = '<a class="plan-cta" href="' + esc(url) + '" target="_blank" rel="noopener">Скачать ресурспак</a>';
     } else if (code) {
       action = '<button class="plan-cta is-copy" type="button" data-copy="' + esc(code) + '">Скопировать код</button>';
-    } else if (free) {
-      action = '<a class="plan-cta" href="../account/">Получить в аккаунте</a>';
     } else {
-      action = '<a class="plan-cta" href="../account/">Купить · ' + esc(fmtPrice(price)) + '</a>';
+      action = '<a class="plan-cta" href="../account/">Получить в аккаунте</a>';
     }
 
     return '<article class="shop-card" style="--i:' + index + '">' +
@@ -356,5 +356,33 @@
     });
   }
 
+  function loadPurchases() {
+    var siteToken = '';
+    try { siteToken = localStorage.getItem('ankavisual.account.token') || ''; } catch (ignored) { /* приватный режим */ }
+    if (!siteToken) return;
+    fetch(API + '/api/payments/my', {
+      headers: { Authorization: 'Bearer ' + siteToken, Accept: 'application/json' },
+      cache: 'no-store'
+    }).then(function (response) { return response.ok ? response.json() : {}; })
+      .then(function (data) {
+        (Array.isArray(data.purchases) ? data.purchases : []).forEach(function (purchase) {
+          if (purchase && purchase.kind === 'shop_item' && purchase.itemId) {
+            purchasedIds[String(purchase.itemId)] = true;
+          }
+        });
+        render();
+      })
+      .catch(function () { /* покупки необязательны для каталога */ });
+  }
+
+  document.addEventListener('ankapay:paid', function (event) {
+    var detail = event.detail || {};
+    if (detail.itemId) {
+      purchasedIds[String(detail.itemId)] = true;
+      render();
+    }
+  });
+
   load();
+  loadPurchases();
 })();
