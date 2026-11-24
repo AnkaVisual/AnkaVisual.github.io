@@ -14,8 +14,8 @@
 <link rel="apple-touch-icon" href="assets/ankavisual/logo-round.png">
 <link rel="preload" href="assets/font/inter-400-cyr.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/font/inter-400-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/site.css?v=12">
-<link rel="stylesheet" href="css/account.css?v=16">
+<link rel="stylesheet" href="css/site.css?v=13">
+<link rel="stylesheet" href="css/account.css?v=17">
 </head>
 <body class="account-body">
 
@@ -158,8 +158,6 @@
 
         <p class="dash-nav-label">Сообщество</p>
         <button type="button" data-panel-nav="configs">Мои конфиги</button>
-        <button type="button" data-panel-nav="partners">Партнёрство</button>
-        <button type="button" data-panel-nav="partner-review" class="dash-review-only" hidden>Заявки</button>
       </nav>
 
       <a class="dash-side-download" href="https://github.com/AnkaVisual/AnkaVisual.github.io/releases/download/v1.0.0/AnkaLauncher.exe">
@@ -242,10 +240,9 @@
 
           <article class="dcard dcard--action">
             <h3>Сообщество</h3>
-            <p>Создай конфиг для магазина или подай заявку на партнёрство.</p>
+            <p>Создай конфиг или ресурспак для магазина AnkaVisual.</p>
             <div class="dcard-actions">
               <button type="button" class="dash-btn dash-btn--primary" data-panel-nav="configs">Создать конфиг</button>
-              <button type="button" class="dash-btn dash-btn--ghost" data-panel-nav="partners">Партнёрство</button>
             </div>
           </article>
         </div>
@@ -532,105 +529,6 @@
         </div>
       </section>
 
-      <!-- Партнёрство -->
-      <section class="dash-panel" data-panel="partners" hidden>
-        <div class="dash-grid">
-          <article class="dcard dcard--wide partner-head">
-            <div class="partner-head-copy">
-              <p class="mono">AnkaVisual Partners</p>
-              <h2 class="dcard-title">Партнёрство</h2>
-              <p class="dcard-lede">Развиваем AnkaVisual вместе с авторами конфигов, каналов и серверов.</p>
-            </div>
-            <span class="partner-status" id="partnerStatus" data-state="none">Не подана</span>
-          </article>
-
-          <article class="dcard">
-            <h3>Что получает партнёр</h3>
-            <ul class="dcard-list dcard-list--plain">
-              <li>Место в разделе партнёров.</li>
-              <li>Промокод и скидку для аудитории.</li>
-              <li>Ранний доступ к обновлениям.</li>
-              <li>Прямая связь с командой.</li>
-            </ul>
-          </article>
-
-          <article class="dcard">
-            <h3>Кому подходит</h3>
-            <p>Авторам конфигов и скинов, владельцам каналов и серверов, а также тем, кто делает контент про AnkaVisual. Размер аудитории не главное — важнее активность и качество.</p>
-          </article>
-
-          <article class="dcard dcard--wide" id="partnerFormCard">
-            <h2 class="dcard-title">Заявка на партнёрство</h2>
-            <p class="dcard-lede">Расскажи о проекте — ответим в течение пары дней.</p>
-
-            <form id="partnerForm" class="config-form">
-              <div class="config-form-row">
-                <label class="auth-field">
-                  <span class="config-label">Имя или проект</span>
-                  <input name="name" type="text" class="auth-input" placeholder="Как к тебе обращаться"
-                         maxlength="60" required>
-                </label>
-                <label class="auth-field">
-                  <span class="config-label">Контакт</span>
-                  <input name="contact" type="text" class="auth-input" placeholder="Discord, Telegram или почта"
-                         maxlength="80" required>
-                </label>
-              </div>
-
-              <div class="config-form-row">
-                <label class="auth-field">
-                  <span class="config-label">Аудитория, чел.</span>
-                  <input name="audience" type="number" class="auth-input" placeholder="0" min="0" max="10000000" step="1">
-                </label>
-                <label class="auth-field">
-                  <span class="config-label">Ссылка на проект</span>
-                  <input name="link" type="url" class="auth-input" placeholder="https://"
-                         maxlength="200" autocomplete="off">
-                </label>
-              </div>
-
-              <label class="auth-field">
-                <span class="config-label">О проекте</span>
-                <textarea name="about" class="auth-input auth-textarea" rows="4"
-                          placeholder="Чем занимаешься и как хочешь сотрудничать" maxlength="600" required></textarea>
-              </label>
-
-              <div class="config-form-actions">
-                <button class="auth-btn auth-btn--primary" type="submit">Отправить заявку</button>
-              </div>
-
-              <p id="partnerMsg" class="auth-msg" role="status" hidden></p>
-            </form>
-          </article>
-
-          <article class="dcard dcard--wide partner-applied" id="partnerApplied" hidden>
-            <h2 class="dcard-title">Заявка отправлена</h2>
-            <p class="dcard-lede" id="partnerAppliedText">Мы получили заявку и свяжемся с тобой.</p>
-            <button type="button" class="dash-btn dash-btn--ghost" id="partnerAgain" hidden>Отправить заново</button>
-          </article>
-        </div>
-      </section>
-
-      <!-- Заявки на партнёрство (владелец / со-владелец) -->
-      <section class="dash-panel" data-panel="partner-review" hidden>
-        <div class="dash-grid">
-          <article class="dcard dcard--wide">
-            <div class="dash-card-head">
-              <div>
-                <h2 class="dcard-title">Заявки на партнёрство</h2>
-                <p class="dcard-lede">Одобряй или отклоняй заявки авторов конфигов, каналов и серверов.</p>
-              </div>
-              <span class="config-count" data-partner-apps-count>0</span>
-            </div>
-
-            <p id="partnerReviewMsg" class="auth-msg" role="status" hidden></p>
-
-            <div id="partnerAppsList" class="config-list"></div>
-            <p class="config-empty" data-partner-apps-empty>Новых заявок нет.</p>
-          </article>
-        </div>
-      </section>
-
       <footer class="dash-foot">
         <span>© 2026 AnkaVisual</span>
         <a href="index.html">На главную</a>
@@ -710,7 +608,7 @@
 </div>
 
 <script src="js/config.js?v=101"></script>
-<script src="js/account.js?v=24"></script>
+<script src="js/account.js?v=25"></script>
 <script src="js/guard.js?v=2"></script>
 </body>
 </html>
