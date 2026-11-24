@@ -53,11 +53,22 @@
 }
 .shop-status:empty{display:none}
 
+/* ------------------------------ вкладки ------------------------------ */
+.shop-tabs{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.shop-tab{
+  height:32px;padding:0 16px;border:1px solid var(--line);border-radius:999px;
+  background:rgba(255,255,255,.02);color:rgba(255,255,255,.42);
+  font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  transition:color .25s var(--ease),background .25s var(--ease),border-color .25s var(--ease);
+}
+.shop-tab:hover{color:#fff;border-color:rgba(255,255,255,.22);background:rgba(255,255,255,.06)}
+.shop-tab.is-active{background:#fff;border-color:#fff;color:#000}
+
 /* ------------------------------ сетка ------------------------------ */
 .shop-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:stretch}
 
 .shop-card{
-  position:relative;display:flex;flex-direction:column;min-height:326px;padding:24px;
+  position:relative;display:flex;flex-direction:column;min-height:0;padding:24px;
   border:1px solid var(--line);border-radius:var(--radius);background-color:#070707;
   background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px);
   background-size:12px 12px;
@@ -70,6 +81,23 @@
 @keyframes shopIn{
   from{opacity:0;transform:translateY(14px)}
   to{opacity:1;transform:none}
+}
+
+.shop-card-media{
+  position:relative;display:block;width:100%;height:148px;margin:0 0 18px;padding:0;
+  border:1px solid var(--line);border-radius:12px;overflow:hidden;
+  background-color:#0a0a0a;background-image:radial-gradient(rgba(255,255,255,.06) 1px,transparent 1px);
+  background-size:12px 12px;cursor:zoom-in;
+}
+.shop-card-media img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .8s var(--ease)}
+.shop-card:hover .shop-card-media img{transform:scale(1.05)}
+.shop-card-media.is-empty{
+  display:grid;place-items:center;border-style:dashed;color:rgba(255,255,255,.3);
+  font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;background:rgba(255,255,255,.015);
+}
+.shop-card-media .shop-state{
+  position:absolute;left:10px;bottom:10px;margin:0;
+  background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(8px);
 }
 
 .shop-card-top{
@@ -86,7 +114,7 @@
 .shop-state.is-paid{border-color:rgba(255,209,102,.32);color:#ffd166}
 
 .shop-card h3{
-  margin-top:22px;font-size:26px;font-weight:500;line-height:1.05;letter-spacing:-.035em;
+  margin-top:14px;font-size:26px;font-weight:500;line-height:1.05;letter-spacing:-.035em;
   color:#fff;
 }
 .shop-note{
@@ -115,6 +143,23 @@
   text-align:center;color:rgba(255,255,255,.42);font-size:13.5px;
 }
 .shop-empty b{font-weight:600;color:rgba(255,255,255,.72)}
+
+/* ------------------------------ лайтбокс ------------------------------ */
+.shop-lightbox{
+  position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:24px;
+  background:rgba(0,0,0,.86);backdrop-filter:blur(6px);
+}
+.shop-lightbox[hidden]{display:none}
+.shop-lightbox img{
+  max-width:min(920px,92vw);max-height:82vh;border-radius:16px;
+  border:1px solid var(--line-2);background:#0a0a0a;
+}
+.shop-lightbox-close{
+  position:fixed;top:16px;right:18px;width:38px;height:38px;border-radius:50%;
+  border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--muted);
+  font:400 20px/1 'Inter',system-ui,sans-serif;cursor:pointer;
+}
+.shop-lightbox-close:hover{background:rgba(255,255,255,.08);color:#fff}
 
 /* --------------------------- как это работает --------------------------- */
 .shop-steps-section{padding-top:0}

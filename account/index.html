@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://ankaguard.ankavisual.workers.dev http://127.0.0.1:8724 http://localhost:8724 http://127.0.0.1:5500 http://localhost:5500 http://127.0.0.1:8080 http://localhost:8080; base-uri 'self'; form-action 'self'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://ankaguard.ankavisual.workers.dev; font-src 'self'; connect-src 'self' https://ankaguard.ankavisual.workers.dev http://127.0.0.1:8724 http://localhost:8724 http://127.0.0.1:5500 http://localhost:5500 http://127.0.0.1:8080 http://localhost:8080; base-uri 'self'; form-action 'self'; object-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <base href="/">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -15,7 +15,7 @@
 <link rel="preload" href="assets/font/inter-400-cyr.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/font/inter-400-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/site.css?v=12">
-<link rel="stylesheet" href="css/account.css?v=15">
+<link rel="stylesheet" href="css/account.css?v=16">
 </head>
 <body class="account-body">
 
@@ -424,8 +424,8 @@
           <article class="dcard dcard--wide">
             <div class="dash-card-head">
               <div>
-                <h2 class="dcard-title">Новый конфиг</h2>
-                <p class="dcard-lede">Заполни карточку — конфиг появится в магазине после проверки.</p>
+                <h2 class="dcard-title">Новый конфиг или ресурспак</h2>
+                <p class="dcard-lede">Заполни карточку — опубликуется в магазине после проверки. Фото обязательно.</p>
               </div>
               <a class="dash-btn dash-btn--ghost" href="shop/" target="_blank" rel="noopener">Открыть магазин</a>
             </div>
@@ -438,6 +438,16 @@
                          maxlength="40" required>
                 </label>
                 <label class="auth-field">
+                  <span class="config-label">Тип публикации</span>
+                  <select name="kind" class="auth-input">
+                    <option value="config">Конфиг — по коду импорта</option>
+                    <option value="resource">Ресурспак — по ссылке на скачивание</option>
+                  </select>
+                </label>
+              </div>
+
+              <div class="config-form-row">
+                <label class="auth-field">
                   <span class="config-label">Категория</span>
                   <select name="category" class="auth-input">
                     <option value="pvp">PvP</option>
@@ -446,6 +456,10 @@
                     <option value="hud">HUD</option>
                     <option value="other">Другое</option>
                   </select>
+                </label>
+                <label class="auth-field">
+                  <span class="config-label">Цена, ₽</span>
+                  <input name="price" type="number" class="auth-input" placeholder="0" min="0" max="99999" step="1" value="0">
                 </label>
               </div>
 
@@ -462,21 +476,36 @@
                          maxlength="120" autocomplete="off">
                 </label>
                 <label class="auth-field">
-                  <span class="config-label">Цена, ₽</span>
-                  <input name="price" type="number" class="auth-input" placeholder="0" min="0" max="99999" step="1" value="0">
+                  <span class="config-label">Код импорта</span>
+                  <input name="code" type="text" class="auth-input" placeholder="Оставь пустым — сгенерируем автоматически"
+                         maxlength="24" autocomplete="off">
                 </label>
               </div>
 
-              <label class="auth-field">
-                <span class="config-label">Код импорта</span>
-                <input name="code" type="text" class="auth-input" placeholder="Оставь пустым — сгенерируем автоматически"
-                       maxlength="24" autocomplete="off">
+              <label class="auth-field" id="configUrlField" hidden>
+                <span class="config-label">Ссылка на скачивание ресурспака</span>
+                <input name="url" type="text" class="auth-input" placeholder="https://…/resource-pack.zip"
+                       maxlength="2048" autocomplete="off">
               </label>
+
+              <div class="config-photos">
+                <span class="config-label">Фото для публикации <em>обязательно</em></span>
+                <div class="avatar-editor">
+                  <div class="avatar-editor-preview config-photo-preview" id="configPhotoPreview" aria-hidden="true">?</div>
+                  <div class="avatar-editor-actions">
+                    <input id="configPhotoInput" name="photos" type="file" accept="image/png,image/jpeg,image/webp" multiple hidden>
+                    <button type="button" class="dash-btn dash-btn--primary" id="configPhotoPick">Выбрать фото (1–5)</button>
+                    <button type="button" class="dash-btn dash-btn--ghost" id="configPhotoRemove" hidden>Удалить фото</button>
+                    <span class="auth-msg" id="configPhotoMsg" hidden></span>
+                  </div>
+                </div>
+                <p class="config-form-hint">Каждая фото сжимается в WebP/JPEG до 1024px. Для ресурспаков добавь ссылку на скачивание — она понадобится в карточке.</p>
+              </div>
 
               <div class="config-form-actions">
                 <button class="auth-btn auth-btn--primary" type="submit">Опубликовать</button>
                 <button class="dash-btn dash-btn--ghost" type="reset">Очистить</button>
-                <span class="config-form-hint">Бесплатный конфиг сразу получит код импорта.</span>
+                <span class="config-form-hint">Бесплатный конфиг сразу получит код импорта. Фото обязательно.</span>
               </div>
 
               <p id="configMsg" class="auth-msg" role="status" hidden></p>
@@ -681,7 +710,7 @@
 </div>
 
 <script src="js/config.js?v=101"></script>
-<script src="js/account.js?v=23"></script>
+<script src="js/account.js?v=24"></script>
 <script src="js/guard.js?v=2"></script>
 </body>
 </html>

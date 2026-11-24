@@ -75,6 +75,14 @@
   var configForm = document.getElementById('configForm');
   var configMsg = document.getElementById('configMsg');
   var configList = document.getElementById('configList');
+  var configKind = document.querySelector('[name="kind"]');
+  var configUrlField = document.getElementById('configUrlField');
+  var configUrl = configUrlField ? configUrlField.querySelector('input[name="url"]') : null;
+  var configPhotoInput = document.getElementById('configPhotoInput');
+  var configPhotoPick = document.getElementById('configPhotoPick');
+  var configPhotoRemove = document.getElementById('configPhotoRemove');
+  var configPhotoPreview = document.getElementById('configPhotoPreview');
+  var configPhotoMsg = document.getElementById('configPhotoMsg');
   var partnerForm = document.getElementById('partnerForm');
   var partnerMsg = document.getElementById('partnerMsg');
   var partnerStatus = document.getElementById('partnerStatus');
@@ -298,6 +306,141 @@
         avatarRemove.disabled = false;
       });
     });
+  }
+
+  /* ── Фото для публикации конфигов и ресурспаков ────────────────── */
+
+  var photoItems = [];
+  var photoBusy = false;
+
+  function photoMessage(text, bad) {
+    setMessage(configPhotoMsg, text, bad);
+  }
+
+  function photoFromFile(file) {
+    return new Promise(function (resolve, reject) {
+      if (!file || !/^image\//.test(file.type)) {
+        reject(new Error('выбери картинку PNG, JPEG или WebP'));
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        reject(new Error('файл больше 5 МБ'));
+        return;
+      }
+      var reader = new FileReader();
+      reader.onerror = function () { reject(new Error('не удалось прочитать файл')); };
+      reader.onload = function () {
+        var image = new Image();
+        image.onerror = function () { reject(new Error('не удалось открыть картинку')); };
+        image.onload = function () {
+          var maxSide = 1024;
+          var scale = Math.min(1, maxSide / Math.max(image.width, image.height));
+          var width = Math.max(1, Math.round(image.width * scale));
+          var height = Math.max(1, Math.round(image.height * scale));
+          var canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          var ctx = canvas.getContext('2d');
+          if (!ctx) { reject(new Error('браузер не поддерживает обработку картинок')); return; }
+          ctx.drawImage(image, 0, 0, width, height);
+          var dataUrl = canvas.toDataURL('image/webp', 0.8);
+          resolve({ dataUrl: dataUrl, width: width, height: height });
+        };
+        image.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function renderPhotoPreview() {
+    if (!configPhotoPreview) return;
+    var src = photoItems.length ? String(photoItems[photoItems.length - 1].dataUrl || '') : '';
+    applyAvatar(configPhotoPreview, src ? { avatar: src } : null);
+  }
+
+  function syncPhotoState() {
+    if (configPhotoRemove) configPhotoRemove.hidden = !photoItems.length;
+  }
+
+  function clearPhotos() {
+    photoItems = [];
+    if (configPhotoInput) configPhotoInput.value = '';
+    renderPhotoPreview();
+    syncPhotoState();
+    photoMessage('', false);
+  }
+
+  function onConfigPhotosPicked(files) {
+    if (!files || !files.length) return;
+    if (files.length > 5) {
+      photoMessage('не больше пяти фото к публикации', true);
+      return;
+    }
+    photoBusy = true;
+    if (configPhotoPick) configPhotoPick.disabled = true;
+    photoMessage('Готовлю фото…');
+
+    var pending = Array.prototype.slice.call(files);
+    var chain = Promise.resolve();
+    pending.forEach(function (file) {
+      chain = chain.then(function () {
+        return photoFromFile(file).then(function (photo) {
+          var contentType = (String(photo.dataUrl).match(/^data:(image\/[a-z+]+);/) || [])[1] || 'image/webp';
+          return api('/api/shop/images', {
+            method: 'POST',
+            body: { ownerId: ownerKey(), itemId: '', base64: photo.dataUrl, contentType: contentType, width: photo.width, height: photo.height }
+          }).then(function (data) {
+            var image = data && data.image;
+            if (!image) throw new Error('не удалось загрузить фото');
+            photoItems.push({ id: image.id, dataUrl: photo.dataUrl, width: photo.width, height: photo.height });
+          });
+        });
+      });
+    });
+
+    chain.then(function () {
+      renderPhotoPreview();
+      syncPhotoState();
+      photoBusy = false;
+      if (configPhotoPick) configPhotoPick.disabled = false;
+      photoMessage('Фото готовы: ' + photoItems.length, false);
+    }).catch(function (error) {
+      photoMessage(error && error.message ? error.message : 'не удалось загрузить фото', true);
+      photoBusy = false;
+      if (configPhotoPick) configPhotoPick.disabled = false;
+    });
+  }
+
+  if (configPhotoPick) {
+    configPhotoPick.addEventListener('click', function () { if (configPhotoInput) configPhotoInput.click(); });
+  }
+
+  if (configPhotoInput) {
+    configPhotoInput.addEventListener('change', function () {
+      if (!configPhotoInput.files || !configPhotoInput.files.length) return;
+      onConfigPhotosPicked(Array.prototype.slice.call(configPhotoInput.files));
+    });
+  }
+
+  if (configPhotoRemove) {
+    configPhotoRemove.addEventListener('click', function () {
+      if (!photoItems.length) return;
+      photoItems.pop();
+      renderPhotoPreview();
+      syncPhotoState();
+    });
+  }
+
+  if (configKind) {
+    configKind.addEventListener('change', function () {
+      if (configUrlField) configUrlField.hidden = String(configKind.value) !== 'resource';
+      var urlInput = configUrl;
+      if (urlInput) urlInput.required = String(configKind.value) === 'resource';
+    });
+  }
+
+  if (configForm) {
+    configForm.addEventListener('reset', function () { clearPhotos(); });
   }
 
   function date(unix) {
@@ -953,6 +1096,15 @@
     var row = document.createElement('div');
     row.className = 'config-row';
 
+    if (item.imageId) {
+      var cover = document.createElement('img');
+      cover.className = 'config-cover';
+      cover.src = String(item.imageId).indexOf('data:') === 0 ? String(item.imageId) : (API + '/api/shop/images/' + item.imageId);
+      cover.alt = item.name || 'Конфиг';
+      cover.loading = 'lazy';
+      row.appendChild(cover);
+    }
+
     var main = document.createElement('div');
     main.className = 'config-row-main';
 
@@ -1079,11 +1231,13 @@
     if (!configForm) return;
 
     var form = new FormData(configForm);
+    var kind = String(form.get('kind') || 'config');
     var name = String(form.get('name') || '').trim();
     var description = String(form.get('description') || '').trim();
     var price = Math.max(0, Math.min(99999, parseInt(form.get('price'), 10) || 0));
     var code = String(form.get('code') || '').trim().toUpperCase();
     var category = String(form.get('category') || 'other');
+    var url = String(form.get('url') || '').trim();
 
     if (name.length < 2) {
       setMessage(configMsg, 'Название должно быть не короче 2 символов', true);
@@ -1094,20 +1248,31 @@
       return;
     }
     if (!code) code = generateConfigCode();
+    if (photoItems.length < 1) {
+      setMessage(configMsg, 'Прикрепи хотя бы одно фото к конфигу или ресурспаку', true);
+      return;
+    }
+    if (kind === 'resource' && !url) {
+      setMessage(configMsg, 'Для ресурспака нужна ссылка на скачивание', true);
+      return;
+    }
 
     var payload = {
       id: 'local-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7),
+      kind: kind,
       name: name,
       description: description,
       category: category,
       tags: parseTags(form.get('tags')),
       price: price,
       code: code,
+      url: url,
       author: accountData.username || 'AnkaVisual',
       authorId: ownerKey(),
       version: '1.21.11',
       status: 'published',
-      created: Math.floor(Date.now() / 1000)
+      created: Math.floor(Date.now() / 1000),
+      imageIds: photoItems.map(function (photo) { return photo.id; })
     };
 
     var submit = configForm.querySelector('button[type="submit"]');
@@ -1118,8 +1283,9 @@
       method: 'POST',
       body: { action: 'create', config: payload }
     }).then(function (data) {
-      var saved = (data && data.config) || payload;
+      var saved = (data && data.config) || (data && data.item) || payload;
       renderConfigs([saved].concat(myConfigs));
+      clearPhotos();
       configForm.reset();
       setMessage(configMsg, data && data.message ? data.message : 'Конфиг опубликован', false);
     }).catch(function (error) {
@@ -1129,8 +1295,11 @@
       }
       if (isUnsupported(error)) {
         payload.local = true;
+        payload.imageId = String(photoItems[0] && photoItems[0].dataUrl || '');
+        payload.photos = photoItems.map(function (photo) { return { id: photo.id, dataUrl: photo.dataUrl }; });
         saveLocalConfig(payload);
         renderConfigs([payload].concat(myConfigs));
+        clearPhotos();
         configForm.reset();
         setMessage(configMsg, 'Конфиг сохранён локально. Публикация на сервере включится вместе с API магазина.', false);
         return;

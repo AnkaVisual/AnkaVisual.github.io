@@ -1,15 +1,17 @@
-/* AnkaVisual — магазин конфигов: каталог, поиск, фильтры, копирование кода. */
+/* AnkaVisual — магазин конфигов и ресурспаков: каталог, поиск, фильтры, лайтбокс, копирование. */
 (function () {
   'use strict';
 
-  var API = window.ANKA_API_BASE || 'https://ankaguard.ankavisual.workers.dev';
+  var API = String(window.ANKA_API_BASE || 'https://ankaguard.ankavisual.workers.dev').replace(/\/+$/, '');
   var grid = document.getElementById('shopGrid');
   var status = document.getElementById('shopStatus');
   var search = document.getElementById('shopSearch');
   var filters = document.getElementById('shopFilters');
+  var tabsRoot = document.querySelector('[data-shop-tabs]');
 
   if (!grid) return;
 
+  var activeTab = 'all';
   var activeFilter = 'all';
   var items = [];
   var LOCAL_CONFIGS_KEY = 'ankavisual.shop.local.configs';
@@ -34,9 +36,15 @@
     other: 'Другое'
   };
 
+  var KIND_LABEL = {
+    config: 'Конфиг',
+    resource: 'Ресурспак'
+  };
+
   var fallback = [
     {
       id: 'pvp-legit',
+      kind: 'config',
       name: 'Legit PvP',
       author: 'AnkaVisual',
       price: 0,
@@ -48,6 +56,7 @@
     },
     {
       id: 'visual-clean',
+      kind: 'config',
       name: 'Clean Visual',
       author: 'AnkaVisual',
       price: 0,
@@ -59,6 +68,7 @@
     },
     {
       id: 'utility-base',
+      kind: 'config',
       name: 'Utility Base',
       author: 'AnkaVisual',
       price: 0,
@@ -67,6 +77,18 @@
       tags: ['utility', 'hud', 'base'],
       description: 'Базовый набор утилит и аккуратный интерфейс — удобная отправная точка для своих настроек.',
       code: 'ANKA-UTL1'
+    },
+    {
+      id: 'res-anim',
+      kind: 'resource',
+      name: 'Anim Pack',
+      author: 'AnkaVisual',
+      price: 0,
+      category: 'visual',
+      version: '1.21.11',
+      tags: ['anim', 'resource', 'packs'],
+      description: 'Набор плавных анимаций интерфейса и частиц для клиента AnkaVisual.',
+      url: 'https://ankavisual.github.io/AnkaVisual/releases/download/v1.0.0/AnkaResourcePackDemo.zip'
     }
   ];
 
@@ -87,13 +109,27 @@
 
   function categoryLabel(item) {
     var key = String(item.category || '').toLowerCase();
-    return CATEGORY_LABEL[key] || (key ? key.charAt(0).toUpperCase() + key.slice(1) : 'Конфиг');
+    return CATEGORY_LABEL[key] || (key ? key.charAt(0).toUpperCase() + key.slice(1) : 'Другое');
+  }
+
+  function kindOf(item) {
+    return String(item.kind || 'config') === 'resource' ? 'resource' : 'config';
+  }
+
+  function coverUrl(item) {
+    var imageId = String(item.imageId || '');
+    if (!imageId) return '';
+    if (imageId.indexOf('data:') === 0) return imageId;
+    return API + '/api/shop/images/' + imageId;
   }
 
   function card(item, index) {
+    var kind = kindOf(item);
     var price = priceOf(item);
     var free = price === 0;
     var code = item.code ? String(item.code) : '';
+    var url = item.url ? String(item.url) : '';
+    var name = item.name || 'Конфиг';
     var tags = (item.tags || []).slice(0, 4).map(function (tag) {
       return '<span class="shop-tag">' + esc(tag) + '</span>';
     }).join('');
@@ -102,8 +138,26 @@
     if (item.version) meta += '<span>' + esc(item.version) + '</span>';
     if (item.updated) meta += '<span>' + esc(item.updated) + '</span>';
 
+    var cover;
+    if (item.imageId) {
+      cover = '<button class="shop-card-media" type="button" data-lightbox="' + esc(item.imageId) + '" aria-label="Открыть фото ' + esc(name) + '">'
+        + '<img src="' + esc(coverUrl(item)) + '" alt="' + esc(name) + '" loading="lazy" />'
+        + '<span class="shop-state ' + (free ? 'is-free' : 'is-paid') + '">' + esc(fmtPrice(price)) + '</span>'
+        + '</button>';
+    } else {
+      cover = '<div class="shop-card-media is-empty"><span>Фото появится после публикации</span></div>';
+    }
+
     var action;
-    if (code) {
+    if (kind === 'resource') {
+      if (url && free) {
+        action = '<a class="plan-cta" href="' + esc(url) + '" target="_blank" rel="noopener">Скачать ресурспак</a>';
+      } else if (url) {
+        action = '<a class="plan-cta" href="../account/">Купить · ' + esc(fmtPrice(price)) + '</a>';
+      } else {
+        action = '<a class="plan-cta" href="../account/">В аккаунте</a>';
+      }
+    } else if (code) {
       action = '<button class="plan-cta is-copy" type="button" data-copy="' + esc(code) + '">Скопировать код</button>';
     } else if (free) {
       action = '<a class="plan-cta" href="../account/">Получить в аккаунте</a>';
@@ -112,11 +166,12 @@
     }
 
     return '<article class="shop-card" style="--i:' + index + '">' +
+      cover +
       '<div class="shop-card-top">' +
         '<span class="shop-author">by ' + esc(item.author || 'AnkaVisual') + '</span>' +
         '<span class="shop-state ' + (free ? 'is-free' : 'is-paid') + '">' + esc(fmtPrice(price)) + '</span>' +
       '</div>' +
-      '<h3>' + esc(item.name || 'Конфиг') + '</h3>' +
+      '<h3>' + esc(name) + '</h3>' +
       '<p class="shop-note">' + esc(item.description || 'Конфиг для AnkaVisual.') + '</p>' +
       (tags ? '<div class="shop-tags">' + tags + '</div>' : '') +
       '<div class="shop-meta">' + meta + '</div>' +
@@ -125,12 +180,17 @@
   }
 
   function matches(item) {
-    var query = (search && search.value ? search.value : '').toLowerCase().trim();
-    var category = String(item.category || '').toLowerCase();
-    var free = priceOf(item) === 0;
+    if (activeTab === 'config' && kindOf(item) !== 'config') return false;
+    if (activeTab === 'resource' && kindOf(item) !== 'resource') return false;
 
-    if (activeFilter === 'free' && !free) return false;
-    if (activeFilter !== 'all' && activeFilter !== 'free' && category !== activeFilter) return false;
+    if (activeFilter === 'free') {
+      if (priceOf(item) !== 0) return false;
+    } else if (activeFilter !== 'all') {
+      var category = String(item.category || '').toLowerCase();
+      if (activeFilter !== category) return false;
+    }
+
+    var query = (search && search.value ? search.value : '').toLowerCase().trim();
     if (!query) return true;
 
     var haystack = [
@@ -146,12 +206,12 @@
     if (!list.length) {
       grid.innerHTML = '<div class="shop-empty"><b>Ничего не найдено</b>' +
         '<span>Попробуй другой запрос или сбрось фильтр.</span></div>';
-      status.textContent = 'Найдено конфигов: 0';
+      status.textContent = 'Найдено: 0';
       return;
     }
 
     grid.innerHTML = list.map(card).join('');
-    status.textContent = 'Найдено конфигов: ' + list.length;
+    status.textContent = 'Найдено: ' + list.length;
   }
 
   function applyList(list) {
@@ -171,7 +231,7 @@
   }
 
   function load() {
-    status.textContent = 'Загрузка конфигов…';
+    status.textContent = 'Загрузка каталога…';
 
     fetch(API + '/api/shop/configs', {
       headers: { 'Accept': 'application/json' },
@@ -191,6 +251,40 @@
         applyList(fallback);
       });
   }
+
+  var lightbox = document.getElementById('shopLightbox');
+  var lightboxImg = document.getElementById('shopLightboxImg');
+
+  function openLightbox(imageId) {
+    if (!lightbox || !lightboxImg) return;
+    lightboxImg.src = imageId ? (String(imageId).indexOf('data:') === 0 ? imageId : API + '/api/shop/images/' + imageId) : '';
+    lightbox.hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() {
+    if (lightbox) lightbox.hidden = true;
+    document.body.style.overflow = '';
+  }
+
+  document.addEventListener('click', function (event) {
+    var trigger = event.target.closest('[data-lightbox]');
+    if (trigger) {
+      event.preventDefault();
+      openLightbox(trigger.getAttribute('data-lightbox'));
+      return;
+    }
+    var close = event.target.closest('[data-shop-lightbox-close]');
+    if (close) {
+      closeLightbox();
+      return;
+    }
+    if (event.target === lightbox) closeLightbox();
+  });
+
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && lightbox && !lightbox.hidden) closeLightbox();
+  });
 
   grid.addEventListener('click', function (event) {
     var button = event.target.closest('[data-copy]');
@@ -222,6 +316,26 @@
     document.body.removeChild(field);
     done();
   });
+
+  function setTab(tab) {
+    activeTab = tab || 'all';
+    if (tabsRoot) {
+      Array.prototype.forEach.call(tabsRoot.querySelectorAll('.shop-tab'), function (button) {
+        var active = button.getAttribute('data-shop-tab') === activeTab;
+        button.classList.toggle('is-active', active);
+        button.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+    }
+    render();
+  }
+
+  if (tabsRoot) {
+    tabsRoot.addEventListener('click', function (event) {
+      var button = event.target.closest('[data-shop-tab]');
+      if (!button) return;
+      setTab(button.getAttribute('data-shop-tab'));
+    });
+  }
 
   if (search) search.addEventListener('input', render);
 
