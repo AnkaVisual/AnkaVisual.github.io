@@ -375,7 +375,7 @@ html.intro .hero-title.ht-ready{animation:ht-rise 1.9s var(--ease-out) .05s both
   font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);
 }
 .price-badge b{font-weight:600;color:rgba(255,255,255,.82);letter-spacing:.1em}
-.plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:stretch}
+.plans{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:stretch;max-width:900px;margin-inline:auto}
 .plan{
   position:relative;display:flex;flex-direction:column;padding:24px;min-height:536px;
   border:1px solid var(--line);border-radius:var(--radius);background-color:#070707;

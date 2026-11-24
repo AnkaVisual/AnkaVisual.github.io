@@ -25,8 +25,7 @@
   function open(button) {
     clearTimeout(successTimer);
     plan = button.getAttribute('data-preorder') || 'plus';
-    var planName = button.getAttribute('data-plan')
-      || (plan === 'forever' ? 'AnkaVisual Forever' : 'AnkaVisual Plus');
+    var planName = button.getAttribute('data-plan') || 'AnkaVisual Plus';
     if (title) title.textContent = planName;
     form.reset();
     setStatus('');
