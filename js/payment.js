@@ -27,6 +27,7 @@
   var kind = 'plus';
   var itemId = '';
   var itemPrice = 0;
+  var itemName = '';
   var selectedDays = MIN_DAYS;
   var lastFocus = null;
 
@@ -172,15 +173,16 @@
     kind = options.kind || 'plus';
     itemId = options.itemId || '';
     itemPrice = Number(options.price) || 0;
+    itemName = options.name || 'Товар магазина';
 
     if (titleNode) {
       titleNode.textContent = kind === 'plus' ? 'AnkaVisual Plus'
         : kind === 'beta' ? 'Бета-Версия'
-        : (options.name || 'Товар магазина');
+        : itemName;
     }
     if (termBox) termBox.hidden = kind !== 'plus';
     if (itemBox) itemBox.hidden = kind !== 'shop_item';
-    if (itemNameNode) itemNameNode.textContent = options.name || 'Товар магазина';
+    if (itemNameNode) itemNameNode.textContent = itemName;
     if (itemPriceNode) itemPriceNode.textContent = itemPrice + ' ₽';
     if (termBox && kind === 'plus') renderDays(MIN_DAYS, true);
 
@@ -239,7 +241,7 @@
       if (successText) {
         var label = kind === 'plus'
           ? (selectedDays === 0 ? 'AnkaVisual Plus · навсегда' : 'AnkaVisual Plus · ' + selectedDays + ' дн.')
-          : kind === 'beta' ? 'Бета-Версия' : (itemId || 'товар магазина');
+          : kind === 'beta' ? 'Бета-Версия' : itemName;
         successText.textContent = label + ' · заказ ' + data.order.id + ' · ' + data.order.amount + ' ₽ (демо)';
       }
       setMsg('', false);
