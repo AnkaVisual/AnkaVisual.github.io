@@ -15,7 +15,7 @@
 <link rel="preload" href="assets/font/inter-400-cyr.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/font/inter-400-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/font/prata-cyr-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/site.css?v=8">
+<link rel="stylesheet" href="css/site.css?v=9">
 </head>
 <body>
 
@@ -203,8 +203,8 @@ html.intro .ht-ch{opacity:1;filter:none;transform:none}
   <div class="shell">
     <div class="section-head reveal">
       <h2>Простые цены</h2>
-      <p>Сейчас клиент бесплатный. Платные тарифы появятся позже —
-        без обязательной подписки на старте.</p>
+      <p>Сейчас клиент бесплатный. Платные тарифы скоро — можно оставить
+        предзаказ, оплата появится позже.</p>
     </div>
 
     <div class="price-badges reveal">
@@ -238,7 +238,7 @@ html.intro .ht-ch{opacity:1;filter:none;transform:none}
       <article class="plan plan-featured reveal">
         <div class="plan-top">
           <span>AnkaVisual Plus</span>
-          <span class="plan-state">СКОРО</span>
+          <span class="plan-state">ПРЕДЗАКАЗ</span>
         </div>
         <div class="price"><span class="amount">99 ₽</span><span class="per">/мес</span></div>
         <p class="plan-note">Дополнительные визуалы и ранний доступ.</p>
@@ -248,15 +248,15 @@ html.intro .ht-ch{opacity:1;filter:none;transform:none}
           <li>Ранний доступ к обновлениям</li>
           <li>Приоритетная поддержка</li>
         </ul>
-        <span class="plan-fine">Оплата появится позже</span>
-        <span class="plan-cta is-soon">Скоро</span>
+        <span class="plan-fine">Оплата появится позже · заявка ни к чему не обязывает</span>
+        <button class="plan-cta plan-preorder" type="button" data-preorder="plus" data-plan="AnkaVisual Plus">Оформить предзаказ</button>
       </article>
 
       <!-- Forever -->
       <article class="plan reveal">
         <div class="plan-top">
           <span>AnkaVisual Forever</span>
-          <span class="plan-state">СКОРО</span>
+          <span class="plan-state">ПРЕДЗАКАЗ</span>
         </div>
         <div class="price"><span class="amount">649 ₽</span><span class="per">/навсегда</span></div>
         <p class="plan-note">Один раз — и все будущие обновления.</p>
@@ -265,8 +265,8 @@ html.intro .ht-ch{opacity:1;filter:none;transform:none}
           <li>Все будущие обновления</li>
           <li>Доступ навсегда</li>
         </ul>
-        <span class="plan-fine">Оплата появится позже</span>
-        <span class="plan-cta is-soon">Скоро</span>
+        <span class="plan-fine">Оплата появится позже · заявка ни к чему не обязывает</span>
+        <button class="plan-cta plan-preorder" type="button" data-preorder="forever" data-plan="AnkaVisual Forever">Оформить предзаказ</button>
       </article>
     </div>
 
@@ -428,8 +428,35 @@ html.intro .ht-ch{opacity:1;filter:none;transform:none}
   </div>
 </footer>
 
+<div id="preorderModal" class="po-overlay" hidden>
+  <div class="po-dialog" role="dialog" aria-modal="true" aria-labelledby="poTitle">
+    <button class="po-close" type="button" data-po-close aria-label="Закрыть">×</button>
+    <span class="po-kicker">Предзаказ</span>
+    <h2 id="poTitle">AnkaVisual Plus</h2>
+    <p class="po-lede">Оставь контакт — напишем, когда откроется оплата.
+      Заявка ни к чему не обязывает.</p>
+    <form id="preorderForm" class="po-form" autocomplete="on">
+      <label class="po-field">
+        <span>Почта или @telegram</span>
+        <input name="contact" type="text" maxlength="120" autocomplete="email"
+               placeholder="you@example.com или @nickname" required>
+      </label>
+      <label class="po-field">
+        <span>Комментарий <em>необязательно</em></span>
+        <textarea name="comment" rows="2" maxlength="300"
+                  placeholder="Например, что важно в тарифе"></textarea>
+      </label>
+      <p id="poStatus" class="po-status" role="status" aria-live="polite"></p>
+      <button class="po-submit" type="submit">Отправить заявку</button>
+      <p class="po-fine">Оплата появится позже. Сейчас мы только собираем заявки.</p>
+    </form>
+  </div>
+</div>
+
 <a class="promo-checker" href="https://ankavisual.github.io/ankachecker/">AnkaChecker</a>
 <script src="js/site.js?v=5"></script>
+<script src="js/config.js?v=7"></script>
+<script src="js/preorder.js?v=1"></script>
 <script src="js/guard.js?v=2"></script>
 </body>
 </html>

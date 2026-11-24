@@ -256,7 +256,8 @@
         'admin-account-unblock': 'Разблокирован',
         'admin-account-logout': 'Выход из панели',
         'admin-account-password': 'Сменён пароль',
-        'admin-account-delete': 'Удалён аккаунт'
+        'admin-account-delete': 'Удалён аккаунт',
+        'preorder': 'Предзаказ'
     };
 
     /* ---------- stats ---------- */
