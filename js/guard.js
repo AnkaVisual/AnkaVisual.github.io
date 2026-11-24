@@ -8,13 +8,15 @@
 (function () {
   'use strict';
 
-  function isEditable(node) {
+  function isInteractive(node) {
     return !!(node && node.closest
-      && node.closest('input, textarea, select, [contenteditable=""], [contenteditable="true"]'));
+      && node.closest('a, button, input, textarea, select, label, [role="button"], '
+        + '[contenteditable=""], [contenteditable="true"]'));
   }
 
   document.addEventListener('contextmenu', function (event) {
-    if (isEditable(event.target)) return;
+    /* Ссылки и поля не трогаем: «открыть в новой вкладке» и вставка должны работать. */
+    if (isInteractive(event.target)) return;
     event.preventDefault();
   }, false);
 
