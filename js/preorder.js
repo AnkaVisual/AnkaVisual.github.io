@@ -9,10 +9,10 @@
   var form = document.getElementById('preorderForm');
   if (!modal || !form) return;
 
-  /* 30 дней — 99 ₽, максимум ползунка — «навсегда» за 699 ₽. */
+  /* 30 дней — 119 ₽, максимум ползунка — «навсегда» за 699 ₽. */
   var MIN_DAYS = 30;
   var MAX_DAYS = 365;
-  var MIN_PRICE = 99;
+  var MIN_PRICE = 119;
   var MAX_PRICE = 699;
 
   var title = document.getElementById('poTitle');

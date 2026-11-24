@@ -226,7 +226,7 @@
           <span class="pk-video-badge">Окно оплаты · 60 кадров/с</span>
         </div>
         <button type="button" class="pk-primary" id="pkOpenVideoEditor">Открыть редактор</button>
-        <p class="pk-fine">В редакторе — 7 шаблонов, промокод, скидка, пауза в конце и экспорт ролика. Войди в аккаунт, чтобы сохранить результат.</p>
+        <p class="pk-fine">В редакторе — 6 шаблонов, промокод, скидка, ссылка для QR, пауза в конце и экспорт ролика. Войди в аккаунт, чтобы сохранить результат.</p>
       </article>
     </div>
   </div>
@@ -309,7 +309,6 @@
           <button type="button" class="pkv-template" data-template="plate">Плашка</button>
           <button type="button" class="pkv-template" data-template="strip">Полоса</button>
           <button type="button" class="pkv-template" data-template="coupon">Купон</button>
-          <button type="button" class="pkv-template" data-template="terminal">Терминал</button>
           <button type="button" class="pkv-template" data-template="big">Крупный текст</button>
           <button type="button" class="pkv-template" data-template="qr">QR-код</button>
         </div>
@@ -323,7 +322,13 @@
 
       <div class="pkv-group">
         <div class="pkv-label-row"><label class="pkv-label" for="pkDiscountInput">Скидка</label><small>Как у вашего промокода</small></div>
-        <input id="pkDiscountInput" class="pkv-input" type="text" maxlength="8" placeholder="−8%" value="−8%">
+        <input id="pkDiscountInput" class="pkv-input" type="text" maxlength="8" placeholder="−9%" value="−9%">
+      </div>
+
+      <div class="pkv-group">
+        <div class="pkv-label-row"><label class="pkv-label" for="pkQrLink">Код ведёт на</label><small>ссылка в QR</small></div>
+        <input id="pkQrLink" class="pkv-input" type="text" maxlength="160" placeholder="https://ankavisual.github.io/partnership/" value="https://ankavisual.github.io/partnership/">
+        <p class="pkv-desc">QR-код ведёт на эту страницу. Под ним будет виден адрес без https://.</p>
       </div>
 
       <div class="pkv-group">
@@ -389,7 +394,7 @@
 
 <script src="../js/site.js?v=5"></script>
 <script src="../js/config.js?v=7"></script>
-<script src="../js/presskit.js?v=4"></script>
+<script src="../js/presskit.js?v=5"></script>
 <script src="../js/guard.js?v=2"></script>
 </body>
 </html>

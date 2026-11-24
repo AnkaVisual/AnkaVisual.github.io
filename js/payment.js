@@ -6,7 +6,7 @@
 
   var API = String(window.ANKA_API_BASE || 'https://ankaguard.ankavisual.workers.dev').replace(/\/+$/, '');
   var TOKEN_KEY = 'ankavisual.account.token';
-  var MIN_DAYS = 30, MAX_DAYS = 365, MIN_PRICE = 99, MAX_PRICE = 699;
+  var MIN_DAYS = 30, MAX_DAYS = 365, MIN_PRICE = 119, MAX_PRICE = 699;
 
   var overlay = null;
   var titleNode = null;
@@ -93,8 +93,8 @@
             '<label class="pay-days"><input id="payDaysNum" type="number" min="30" max="365" step="1" value="30"><span>дн.</span></label>' +
           '</div>' +
           '<input id="payDays" class="pay-range" type="range" min="30" max="365" step="1" value="30">' +
-          '<div class="pay-scale"><span>30 дней · 99 ₽</span><span>навсегда · 699 ₽</span></div>' +
-          '<div class="pay-total"><span id="payTermLabel">30 дней</span><b id="payTotal">99 ₽</b></div>' +
+          '<div class="pay-scale"><span>30 дней · 119 ₽</span><span>навсегда · 699 ₽</span></div>' +
+          '<div class="pay-total"><span id="payTermLabel">30 дней</span><b id="payTotal">119 ₽</b></div>' +
         '</div>' +
 
         '<div class="pay-item" id="payItemBox" hidden>' +

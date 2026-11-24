@@ -158,8 +158,9 @@
   /* ── редактор промо-видео ───────────────────────────────────── */
 
   var videoState = {
-    template: 'payment', promo: 'PART-ABC123', discount: '−8%',
-    color: PALETTE[0].color, speed: 1, bg: 'dark', time: 0, playing: false, endPause: 3.5
+    template: 'payment', promo: 'PART-ABC123', discount: '−9%',
+    color: PALETTE[0].color, speed: 1, bg: 'dark', time: 0, playing: false, endPause: 3.5,
+    qrLink: 'https://ankavisual.github.io/partnership/'
   };
   var BLOCK_DURATION = 4.7;
   var TEMPLATE_DESC = {
@@ -167,7 +168,6 @@
     plate: 'Скидка, ввод кода, «Применён» · 60 кадров/с',
     strip: 'Полоса внизу кадра, середина свободна · 60 кадров/с',
     coupon: 'Стеклянный купон: код, штамп скидки, корешок отрывается · 60 кадров/с',
-    terminal: 'Код вводится в командной строке, скидка активируется · 60 кадров/с',
     big: 'Код во весь кадр, буквы выезжают одна за другой · 60 кадров/с',
     qr: 'Реферальная ссылка QR-кодом со стеклянной звездой · 30 кадров/с'
   };
@@ -237,7 +237,7 @@
   function drawTemplate(ctx, w, h, p) {
     var c = videoState.color;
     var code = String(videoState.promo || 'PART-ABC123').trim();
-    var discount = String(videoState.discount || '−8%').trim();
+    var discount = String(videoState.discount || '−9%').trim();
     var shown = typedText(ctx, code, p);
     var t = videoState.template;
     ctx.textAlign = 'center';
@@ -545,6 +545,12 @@
       videoState.discount = discount.value.trim().slice(0, 8);
       drawVideo(videoState.time);
     });
+    var qrLink = $('pkQrLink');
+    if (qrLink) qrLink.addEventListener('input', function () {
+      videoState.qrLink = qrLink.value.trim();
+      renderPoster();
+      drawVideo(videoState.time);
+    });
 
     var scrub = $('pkScrub');
     if (scrub) scrub.addEventListener('input', function () {
@@ -610,7 +616,7 @@
   function drawTemplateLegacy(ctx, w, h, p) {
     var c = videoState.color;
     var code = String(videoState.promo || 'PART-ABC123').trim().slice(0, 14);
-    var discount = String(videoState.discount || '−8%').trim();
+    var discount = String(videoState.discount || '−9%').trim();
     var shown = typedText(ctx, code, Math.min(1, p * 1.25));
     var applied = p > 0.58;
     var t = videoState.template;
@@ -777,7 +783,7 @@
   function drawTemplate(ctx, w, h, p) {
     var c = videoState.color;
     var code = String(videoState.promo || 'PART-ABC123').trim().slice(0, 14) || 'PART-ABC123';
-    var discount = String(videoState.discount || '−8%').trim();
+    var discount = String(videoState.discount || '−9%').trim();
     var t = videoState.template;
     var secs = p * BLOCK_DURATION;
 
@@ -819,7 +825,7 @@
     }
     function mark(x, y, size, color) {
       ctx.save();
-      ctx.translate(x, y);
+      ctx.translate(x - size / 2, y - size / 2);
       ctx.scale(size / 100, size / 100);
       ctx.fillStyle = color;
       ctx.fill(new Path2D(MARK_PATH));
@@ -870,9 +876,9 @@
       ctx.save();
       ctx.translate(0, (1 - slide) * 38);
       glass(316, 92, 648, 536, 30, 0.02);
-      mark(360, 140, 34, c);
+      mark(365, 140, 40, c);
       ctx.textAlign = 'left';
-      font(30, 700); ctx.fillStyle = '#fff'; ctx.fillText('AnkaVisual', 406, 141);
+      font(30, 700); ctx.fillStyle = '#fff'; ctx.fillText('AnkaVisual', 410, 141);
       ctx.textAlign = 'center';
       font(19, 700); ctx.fillStyle = hexAlpha(c, 0.95);
       ctx.fillText('ОПЛАТА', 858, 141);
@@ -967,39 +973,6 @@
       ctx.restore(); ctx.restore();
       ctx.textAlign = 'center';
       ctx.restore();
-    } else if (t === 'terminal') {
-      var reveal = ease(secs / 0.55);
-      ctx.save(); ctx.translate(0, (1 - reveal) * 24);
-      rr(ctx, 164, 116, 952, 488, 16);
-      ctx.fillStyle = 'rgba(6,7,10,.96)'; ctx.fill();
-      ctx.strokeStyle = 'rgba(255,255,255,.14)'; ctx.lineWidth = 2; ctx.stroke();
-      ctx.fillStyle = 'rgba(255,255,255,.06)'; ctx.fillRect(164, 116, 952, 46);
-      ['#ff6b6b', '#ffd166', '#7ef0a4'].forEach(function (col, i) {
-        ctx.fillStyle = col; ctx.beginPath(); ctx.arc(194 + i * 24, 139, 6, 0, 6.28); ctx.fill();
-      });
-      ctx.textAlign = 'left';
-      font(22, 600, true); ctx.fillStyle = 'rgba(255,255,255,.35)';
-      ctx.fillText('ankavisual — promo', 1060, 139);
-      font(25, 500, true); ctx.fillStyle = c;
-      ctx.fillText('$ ankavisual promo --apply', 212, 226);
-      ctx.fillStyle = '#fff'; ctx.fillText('> код: ' + typed, 212, 296);
-      caret(212 + ctx.measureText('> код: ' + typed).width + 8, 296, 26);
-      if (applied > 0) {
-        ctx.save(); ctx.globalAlpha = applied;
-        ctx.fillStyle = c; ctx.beginPath(); ctx.arc(226, 376, 13, 0, 6.28); ctx.fill();
-        ctx.strokeStyle = '#0a0a0a'; ctx.lineWidth = 3;
-        ctx.beginPath(); ctx.moveTo(220, 376); ctx.lineTo(224, 381); ctx.lineTo(233, 370); ctx.stroke();
-        ctx.fillStyle = c; font(25, 500, true);
-        ctx.fillText('скидка ' + discount + ' активирована', 252, 378);
-        ctx.fillStyle = 'rgba(255,255,255,.7)';
-        ctx.fillText('доступ открыт', 226, 438);
-        var pr = ctx.createLinearGradient(212, 486, 1068, 486);
-        pr.addColorStop(0, c); pr.addColorStop(1, hexAlpha(c, 0.1));
-        ctx.fillStyle = 'rgba(255,255,255,.08)'; ctx.fillRect(212, 480, 856, 6);
-        ctx.fillStyle = pr; ctx.fillRect(212, 480, 856 * applied, 6);
-        ctx.restore();
-      }
-      ctx.textAlign = 'center'; ctx.restore();
     } else if (t === 'big') {
       var chars = code.split('');
       var size = Math.max(42, Math.min(148, Math.floor(1020 / chars.length * 1.6)));
@@ -1023,14 +996,15 @@
       ctx.textAlign = 'center';
       font(30, 600); ctx.fillStyle = 'rgba(255,255,255,.55)';
       ctx.fillText('AnkaVisual · ' + discount, 640, 520);
-      mark(640, 586, 26, hexAlpha(c, 0.7));
+      mark(640, 580, 36, hexAlpha(c, 0.8));
     } else if (t === 'qr') {
       var cell = 17, n = 17, x0 = 640 - (n * cell) / 2, y0 = 138;
       rr(ctx, x0 - 18, y0 - 18, n * cell + 36, n * cell + 36, 20);
       ctx.fillStyle = 'rgba(255,255,255,.96)'; ctx.fill();
       ctx.strokeStyle = hexAlpha(c, 0.5); ctx.lineWidth = 2; ctx.stroke();
+      var link = String(videoState.qrLink || 'https://ankavisual.github.io/partnership/').trim();
       var seed = 0;
-      for (var s = 0; s < code.length; s++) seed = (seed * 31 + code.charCodeAt(s)) >>> 0;
+      for (var s = 0; s < link.length; s++) seed = (seed * 31 + link.charCodeAt(s)) >>> 0;
       function finder(ox, oy) {
         ctx.fillStyle = '#0c0a14';
         ctx.fillRect(x0 + ox * cell, y0 + oy * cell, 7 * cell, 7 * cell);
@@ -1050,21 +1024,14 @@
       }
       finder(0, 0); finder(n - 7, 0); finder(0, n - 7);
       var cx = 640, cy = y0 + (n * cell) / 2;
-      ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.35)'; ctx.shadowBlur = 22;
-      ctx.fillStyle = 'rgba(255,255,255,.56)';
-      ctx.beginPath(); ctx.arc(cx, cy, 64, 0, 6.28); ctx.fill();
+      ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.4)'; ctx.shadowBlur = 26;
+      ctx.fillStyle = 'rgba(255,255,255,.72)';
+      ctx.beginPath(); ctx.arc(cx, cy, 66, 0, 6.28); ctx.fill();
       ctx.restore();
-      ctx.fillStyle = c; ctx.beginPath();
-      for (var k = 0; k < 10; k++) {
-        var ang = -Math.PI / 2 + k * Math.PI / 5;
-        var rad = k % 2 ? 20 : 48;
-        var px = cx + Math.cos(ang) * rad, py = cy + Math.sin(ang) * rad;
-        if (k === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
-      }
-      ctx.closePath(); ctx.fill();
+      mark(cx, cy, 74, c);
       font(40, 700); ctx.fillStyle = '#fff'; ctx.fillText(typed, 640, 500);
       font(22, 500); ctx.fillStyle = hexAlpha(c, 0.9);
-      ctx.fillText('ankavisual.github.io', 640, 552);
+      ctx.fillText(link.replace(/^https?:\/\//, '').slice(0, 48), 640, 552);
     }
     ctx.textAlign = 'center';
   }
