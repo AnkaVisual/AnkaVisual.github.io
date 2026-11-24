@@ -734,7 +734,22 @@ html.intro .hero-title.ht-ready{animation:ht-rise 1.9s var(--ease-out) .05s both
 @media(max-width:600px){
   .partner-modal-card{padding:24px}
   .partner-promo-code{min-width:0;width:100%}
+  .partner-review-row{flex-direction:column}
 }
+
+.partner-review-list{display:grid;gap:10px;margin-top:14px}
+.partner-review-row{
+  display:flex;align-items:flex-start;gap:12px;padding:12px;
+  border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.02);
+}
+.partner-review-info{flex:1;min-width:0}
+.partner-review-info strong{font-size:13px;color:#fff}
+.partner-review-info span{display:block;margin-top:3px;font-size:11px;color:var(--muted-2);overflow-wrap:anywhere}
+.partner-review-info p{margin:6px 0;font-size:12px;line-height:1.5;color:var(--muted)}
+.partner-review-state[data-state="approved"]{color:var(--accent-2)}
+.partner-review-state[data-state="rejected"]{color:var(--danger)}
+.partner-review-actions{display:flex;flex-direction:column;flex:none;gap:6px}
+.partner-review-actions .dash-btn{height:32px;padding:0 12px;font-size:11px}
 
 .po-submit:disabled{opacity:.6;cursor:default;transform:none}
 .po-status{min-height:18px;font-size:12.5px;line-height:1.5;color:var(--accent-2)}

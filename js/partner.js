@@ -24,6 +24,9 @@
   var ownerId = 'local';
   var current = null;
   var lastVideoUrl = '';
+  var myPrefix = '';
+  var reviewList = null;
+  var reviewBlock = null;
 
   function esc(value) {
     return String(value == null ? '' : value).replace(/[&<>"']/g, function (ch) {
@@ -71,6 +74,12 @@
         '<p class="partner-modal-lede">Промокод и промо-видео с твоим кодом — в одном окне.</p>' +
         '<div class="partner-modal-status" id="partnerModalStatus">Статус: загрузка…</div>' +
 
+        '<div id="partnerReviewBlock" hidden>' +
+          '<h3 class="partner-modal-h3">Заявки на партнёрство</h3>' +
+          '<p class="partner-modal-hint">Одобряй или отклоняй заявки — решение сразу видно партнёру.</p>' +
+          '<div id="partnerReviewList" class="partner-review-list"></div>' +
+        '</div>' +
+
         '<div id="partnerApplyBlock">' +
           '<h3 class="partner-modal-h3">Стать партнёром</h3>' +
           '<p class="partner-modal-hint">Заявка рассматривается владельцем проекта.</p>' +
@@ -109,6 +118,8 @@
 
     overlay = wrap;
     statusNode = document.getElementById('partnerModalStatus');
+    reviewBlock = document.getElementById('partnerReviewBlock');
+    reviewList = document.getElementById('partnerReviewList');
     applyBlock = document.getElementById('partnerApplyBlock');
     promoBlock = document.getElementById('partnerPromoBlock');
     applyForm = document.getElementById('partnerApplyForm');
@@ -125,6 +136,11 @@
     });
 
     if (applyForm) applyForm.addEventListener('submit', submitApplication);
+    if (reviewList) reviewList.addEventListener('click', function (event) {
+      var button = event.target.closest('[data-decide]');
+      if (!button) return;
+      decide(button.getAttribute('data-decide'), button.getAttribute('data-app-id'));
+    });
     if (genCodeBtn) genCodeBtn.addEventListener('click', function () {
       var code = generateCode();
       setMsg('Промокод сгенерирован: ' + code, false);
@@ -149,9 +165,11 @@
       cache: 'no-store'
     }).then(function (response) { return response.ok ? response.json() : {}; })
       .then(function (data) {
-        ownerId = (data && data.account && (data.account.id || data.account.accountId)) || 'local';
+        var account = data && data.account;
+        ownerId = (account && (account.id || account.accountId)) || 'local';
+        myPrefix = String((account && account.prefix) || '').toLowerCase();
       })
-      .catch(function () { ownerId = 'local'; });
+      .catch(function () { ownerId = 'local'; myPrefix = ''; });
   }
 
   function load() {
@@ -177,6 +195,83 @@
       if (codeNode) codeNode.textContent = code;
     }
     setMsg('', false);
+    renderReview();
+  }
+
+  function isOwner() {
+    return ['owner', 'coowner', 'admin'].indexOf(myPrefix) !== -1;
+  }
+
+  function renderReview() {
+    if (!reviewBlock) return;
+    reviewBlock.hidden = !isOwner();
+    if (!isOwner() || !reviewList) return;
+
+    var list = read(STORE, []);
+    if (!Array.isArray(list)) list = [];
+    reviewList.replaceChildren();
+
+    if (!list.length) {
+      var empty = document.createElement('p');
+      empty.className = 'partner-modal-hint';
+      empty.textContent = 'Новых заявок нет.';
+      reviewList.appendChild(empty);
+      return;
+    }
+
+    list.forEach(function (item) {
+      var row = document.createElement('div');
+      row.className = 'partner-review-row';
+
+      var info = document.createElement('div');
+      info.className = 'partner-review-info';
+      var name = document.createElement('strong');
+      name.textContent = item.name || 'Партнёр';
+      var meta = document.createElement('span');
+      meta.textContent = [item.contact, item.link].filter(Boolean).join(' · ');
+      var about = document.createElement('p');
+      about.textContent = item.about || '';
+      var state = document.createElement('span');
+      state.className = 'partner-review-state';
+      state.setAttribute('data-state', String(item.status || 'pending'));
+      state.textContent = { pending: 'На рассмотрении', approved: 'Одобрена', rejected: 'Отклонена' }[String(item.status || 'pending')] || item.status;
+      info.append(name, meta, about, state);
+
+      var actions = document.createElement('div');
+      actions.className = 'partner-review-actions';
+      var approve = document.createElement('button');
+      approve.type = 'button';
+      approve.className = 'dash-btn dash-btn--ghost';
+      approve.textContent = 'Одобрить';
+      approve.setAttribute('data-decide', 'approved');
+      approve.setAttribute('data-app-id', String(item.id || ''));
+      var reject = document.createElement('button');
+      reject.type = 'button';
+      reject.className = 'dash-btn dash-btn--ghost';
+      reject.textContent = 'Отклонить';
+      reject.setAttribute('data-decide', 'rejected');
+      reject.setAttribute('data-app-id', String(item.id || ''));
+      actions.append(approve, reject);
+
+      row.append(info, actions);
+      reviewList.appendChild(row);
+    });
+  }
+
+  function decide(decision, id) {
+    if (!id || !decision) return;
+    var list = read(STORE, []);
+    if (!Array.isArray(list)) return;
+    for (var i = 0; i < list.length; i++) {
+      if (String(list[i].id || '') === String(id)) {
+        list[i].status = decision;
+        break;
+      }
+    }
+    save(list);
+    renderReview();
+    load();
+    setMsg(decision === 'approved' ? 'Заявка одобрена' : 'Заявка отклонена', false);
   }
 
   function save(list) {
