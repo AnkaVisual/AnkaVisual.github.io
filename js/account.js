@@ -473,13 +473,22 @@
   function apiRequest(base, path, options) {
     var opts = options || {};
     var url = base + path;
-    if (token) {
-      url += (url.indexOf('?') >= 0 ? '&' : '?') + 'token=' + encodeURIComponent(token);
+
+    /* Токен уходит заголовком, а не в адресе: так он не попадает в историю,
+       логи прокси и заголовок Referer. */
+    var headers = { 'Content-Type': 'text/plain;charset=UTF-8' };
+    if (token) headers.Authorization = 'Bearer ' + token;
+    if (opts.headers) {
+      for (var key in opts.headers) {
+        if (Object.prototype.hasOwnProperty.call(opts.headers, key)) {
+          headers[key] = opts.headers[key];
+        }
+      }
     }
 
     return fetch(url, {
       method: opts.method || 'GET',
-      headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+      headers: headers,
       body: opts.body ? JSON.stringify(opts.body) : undefined,
       cache: 'no-store'
     }).then(function (response) {

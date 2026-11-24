@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /account/
+Disallow: /api.json
+
+Sitemap: https://ankavisual.github.io/sitemap.xml

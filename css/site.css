@@ -569,6 +569,22 @@ html.intro .hero-title.ht-ready{animation:ht-rise 1.9s var(--ease-out) .05s both
   .hero-cta .btn{width:100%}
   .hero h1{font-size:38px}
 }
+/* ---------- промо-кнопка AnkaChecker ---------- */
+.promo-checker{
+  position:fixed;right:18px;bottom:18px;z-index:900;
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 18px;border-radius:999px;
+  background:linear-gradient(135deg,#6c5ce7,#2f6bff);
+  color:#fff;font:700 14px/1 'Inter',system-ui,sans-serif;
+  text-decoration:none;border:1px solid rgba(255,255,255,.16);
+  box-shadow:0 10px 28px rgba(0,0,0,.45);
+  transition:transform .2s ease,box-shadow .2s ease;
+}
+.promo-checker:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(0,0,0,.55)}
+@media(max-width:600px){
+  .promo-checker{right:12px;bottom:12px;padding:9px 14px;font-size:13px}
+}
+
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}

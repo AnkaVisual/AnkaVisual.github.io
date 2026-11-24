@@ -40,8 +40,11 @@
     }
 
     function fetchAccount(siteToken) {
-        return fetch(API_BASE + '/api/auth/me?token=' + encodeURIComponent(siteToken), {
-            headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+        return fetch(API_BASE + '/api/auth/me', {
+            headers: {
+                'Content-Type': 'text/plain;charset=UTF-8',
+                'Authorization': 'Bearer ' + siteToken
+            },
             cache: 'no-store'
         }).then(function (response) {
             return response.text().then(function (text) {

@@ -294,7 +294,7 @@
   position:absolute;
   inset:-24px;
   z-index:-3;
-  background:url(../assets/ankavisual/images/mainmenu/background.png) center/cover no-repeat;
+  background:url(../assets/ankavisual/images/mainmenu/background.webp) center/cover no-repeat;
   opacity:.38;
   filter:blur(3px) saturate(.82);
   transform:scale(1.06);
