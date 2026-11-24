@@ -179,7 +179,7 @@
         : (options.name || 'Товар магазина');
     }
     if (termBox) termBox.hidden = kind !== 'plus';
-    if (itemBox) itemBox.hidden = kind !== 'shop';
+    if (itemBox) itemBox.hidden = kind !== 'shop_item';
     if (itemNameNode) itemNameNode.textContent = options.name || 'Товар магазина';
     if (itemPriceNode) itemPriceNode.textContent = itemPrice + ' ₽';
     if (termBox && kind === 'plus') renderDays(MIN_DAYS, true);
@@ -207,7 +207,7 @@
 
     var body = { kind: kind };
     if (kind === 'plus') body.days = selectedDays;
-    if (kind === 'shop') body.itemId = itemId;
+    if (kind === 'shop_item') body.itemId = itemId;
     if (contact) body.contact = contact;
 
     var submit = document.getElementById('paySubmit');
@@ -314,7 +314,7 @@
     if (itemButton) {
       event.preventDefault();
       open({
-        kind: 'shop',
+        kind: 'shop_item',
         itemId: itemButton.getAttribute('data-pay-item'),
         name: itemButton.getAttribute('data-pay-name') || 'Товар магазина',
         price: Number(itemButton.getAttribute('data-pay-price')) || 0
