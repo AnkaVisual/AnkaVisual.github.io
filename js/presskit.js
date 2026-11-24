@@ -164,12 +164,12 @@
   var BLOCK_DURATION = 4.7;
   var TEMPLATE_DESC = {
     payment: 'Карточка цены и поле промокода, курсор · 60 кадров/с',
-    plate: 'Плашка с промокодом и скидкой · 60 кадров/с',
-    strip: 'Полоса с бегущим промокодом · 60 кадров/с',
-    coupon: 'Купон с перфорацией и крупной скидкой · 60 кадров/с',
-    terminal: 'Терминал с набором кода и подтверждением · 60 кадров/с',
-    big: 'Крупный текст с подсветкой · 60 кадров/с',
-    qr: 'QR-код и промокод под ним · 60 кадров/с'
+    plate: 'Скидка, ввод кода, «Применён» · 60 кадров/с',
+    strip: 'Полоса внизу кадра, середина свободна · 60 кадров/с',
+    coupon: 'Стеклянный купон: код, штамп скидки, корешок отрывается · 60 кадров/с',
+    terminal: 'Код вводится в командной строке, скидка активируется · 60 кадров/с',
+    big: 'Код во весь кадр, буквы выезжают одна за другой · 60 кадров/с',
+    qr: 'Реферальная ссылка QR-кодом со стеклянной звездой · 30 кадров/с'
   };
   function videoTotal() { return BLOCK_DURATION + videoState.endPause; }
   function videoFrames() { return Math.round(videoTotal() * 60); }
@@ -604,6 +604,173 @@
     drawVideo(0);
     renderPoster();
     updatePause();
+  }
+
+  /* Точная раскладка шаблонов System, но с брендом AnkaVisual и фиолетовым акцентом. */
+  function drawTemplate(ctx, w, h, p) {
+    var c = videoState.color;
+    var code = String(videoState.promo || 'PART-ABC123').trim().slice(0, 14);
+    var discount = String(videoState.discount || '−8%').trim();
+    var shown = typedText(ctx, code, Math.min(1, p * 1.25));
+    var applied = p > 0.58;
+    var t = videoState.template;
+
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    if (t === 'payment') {
+      rr(ctx, 320, 96, 640, 528, 30);
+      ctx.fillStyle = 'rgba(8,8,12,.94)'; ctx.fill();
+      ctx.strokeStyle = hexAlpha(c, 0.45); ctx.lineWidth = 2; ctx.stroke();
+      ctx.fillStyle = 'rgba(255,255,255,.6)'; ctx.font = '600 30px Inter, system-ui, sans-serif';
+      ctx.fillText('AnkaVisual · оплата', 640, 158);
+      ctx.fillStyle = '#fff'; ctx.font = '700 96px Inter, system-ui, sans-serif';
+      ctx.fillText('600 ₽', 640, 262);
+      ctx.fillStyle = 'rgba(255,255,255,.4)'; ctx.font = '500 26px Inter, system-ui, sans-serif';
+      ctx.fillText('/ мес · полный доступ', 640, 320);
+      rr(ctx, 400, 370, 480, 100, 16);
+      ctx.fillStyle = 'rgba(255,255,255,.05)'; ctx.fill();
+      ctx.strokeStyle = hexAlpha(c, 0.75); ctx.lineWidth = 3; ctx.stroke();
+      ctx.fillStyle = c; fitText(ctx, shown, 56, 700, 420); ctx.fillText(shown, 640, 420);
+      if (Math.sin(p * 14) > 0) {
+        var tw = ctx.measureText(shown).width;
+        ctx.fillRect(640 + tw / 2 + 6, 398, 3, 44);
+      }
+      ctx.fillStyle = hexAlpha(c, 0.9); ctx.font = '600 26px Inter, system-ui, sans-serif';
+      ctx.fillText(discount + ' по промокоду', 640, 525);
+      ctx.save(); ctx.translate(770, 520); ctx.rotate(-0.18);
+      ctx.fillStyle = '#fff'; ctx.beginPath();
+      ctx.moveTo(0, 0); ctx.lineTo(0, 42); ctx.lineTo(10, 32); ctx.lineTo(17, 47);
+      ctx.lineTo(24, 43); ctx.lineTo(17, 29); ctx.lineTo(31, 26); ctx.closePath(); ctx.fill();
+      ctx.restore();
+    } else if (t === 'plate') {
+      rr(ctx, 150, 250, 980, 220, 26);
+      ctx.fillStyle = 'rgba(255,255,255,.07)'; ctx.fill();
+      ctx.strokeStyle = hexAlpha(c, 0.7); ctx.lineWidth = 3; ctx.stroke();
+      ctx.fillStyle = c; ctx.font = '800 68px Inter, system-ui, sans-serif';
+      ctx.fillText(discount, 290, 345);
+      ctx.fillStyle = 'rgba(255,255,255,.45)'; ctx.font = '600 24px Inter, system-ui, sans-serif';
+      ctx.fillText('скидка по коду', 290, 405);
+      rr(ctx, 470, 310, 520, 100, 16);
+      ctx.fillStyle = 'rgba(0,0,0,.45)'; ctx.fill();
+      ctx.strokeStyle = hexAlpha(c, 0.8); ctx.lineWidth = 2; ctx.stroke();
+      ctx.fillStyle = '#fff'; fitText(ctx, shown, 54, 700, 470); ctx.fillText(shown, 730, 360);
+      if (applied) {
+        rr(ctx, 760, 195, 220, 66, 33); ctx.fillStyle = c; ctx.fill();
+        ctx.fillStyle = '#0a0a0a'; ctx.font = '700 27px Inter, system-ui, sans-serif';
+        ctx.fillText('Применён', 870, 228);
+      }
+    } else if (t === 'strip') {
+      ctx.fillStyle = 'rgba(8,8,12,.9)'; ctx.fillRect(0, 540, 1280, 180);
+      ctx.fillStyle = c; ctx.fillRect(0, 540, 1280, 6);
+      ctx.textAlign = 'left';
+      ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.font = '600 24px Inter, system-ui, sans-serif';
+      ctx.fillText('AnkaVisual', 60, 630);
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#fff'; fitText(ctx, shown, 66, 700, 700); ctx.fillText(shown, 650, 615);
+      ctx.fillStyle = hexAlpha(c, 0.95); ctx.font = '700 32px Inter, system-ui, sans-serif';
+      ctx.fillText(discount, 1130, 615);
+    } else if (t === 'coupon') {
+      var tear = Math.min(1, p * 1.3);
+      rr(ctx, 170, 190, 940, 340, 28);
+      ctx.fillStyle = 'rgba(255,255,255,.08)'; ctx.fill();
+      ctx.strokeStyle = hexAlpha(c, 0.6); ctx.lineWidth = 2; ctx.stroke();
+      ctx.textAlign = 'left';
+      ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.font = '600 26px Inter, system-ui, sans-serif';
+      ctx.fillText('ПРОМОКОД ANKAVISUAL', 220, 250);
+      ctx.fillStyle = '#fff'; fitText(ctx, shown, 72, 700, 560); ctx.fillText(shown, 220, 340);
+      ctx.fillStyle = 'rgba(255,255,255,.4)'; ctx.font = '500 22px Inter, system-ui, sans-serif';
+      ctx.fillText('ankavisual.github.io', 220, 455);
+      ctx.save(); ctx.setLineDash([10, 12]); ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(880, 205); ctx.lineTo(880, 515); ctx.stroke(); ctx.restore();
+      ctx.save(); ctx.translate(tear * 42, 0);
+      ctx.fillStyle = 'rgba(255,255,255,.05)'; ctx.fillRect(885, 195, 225, 330);
+      ctx.strokeStyle = hexAlpha(c, 0.8); ctx.lineWidth = 4;
+      ctx.save(); ctx.translate(998, 360); ctx.rotate(-0.25);
+      ctx.strokeRect(-85, -45, 170, 90);
+      ctx.fillStyle = c; ctx.font = '800 52px Inter, system-ui, sans-serif';
+      ctx.textAlign = 'center'; ctx.fillText(discount, 0, 6);
+      ctx.restore(); ctx.restore();
+      ctx.textAlign = 'center';
+    } else if (t === 'terminal') {
+      rr(ctx, 170, 120, 940, 480, 16);
+      ctx.fillStyle = '#08090b'; ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,.14)'; ctx.lineWidth = 2; ctx.stroke();
+      ctx.fillStyle = 'rgba(255,255,255,.07)'; ctx.fillRect(170, 120, 940, 46);
+      ['#ff6b6b', '#ffd166', '#7ef0a4'].forEach(function (col, i) {
+        ctx.fillStyle = col; ctx.beginPath(); ctx.arc(198 + i * 24, 143, 6, 0, 6.28); ctx.fill();
+      });
+      ctx.textAlign = 'left';
+      ctx.font = '400 25px monospace';
+      ctx.fillStyle = c; ctx.fillText('$ ankavisual promo --apply', 210, 230);
+      ctx.fillStyle = '#fff'; ctx.fillText('> код: ' + shown, 210, 300);
+      if (applied) {
+        ctx.fillStyle = c; ctx.fillText('> скидка ' + discount + ' активирована', 210, 380);
+        ctx.fillStyle = '#fff'; ctx.fillText('> доступ открыт', 210, 440);
+      }
+      if (Math.sin(p * 10) > 0) ctx.fillRect(210 + ctx.measureText('> код: ' + shown).width + 8, 280, 12, 28);
+      ctx.textAlign = 'center';
+    } else if (t === 'big') {
+      var chars = code.split('');
+      var size = Math.max(44, Math.min(160, Math.floor(1000 / chars.length * 1.6)));
+      ctx.font = '700 ' + size + 'px Inter, system-ui, sans-serif';
+      var widths = chars.map(function (ch) { return ctx.measureText(ch).width; });
+      var total = widths.reduce(function (a, b) { return a + b; }, 0);
+      var x = 640 - total / 2;
+      ctx.textAlign = 'left';
+      for (var i = 0; i < chars.length; i++) {
+        var local = Math.max(0, Math.min(1, (p * chars.length - i) / 0.7));
+        ctx.globalAlpha = local;
+        ctx.fillStyle = c;
+        ctx.shadowColor = hexAlpha(c, 0.7); ctx.shadowBlur = 30;
+        ctx.fillText(chars[i], x, 370 + (1 - local) * 140);
+        x += widths[i];
+      }
+      ctx.globalAlpha = 1; ctx.shadowBlur = 0; ctx.textAlign = 'center';
+      ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.font = '600 38px Inter, system-ui, sans-serif';
+      ctx.fillText('AnkaVisual · ' + discount, 640, 520);
+    } else if (t === 'qr') {
+      var cell = 17, n = 17, x0 = 640 - (n * cell) / 2, y0 = 150;
+      rr(ctx, x0 - 16, y0 - 16, n * cell + 32, n * cell + 32, 18);
+      ctx.fillStyle = 'rgba(255,255,255,.92)'; ctx.fill();
+      var seed = 0;
+      for (var s = 0; s < code.length; s++) seed = (seed * 31 + code.charCodeAt(s)) >>> 0;
+      function finder(ox, oy) {
+        ctx.fillStyle = '#0a0a0a';
+        ctx.fillRect(x0 + ox * cell, y0 + oy * cell, 7 * cell, 7 * cell);
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(x0 + (ox + 1) * cell, y0 + (oy + 1) * cell, 5 * cell, 5 * cell);
+        ctx.fillStyle = '#0a0a0a';
+        ctx.fillRect(x0 + (ox + 2) * cell, y0 + (oy + 2) * cell, 3 * cell, 3 * cell);
+      }
+      for (var yy = 0; yy < n; yy++) {
+        for (var xx = 0; xx < n; xx++) {
+          if ((xx < 8 && yy < 8) || (xx > n - 9 && yy < 8) || (xx < 8 && yy > n - 9)) continue;
+          var bit = ((seed >>> ((xx * 7 + yy * 3) % 24)) + xx * yy) % 3;
+          if (bit === 0) {
+            ctx.fillStyle = '#0a0a0a';
+            ctx.fillRect(x0 + xx * cell, y0 + yy * cell, cell - 2, cell - 2);
+          }
+        }
+      }
+      finder(0, 0); finder(n - 7, 0); finder(0, n - 7);
+      var cx = 640, cy = y0 + (n * cell) / 2;
+      ctx.fillStyle = 'rgba(255,255,255,.55)';
+      ctx.beginPath(); ctx.arc(cx, cy, 62, 0, 6.28); ctx.fill();
+      ctx.fillStyle = c; ctx.beginPath();
+      for (var k = 0; k < 10; k++) {
+        var ang = -Math.PI / 2 + k * Math.PI / 5;
+        var rad = k % 2 ? 20 : 46;
+        var px = cx + Math.cos(ang) * rad, py = cy + Math.sin(ang) * rad;
+        if (k === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      }
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.font = '700 40px Inter, system-ui, sans-serif';
+      ctx.fillText(shown, 640, 500);
+      ctx.fillStyle = 'rgba(255,255,255,.45)'; ctx.font = '500 22px Inter, system-ui, sans-serif';
+      ctx.fillText('ankavisual.github.io', 640, 555);
+    }
+    ctx.textAlign = 'center';
   }
 
   function init() {
