@@ -34,7 +34,10 @@
 }
 .pk-input:focus{border-color:rgba(177,140,255,.6);background:rgba(255,255,255,.05)}
 .pk-input::placeholder{color:rgba(255,255,255,.28)}
-.pk-input--promo{font-family:'JetBrains Mono',ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase}
+.pk-input--promo{
+  font-family:'JetBrains Mono',ui-monospace,monospace;
+  font-size:15px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+}
 .pk-textarea{min-height:96px;line-height:1.5;resize:vertical}
 .pk-check{display:flex;align-items:center;gap:9px;font-size:12px;line-height:1.4;color:var(--muted-2);cursor:pointer}
 .pk-check input{width:16px;height:16px;accent-color:var(--accent);flex:none}
@@ -191,7 +194,10 @@
   background:rgba(255,255,255,.03);color:#fff;font:inherit;font-size:13px;outline:none;
 }
 .pkv-input:focus{border-color:rgba(177,140,255,.6)}
-.pkv-input--promo{font-family:'JetBrains Mono',ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase}
+.pkv-input--promo{
+  font-family:'JetBrains Mono',ui-monospace,monospace;
+  font-size:16px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+}
 .pkv-stepper{display:grid;grid-template-columns:38px 1fr 38px;gap:6px}
 .pkv-stepper input{
   height:34px;min-width:0;padding:0 6px;text-align:center;color:#fff;

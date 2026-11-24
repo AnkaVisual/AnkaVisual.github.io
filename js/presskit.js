@@ -169,7 +169,7 @@
     strip: 'Полоса внизу кадра, середина свободна · 60 кадров/с',
     coupon: 'Стеклянный купон: код, штамп скидки, корешок отрывается · 60 кадров/с',
     big: 'Код во весь кадр, буквы выезжают одна за другой · 60 кадров/с',
-    qr: 'Реферальная ссылка QR-кодом со стеклянной звездой · 30 кадров/с'
+    qr: 'QR-код на партнёрский центр с логотипом AnkaVisual · 30 кадров/с'
   };
   function videoTotal() { return BLOCK_DURATION + videoState.endPause; }
   function videoFrames() { return Math.round(videoTotal() * 60); }
@@ -545,12 +545,6 @@
       videoState.discount = discount.value.trim().slice(0, 8);
       drawVideo(videoState.time);
     });
-    var qrLink = $('pkQrLink');
-    if (qrLink) qrLink.addEventListener('input', function () {
-      videoState.qrLink = qrLink.value.trim();
-      renderPoster();
-      drawVideo(videoState.time);
-    });
 
     var scrub = $('pkScrub');
     if (scrub) scrub.addEventListener('input', function () {
@@ -886,7 +880,7 @@
       font(25, 500); ctx.fillStyle = 'rgba(255,255,255,.45)';
       ctx.fillText('в месяц · все возможности', 640, 320);
       glass(392, 366, 496, 102, 16, 0.01);
-      ctx.fillStyle = '#fff'; fit(typed, 52, 700, 440, true); ctx.fillText(typed, 640, 417);
+      ctx.fillStyle = '#fff'; fit(typed, 56, 700, 440); ctx.fillText(typed, 640, 417);
       caret(640 + ctx.measureText(typed).width / 2 + 9, 417, 46);
       if (applied > 0) {
         ctx.save(); ctx.globalAlpha = applied;
@@ -910,7 +904,7 @@
       ctx.fillStyle = c; font(76, 800); ctx.fillText(discount, 300, 352);
       font(23, 600); ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.fillText('скидка по коду', 300, 410);
       glass(470, 310, 530, 104, 16, 0.01);
-      ctx.fillStyle = '#fff'; fit(typed, 50, 700, 470, true); ctx.fillText(typed, 735, 362);
+      ctx.fillStyle = '#fff'; fit(typed, 54, 700, 470); ctx.fillText(typed, 735, 362);
       caret(735 + ctx.measureText(typed).width / 2 + 8, 362, 44);
       if (applied > 0) {
         ctx.save(); ctx.globalAlpha = applied; ctx.translate(870, 215);
@@ -934,7 +928,7 @@
       ctx.textAlign = 'left'; font(24, 650); ctx.fillStyle = 'rgba(255,255,255,.62)';
       ctx.fillText('AnkaVisual', 108, 627);
       ctx.textAlign = 'center'; ctx.fillStyle = '#fff';
-      fit(typed, 58, 700, 690, true); ctx.fillText(typed, 650, 618);
+      fit(typed, 66, 700, 690); ctx.fillText(typed, 650, 618);
       caret(650 + ctx.measureText(typed).width / 2 + 8, 618, 52);
       rr(ctx, 1030, 586, 180, 62, 31);
       ctx.fillStyle = hexAlpha(c, 0.18); ctx.fill();
@@ -956,7 +950,7 @@
       ctx.textAlign = 'left';
       font(25, 700); ctx.fillStyle = '#fff'; ctx.fillText('AnkaVisual', 268, 250);
       font(20, 600); ctx.fillStyle = hexAlpha(c, 0.9); ctx.fillText('· промокод', 412, 250);
-      fit(typed, 64, 750, 520, true); ctx.fillStyle = '#fff'; ctx.fillText(typed, 216, 342);
+      fit(typed, 76, 750, 560); ctx.fillStyle = '#fff'; ctx.fillText(typed, 216, 342);
       caret(216 + ctx.measureText(typed).width + 8, 342, 60);
       font(22, 500); ctx.fillStyle = 'rgba(255,255,255,.42)';
       ctx.fillText('ankavisual.github.io', 216, 462);
@@ -978,7 +972,7 @@
     } else if (t === 'big') {
       var chars = code.split('');
       var size = Math.max(42, Math.min(148, Math.floor(1020 / chars.length * 1.6)));
-      font(size, 780, true);
+      font(size, 780);
       var widths = chars.map(function (ch) { return ctx.measureText(ch).width; });
       var totalW = widths.reduce(function (a, b) { return a + b; }, 0);
       var x = 640 - totalW / 2;
@@ -1035,7 +1029,7 @@
       ctx.beginPath(); ctx.arc(cx, cy, logoSize * 0.72, 0, 6.28); ctx.fill();
       ctx.restore();
       mark(cx, cy, logoSize, c);
-      font(36, 700, true); ctx.fillStyle = '#fff'; ctx.fillText(typed, 640, 500);
+      font(40, 700); ctx.fillStyle = '#fff'; ctx.fillText(typed, 640, 500);
       font(22, 500); ctx.fillStyle = hexAlpha(c, 0.9);
       ctx.fillText(link.replace(/^https?:\/\//, '').slice(0, 48), 640, 552);
     }
