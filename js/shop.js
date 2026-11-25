@@ -53,7 +53,8 @@
       version: '1.21.11',
       tags: ['pvp', 'legit', 'hud'],
       description: 'Аккуратный конфиг для легит-PvP: чистая подсветка цели, удобный HUD и безопасные настройки.',
-      code: 'ANKA-PVP1'
+      code: 'ANKA-PVP1',
+      imageId: 'demo:../assets/img/menu.webp'
     },
     {
       id: 'visual-clean',
@@ -65,7 +66,8 @@
       version: '1.21.11',
       tags: ['visual', 'clean', 'menu'],
       description: 'Спокойный визуал без лишнего шума. Подходит для скриншотов, стримов и обычной игры.',
-      code: 'ANKA-VIS1'
+      code: 'ANKA-VIS1',
+      imageId: 'demo:../assets/img/menu-bg.webp'
     },
     {
       id: 'utility-base',
@@ -77,7 +79,8 @@
       version: '1.21.11',
       tags: ['utility', 'hud', 'base'],
       description: 'Базовый набор утилит и аккуратный интерфейс — удобная отправная точка для своих настроек.',
-      code: 'ANKA-UTL1'
+      code: 'ANKA-UTL1',
+      imageId: 'demo:../assets/img/menu.webp'
     },
     {
       id: 'res-anim',
@@ -89,7 +92,8 @@
       version: '1.21.11',
       tags: ['anim', 'resource', 'packs'],
       description: 'Набор плавных анимаций интерфейса и частиц для клиента AnkaVisual.',
-      url: 'https://ankavisual.github.io/AnkaVisual/releases/download/v1.0.0/AnkaResourcePackDemo.zip'
+      url: '../assets/ankavisual/resource-pack-demo.zip',
+      imageId: 'demo:../assets/img/menu-bg.webp'
     }
   ];
 
@@ -117,11 +121,16 @@
     return String(item.kind || 'config') === 'resource' ? 'resource' : 'config';
   }
 
+  function imageUrl(imageId) {
+    var value = String(imageId || '');
+    if (!value) return '';
+    if (value.indexOf('data:') === 0) return value;
+    if (value.indexOf('demo:') === 0) return value.slice(5);
+    return API + '/api/shop/images/' + value;
+  }
+
   function coverUrl(item) {
-    var imageId = String(item.imageId || '');
-    if (!imageId) return '';
-    if (imageId.indexOf('data:') === 0) return imageId;
-    return API + '/api/shop/images/' + imageId;
+    return imageUrl(item.imageId);
   }
 
   function card(item, index) {
@@ -257,7 +266,7 @@
 
   function openLightbox(imageId) {
     if (!lightbox || !lightboxImg) return;
-    lightboxImg.src = imageId ? (String(imageId).indexOf('data:') === 0 ? imageId : API + '/api/shop/images/' + imageId) : '';
+    lightboxImg.src = imageUrl(imageId);
     lightbox.hidden = false;
     document.body.style.overflow = 'hidden';
   }
