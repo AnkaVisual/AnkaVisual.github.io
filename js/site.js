@@ -130,4 +130,58 @@
 
   const year = document.getElementById('year');
   if (year) year.textContent = String(new Date().getFullYear());
+
+  /* ---------- вошедший пользователь в шапке ---------- */
+  (function headerUser() {
+    const login = document.querySelector('.header-actions .login');
+    if (!login) return;
+    let siteToken = '';
+    try { siteToken = localStorage.getItem('ankavisual.account.token') || ''; } catch (ignored) { /* приватный режим */ }
+    if (!siteToken) return;
+
+    const base = String(window.ANKA_API_BASE || 'https://ankaguard.ankavisual.workers.dev').replace(/\/+$/, '');
+    fetch(base + '/api/auth/me', {
+      headers: { Authorization: 'Bearer ' + siteToken, Accept: 'application/json' },
+      cache: 'no-store'
+    }).then((response) => response.ok ? response.json() : null)
+      .then((data) => {
+        const account = data && data.account;
+        if (!account) return;
+
+        const labels = {
+          owner: 'Владелец', coowner: 'Со-владелец', admin: 'Админ',
+          support: 'Поддержка', beta: 'Бета-тестер'
+        };
+        const rawPrefix = String(account.prefix || '').toLowerCase();
+        const label = labels[rawPrefix] || '';
+
+        const chip = document.createElement('a');
+        chip.className = 'user-chip';
+        chip.href = '/account/';
+
+        const avatar = document.createElement('span');
+        avatar.className = 'user-chip-ava';
+        const src = String(account.avatar || '');
+        if (src) {
+          avatar.style.backgroundImage = 'url("' + src + '")';
+          avatar.classList.add('has-avatar');
+        } else {
+          avatar.textContent = String(account.username || '?').charAt(0).toUpperCase();
+        }
+
+        const name = document.createElement('span');
+        name.className = 'user-chip-name';
+        name.textContent = account.username || 'Аккаунт';
+
+        chip.append(avatar, name);
+        if (label) {
+          const prefix = document.createElement('span');
+          prefix.className = 'user-chip-prefix pf-' + rawPrefix;
+          prefix.textContent = label;
+          chip.appendChild(prefix);
+        }
+        login.replaceWith(chip);
+      })
+      .catch(() => { /* гостевой режим — оставляем «Войти» */ });
+  })();
 })();
