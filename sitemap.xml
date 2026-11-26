@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://ankavisual.github.io/</loc>
+    <loc>https://ankavisual-site.ankavisual.workers.dev/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://ankavisual.github.io/shop/</loc>
+    <loc>https://ankavisual-site.ankavisual.workers.dev/shop/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ankavisual-site.ankavisual.workers.dev/partnership/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

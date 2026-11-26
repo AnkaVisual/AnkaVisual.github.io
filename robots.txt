@@ -4,4 +4,4 @@ Disallow: /admin/
 Disallow: /account/
 Disallow: /api.json
 
-Sitemap: https://ankavisual.github.io/sitemap.xml
+Sitemap: https://ankavisual-site.ankavisual.workers.dev/sitemap.xml
