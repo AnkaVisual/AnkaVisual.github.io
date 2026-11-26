@@ -160,7 +160,7 @@
   var videoState = {
     template: 'payment', promo: 'PART-ABC123', discount: '−9%',
     color: PALETTE[0].color, speed: 1, bg: 'dark', time: 0, playing: false, endPause: 3.5,
-    qrLink: 'https://ankavisual.github.io/partnership/'
+    qrLink: window.location.origin + '/partnership/'
   };
   var BLOCK_DURATION = 4.7;
   var TEMPLATE_DESC = {
@@ -994,7 +994,7 @@
       ctx.fillText('AnkaVisual · ' + discount, 640, 520);
       mark(640, 580, 36, hexAlpha(c, 0.8));
     } else if (t === 'qr') {
-      var link = String(videoState.qrLink || '').trim() || 'https://ankavisual.github.io/partnership/';
+      var link = String(videoState.qrLink || '').trim() || (window.location.origin + '/partnership/');
       var qr = null;
       try {
         if (typeof window.qrcode === 'function') {

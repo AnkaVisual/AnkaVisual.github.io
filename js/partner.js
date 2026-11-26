@@ -76,7 +76,7 @@
         '<span class="partner-modal-kicker">AnkaVisual Partners</span>' +
         '<h2 id="partnerModalTitle">Партнёрство</h2>' +
         '<p class="partner-modal-lede">Промокод и промо-видео с твоим кодом — в одном окне.</p>' +
-        '<a class="partner-center-link" href="https://ankavisual.github.io/partnership/">Открыть партнёрский центр →</a>' +
+        '<a class="partner-center-link" href="/partnership/">Открыть партнёрский центр →</a>' +
         '<div class="partner-modal-status" id="partnerModalStatus">Статус: загрузка…</div>' +
 
         '<div id="partnerReviewBlock" hidden>' +
