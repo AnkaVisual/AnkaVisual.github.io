@@ -280,7 +280,7 @@
       fitText(ctx, shown, 78, 800, 500); ctx.fillText(shown, 480, 360);
       ctx.fillStyle = c; ctx.font = '800 96px Inter, sans-serif'; ctx.fillText(discount, 990, 360);
       ctx.fillStyle = '#6a5d86'; ctx.font = '500 20px Inter, sans-serif';
-      ctx.fillText('ankavisual.github.io', 640, 550);
+      ctx.fillText('ankavisual.pro', 640, 550);
     } else if (t === 'terminal') {
       rr(ctx, 170, 130, 940, 460, 18); ctx.fillStyle = '#08090b'; ctx.fill();
       ctx.strokeStyle = 'rgba(255,255,255,.14)'; ctx.lineWidth = 2; ctx.stroke();
@@ -680,7 +680,7 @@
       ctx.fillText('ПРОМОКОД ANKAVISUAL', 220, 250);
       ctx.fillStyle = '#fff'; fitText(ctx, shown, 72, 700, 560); ctx.fillText(shown, 220, 340);
       ctx.fillStyle = 'rgba(255,255,255,.4)'; ctx.font = '500 22px Inter, system-ui, sans-serif';
-      ctx.fillText('ankavisual.github.io', 220, 455);
+      ctx.fillText('ankavisual.pro', 220, 455);
       ctx.save(); ctx.setLineDash([10, 12]); ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.lineWidth = 2;
       ctx.beginPath(); ctx.moveTo(880, 205); ctx.lineTo(880, 515); ctx.stroke(); ctx.restore();
       ctx.save(); ctx.translate(tear * 42, 0);
@@ -768,7 +768,7 @@
       ctx.fillStyle = '#fff'; ctx.font = '700 40px Inter, system-ui, sans-serif';
       ctx.fillText(shown, 640, 500);
       ctx.fillStyle = 'rgba(255,255,255,.45)'; ctx.font = '500 22px Inter, system-ui, sans-serif';
-      ctx.fillText('ankavisual.github.io', 640, 555);
+      ctx.fillText('ankavisual.pro', 640, 555);
     }
     ctx.textAlign = 'center';
   }
@@ -953,7 +953,7 @@
       fit(typed, 76, 750, 560); ctx.fillStyle = '#fff'; ctx.fillText(typed, 216, 342);
       caret(216 + ctx.measureText(typed).width + 8, 342, 60);
       font(22, 500); ctx.fillStyle = 'rgba(255,255,255,.42)';
-      ctx.fillText('ankavisual.github.io', 216, 462);
+      ctx.fillText('ankavisual.pro', 216, 462);
       ctx.save(); ctx.setLineDash([9, 12]);
       ctx.strokeStyle = 'rgba(255,255,255,.32)'; ctx.lineWidth = 2;
       ctx.beginPath(); ctx.moveTo(890, 205); ctx.lineTo(890, 515); ctx.stroke(); ctx.restore();
