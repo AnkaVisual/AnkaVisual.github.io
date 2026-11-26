@@ -1332,11 +1332,6 @@
         }
     });
 
-    checkAccess().then(function (allowed) {
-        if (!allowed) return;
-        var saved = '';
-        try { saved = sessionStorage.getItem('ag-token') || ''; } catch (ignored) { /* ignore */ }
-        if (saved) start(saved);
-        else showLogin('');
-    });
+    /* Панель работает без входа — загружаем данные сразу. */
+    start('public');
 })();
