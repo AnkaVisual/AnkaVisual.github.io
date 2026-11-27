@@ -4,7 +4,10 @@
    ============================================================ */
 
 :root{
-  --acc:#b18cff; --acc-2:#c8a9ff; --acc-soft:rgba(177,140,255,.12); --acc-line:rgba(177,140,255,.38);
+  --acc:#b18cff; --acc-2:#c8a9ff; --acc-soft:rgba(var(--accent-rgb),.12); --acc-line:rgba(var(--accent-rgb),.38);
+  --accent-rgb:177,140,255;
+  --accent-soft:rgba(var(--accent-rgb),.12); --accent-line:rgba(var(--accent-rgb),.38);
+  --font-main:'Inter',system-ui,sans-serif;
   --muted:rgba(255,255,255,.56); --muted-2:rgba(255,255,255,.4); --muted-3:rgba(255,255,255,.26);
   --line:rgba(255,255,255,.08); --line-2:rgba(255,255,255,.13); --line-3:rgba(255,255,255,.22);
   --panel:#09090c; --ok:#7ef0a4; --warn:#ffd166; --err:#ff8a8a;
@@ -16,15 +19,15 @@
 html,body{min-height:100%}
 body.account-body{
   background:#050507;color:#fff;
-  font:400 13.5px/1.55 'Inter',system-ui,sans-serif;
+  font:400 13.5px/1.55 var(--font-main);
   -webkit-font-smoothing:antialiased;
   min-height:100vh;
 }
 .account-body::before{
   content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   background:
-    radial-gradient(50% 38% at 8% -8%,rgba(177,140,255,.14),transparent 72%),
-    radial-gradient(42% 36% at 105% 105%,rgba(177,140,255,.09),transparent 70%);
+    radial-gradient(50% 38% at 8% -8%,rgba(var(--accent-rgb),.14),transparent 72%),
+    radial-gradient(42% 36% at 105% 105%,rgba(var(--accent-rgb),.09),transparent 70%);
 }
 a{color:var(--acc-2);text-decoration:none}
 a:hover{color:#fff}
@@ -58,7 +61,7 @@ button{cursor:pointer}
   font-size:13px;font-weight:600;
   transition:filter .2s,background .2s,transform .2s;
 }
-.auth-btn--primary{border:0;background:linear-gradient(135deg,var(--acc),#9d78e8);color:#0a0a0a;box-shadow:0 8px 24px rgba(177,140,255,.18)}
+.auth-btn--primary{border:0;background:linear-gradient(135deg,var(--acc),#9d78e8);color:#0a0a0a;box-shadow:0 8px 24px rgba(var(--accent-rgb),.18)}
 .auth-btn--primary:hover{filter:brightness(1.1);transform:translateY(-1px)}
 .auth-btn--ghost{border:1px solid var(--line-2);background:rgba(255,255,255,.03);color:#fff}
 .auth-btn--ghost:hover{background:rgba(255,255,255,.07)}
@@ -76,7 +79,7 @@ button{cursor:pointer}
 .auth-promo-kicker{font:600 10px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--acc)}
 .auth__right{
   position:relative;overflow:hidden;border-left:1px solid var(--line);
-  background:radial-gradient(60% 50% at 60% 40%,rgba(177,140,255,.16),transparent 70%),#08080b;
+  background:radial-gradient(60% 50% at 60% 40%,rgba(var(--accent-rgb),.16),transparent 70%),#08080b;
 }
 .auth__right::after{
   content:"";position:absolute;inset:0;pointer-events:none;
@@ -242,6 +245,28 @@ button{cursor:pointer}
 .config-count{padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.05);font-size:10px;color:var(--muted)}
 .config-photos{display:grid;gap:10px;margin-top:2px}
 .config-photo-preview{width:128px;height:128px;border-radius:30px;font-size:42px}
+.theme-group-title{margin:22px 0 10px;font-size:13px;font-weight:600;color:var(--muted)}
+.theme-swatches{display:flex;flex-wrap:wrap;gap:10px}
+.theme-swatch{
+  width:30px;height:30px;border-radius:50%;border:2px solid transparent;
+  background:var(--swatch);box-shadow:0 0 0 1px rgba(255,255,255,.14) inset;cursor:pointer;
+}
+.theme-swatch:hover{transform:scale(1.08)}
+.theme-swatch.is-active{border-color:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.18)}
+.theme-custom{display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap}
+.theme-label{font-size:11.5px;color:var(--muted-2)}
+.theme-custom input[type="color"]{
+  width:44px;height:34px;padding:2px;border:1px solid var(--line-2);border-radius:9px;
+  background:rgba(255,255,255,.03);cursor:pointer;
+}
+.theme-custom span{font-size:11.5px;color:var(--muted)}
+.theme-preview{
+  display:grid;gap:6px;margin-top:18px;padding:20px;border:1px solid var(--accent-line);border-radius:14px;
+  background:var(--accent-soft);
+}
+.theme-preview b{font-family:'Prata',serif;font-size:26px;font-weight:400;color:var(--accent-3,var(--acc-2))}
+.theme-preview span:last-child{font-size:12px;color:var(--muted)}
+#themeFont{margin-top:4px}
 .pay-panel-title{margin:20px 0 8px;font-size:13px;font-weight:600;color:var(--muted)}
 .pay-panel-list{display:grid;gap:8px}
 .pay-row{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:11px;font-size:12px}

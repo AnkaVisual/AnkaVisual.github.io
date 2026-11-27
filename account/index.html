@@ -14,8 +14,9 @@
 <link rel="apple-touch-icon" href="assets/ankavisual/logo-round.png">
 <link rel="preload" href="assets/font/inter-400-cyr.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/font/inter-400-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/site.css?v=18">
-<link rel="stylesheet" href="css/account.css?v=19">
+<script src="js/theme.js"></script>
+<link rel="stylesheet" href="css/site.css?v=19">
+<link rel="stylesheet" href="css/account.css?v=20">
 </head>
 <body class="account-body">
 
@@ -161,6 +162,7 @@
 
         <p class="dash-nav-label">Покупки</p>
         <button type="button" data-panel-nav="payments">Мои покупки</button>
+        <button type="button" data-panel-nav="settings">Настройки</button>
       </nav>
 
       <a class="dash-side-download" href="https://ankaguard.ankavisual.workers.dev/download">
@@ -546,6 +548,53 @@
         </div>
       </section>
 
+      <!-- Настройки оформления -->
+      <section class="dash-panel" data-panel="settings" hidden>
+        <div class="dash-grid">
+          <article class="dcard dcard--wide">
+            <h2 class="dcard-title">Оформление</h2>
+            <p class="dcard-lede">Настройки сохраняются в этом браузере и применяются на всех страницах сайта.</p>
+
+            <h3 class="theme-group-title">Акцентный цвет</h3>
+            <div class="theme-swatches" id="themeSwatches">
+              <button type="button" class="theme-swatch" data-color="#b18cff" style="--swatch:#b18cff" aria-label="Аметист"></button>
+              <button type="button" class="theme-swatch" data-color="#ffd166" style="--swatch:#ffd166" aria-label="Золото"></button>
+              <button type="button" class="theme-swatch" data-color="#ff7eb6" style="--swatch:#ff7eb6" aria-label="Роза"></button>
+              <button type="button" class="theme-swatch" data-color="#7ef0a4" style="--swatch:#7ef0a4" aria-label="Изумруд"></button>
+              <button type="button" class="theme-swatch" data-color="#5aa9ff" style="--swatch:#5aa9ff" aria-label="Сапфир"></button>
+              <button type="button" class="theme-swatch" data-color="#ff6b6b" style="--swatch:#ff6b6b" aria-label="Рубин"></button>
+            </div>
+            <div class="theme-custom">
+              <label class="theme-label" for="themeColor">Свой цвет</label>
+              <input type="color" id="themeColor" value="#b18cff">
+              <span class="mono" id="themeColorValue">#b18cff</span>
+            </div>
+
+            <h3 class="theme-group-title">Основной шрифт</h3>
+            <select id="themeFont" class="auth-input">
+              <option value="inter">Inter — по умолчанию</option>
+              <option value="mono">JetBrains Mono — моноширинный</option>
+              <option value="prata">Prata — засечный</option>
+              <option value="georgia">Georgia — классический</option>
+              <option value="system">System UI</option>
+            </select>
+            <p class="config-form-hint">Шрифт применяется ко всем страницам, включая эту. Заголовки остаются в Prata.</p>
+
+            <div class="theme-preview" id="themePreview">
+              <span class="eyebrow">Предпросмотр</span>
+              <b>AnkaVisual</b>
+              <span>Визуал, который не мешает играть</span>
+            </div>
+
+            <div class="dcard-actions">
+              <button type="button" class="dash-btn dash-btn--primary" id="themeSave">Сохранить</button>
+              <button type="button" class="dash-btn dash-btn--ghost" id="themeReset">Сбросить</button>
+            </div>
+            <p id="themeMsg" class="auth-msg" hidden></p>
+          </article>
+        </div>
+      </section>
+
       <footer class="dash-foot">
         <span>© 2026 AnkaVisual</span>
         <a href="index.html">На главную</a>
@@ -625,7 +674,8 @@
 </div>
 
 <script src="js/config.js?v=101"></script>
-<script src="js/account.js?v=27"></script>
+<script src="js/account.js?v=28"></script>
+<script src="js/theme-settings.js?v=1"></script>
 <script src="js/payment.js?v=5"></script>
 <script src="js/guard.js?v=2"></script>
 </body>
