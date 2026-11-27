@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; media-src 'self' blob:; font-src 'self'; connect-src 'self' https://static.cloudflareinsights.com https://ankaguard.ankavisual.workers.dev http://127.0.0.1:8724 http://localhost:8724; base-uri 'self'; form-action 'self'; object-src 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<script src="../js/intro.js?v=1"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Магазин — AnkaVisual Store</title>
+<meta name="description" content="AnkaVisual Store: визуалы, ресурспаки, конфиги и косметика для клиента. Примеряй, выбирай и покупай.">
+<meta name="robots" content="index, follow, noarchive">
+<link rel="icon" href="../assets/ankavisual/icon.ico" sizes="any">
+<script src="../js/theme.js"></script>
+<link rel="stylesheet" href="../css/site.css?v=19">
+<link rel="stylesheet" href="../css/store.css?v=1">
+</head>
+<body>
+
+<header class="site-header" id="top">
+  <div class="shell header-inner">
+    <a class="brand" href="../index.html" aria-label="AnkaVisual — на главную">
+      <img class="mark" src="../assets/ankavisual/logo.svg" alt="" width="26" height="26">
+      <span>AnkaVisual</span>
+    </a>
+    <nav class="nav-links" aria-label="Главная навигация">
+      <a href="../index.html#features">Возможности</a>
+      <a href="../index.html#pricing">Цены</a>
+      <a href="./" aria-current="page">Магазин</a>
+      <a href="../partnership/">Партнёрство</a>
+      <a href="../index.html#faq">FAQ</a>
+      <a href="../account/">Аккаунт</a>
+    </nav>
+    <div class="header-actions">
+      <a class="login" href="../account/">Войти</a>
+      <a class="btn btn-light btn-sm" href="https://ankaguard.ankavisual.workers.dev/download">Скачать
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- витрина -->
+  <section class="section store-hero">
+    <div class="shell">
+      <div class="store-hero-grid">
+        <div class="store-hero-copy reveal">
+          <span class="eyebrow"><span class="live-dot"></span> ANKAVISUAL STORE · ВИТРИНА</span>
+          <h1>Визуал, который<br>видно в игре</h1>
+          <p>Ресурспаки, конфиги и косметика для AnkaVisual. Смотри, выбирай и забирай — всё сразу в клиенте.</p>
+          <div class="store-hero-actions">
+            <a class="btn btn-light" href="#catalog">Открыть каталог
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+            <a class="btn btn-ghost" href="#coins">Коины и баланс</a>
+          </div>
+        </div>
+        <article class="store-featured reveal">
+          <div class="sf-media"><span class="sf-badge">ПРЕДМЕТ НЕДЕЛИ</span><span class="sf-rarity">Легендарная</span></div>
+          <div class="sf-body">
+            <h3>Дымные перья</h3>
+            <p>Плащ с дымным шлейфом. Видят все игроки, носится поверх любого скина.</p>
+            <div class="sf-foot"><b>249 ₽</b><button class="store-buy" type="button" data-buy="Дымные перья" data-price="249">Купить</button></div>
+          </div>
+        </article>
+      </div>
+
+      <div class="store-banners reveal">
+        <article class="store-banner">
+          <span class="eyebrow">КОЛЛЕКЦИЯ</span>
+          <h3>Тёмный стиль</h3>
+          <p>Плащи, ауры и визуалы из одной коллекции — собери образ целиком.</p>
+          <a href="#collection" class="store-link">Смотреть коллекцию →</a>
+        </article>
+        <article class="store-banner store-banner--acc">
+          <span class="eyebrow">PREMIUM</span>
+          <h3>Всё лучшее в Plus</h3>
+          <p>Все визуалы, ранний доступ и приоритетная поддержка.</p>
+          <a href="../index.html#pricing" class="store-link">Оформить Plus →</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section store-section" id="catalog">
+    <div class="shell">
+      <div class="section-head reveal">
+        <h2>Каталог</h2>
+        <p>Выбери категорию или найди нужный визуал по названию.</p>
+      </div>
+      <div class="store-tools reveal">
+        <input id="storeSearch" class="store-search" type="search" placeholder="Поиск по магазину" aria-label="Поиск по магазину">
+        <a class="store-link" href="../shop/">Конфиги и ресурспаки →</a>
+      </div>
+      <div class="store-cats reveal" id="storeCats"></div>
+      <div class="store-grid" id="storeGrid" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section class="section store-section store-section--alt" id="collection">
+    <div class="shell">
+      <div class="section-head reveal">
+        <h2>Демоническая коллекция</h2>
+        <p>Косы, крылья, ауры и взгляды из преисподней.</p>
+      </div>
+      <div class="store-grid" id="collectionGrid"></div>
+    </div>
+  </section>
+
+  <section class="section store-section" id="partners">
+    <div class="shell">
+      <div class="section-head reveal">
+        <h2>Магазины партнёров</h2>
+        <p>Эксклюзивные визуалы от авторов и сообщества.</p>
+      </div>
+      <div class="store-partners" id="storePartners"></div>
+    </div>
+  </section>
+
+  <section class="section store-section store-section--alt" id="premium">
+    <div class="shell">
+      <div class="premium-card reveal">
+        <div class="premium-copy">
+          <span class="eyebrow">ANKAVISUAL PLUS</span>
+          <h2>Всё лучшее в Plus</h2>
+          <p>Подписка открывает расширенные визуалы, ранний доступ и все будущие обновления.</p>
+          <a class="btn btn-light" href="../index.html#pricing">Оформить Plus
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+        <ul class="premium-list">
+          <li>Все визуалы и функции клиента</li>
+          <li>Ранний доступ к обновлениям</li>
+          <li>Эффекты и кастомизация ника</li>
+          <li>Полный доступ к ивентам</li>
+          <li>Приоритетная поддержка</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section store-section" id="coins">
+    <div class="shell">
+      <div class="coins-card reveal">
+        <div>
+          <span class="eyebrow">1 ₽ = 1 КОИН</span>
+          <h2>Коины</h2>
+          <p>Пополни баланс и забирай визуалы сразу. У тебя <b id="coinBalance">0</b> коинов.</p>
+        </div>
+        <button class="store-buy" type="button" id="topupBtn">Пополнить</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="shell">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="../index.html"><img class="mark" src="../assets/ankavisual/logo.svg" alt="" width="26" height="26"><span>AnkaVisual</span></a>
+        <p>Визуальный клиент для Minecraft на Fabric. После первого запуска работает офлайн.</p>
+      </div>
+      <div class="footer-col"><h5>Продукт</h5><a href="../index.html#features">Возможности</a><a href="../index.html#pricing">Цены</a><a href="../shop/">Конфиги и ресурспаки</a><a href="./">Магазин</a></div>
+      <div class="footer-col"><h5>Ещё</h5><a href="#coins">Пополнить баланс</a><a href="#premium">Plus</a><a href="../partnership/">Партнёрство</a><a href="../account/">Личный кабинет</a></div>
+    </div>
+    <div class="footer-bottom"><span>© <span id="year">2026</span> AnkaVisual</span><span>Minecraft и Fabric принадлежат их владельцам</span></div>
+  </div>
+</footer>
+
+<div class="store-checkout" id="storeCheckout" hidden>
+  <div class="sc-backdrop" data-sc-close></div>
+  <section class="sc-card" role="dialog" aria-modal="true" aria-labelledby="scTitle">
+    <button class="sc-close" type="button" data-sc-close aria-label="Закрыть">×</button>
+    <span class="eyebrow">ДЕМО-ОФОРМЛЕНИЕ</span>
+    <h2 id="scTitle">Покупка</h2>
+    <p id="scItem" class="sc-item"></p>
+    <p class="sc-hint">Сейчас деньги не списываются — покупка появится в твоём кабинете в демо-режиме.</p>
+    <button class="store-buy" type="button" id="scConfirm">Подтвердить</button>
+  </section>
+</div>
+
+<script src="../js/site.js?v=6"></script>
+<script src="../js/store.js?v=1"></script>
+<script src="../js/guard.js?v=2"></script>
+</body>
+</html>
