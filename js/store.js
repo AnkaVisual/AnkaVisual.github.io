@@ -4,7 +4,6 @@
 
   var $ = function (id) { return document.getElementById(id); };
   var STORE_KEY = 'ankavisual.store.purchases';
-  var COINS_KEY = 'ankavisual.store.coins';
 
   var CATEGORIES = [
     { id: 'all', name: 'Все товары' },
@@ -72,9 +71,6 @@
 
   function purchased() { return read(STORE_KEY, []); }
   function isPurchased(id) { return purchased().indexOf(id) !== -1; }
-
-  function coins() { return Number(read(COINS_KEY, 0)) || 0; }
-  function setCoins(value) { write(COINS_KEY, value); var node = $('coinBalance'); if (node) node.textContent = String(value); }
 
   function esc(value) {
     return String(value == null ? '' : value).replace(/[&<>"']/g, function (ch) {
@@ -156,10 +152,8 @@
     var itemNode = $('scItem');
     var title = $('scTitle');
     if (!box) return;
-    if (title) title.textContent = currentAction === 'topup' ? 'Пополнение баланса' : 'Покупка';
-    if (itemNode) itemNode.textContent = currentAction === 'topup'
-      ? '100 коинов за 100 ₽'
-      : esc(name) + ' · ' + price + ' ₽';
+    if (title) title.textContent = 'Покупка';
+    if (itemNode) itemNode.textContent = esc(name) + ' · ' + price + ' ₽';
     box.hidden = false;
     document.body.style.overflow = 'hidden';
   }
@@ -171,10 +165,7 @@
   }
 
   function confirmCheckout() {
-    if (currentAction === 'topup') {
-      setCoins(coins() + 100);
-      toast('Баланс пополнен: +100 коинов');
-    } else if (currentItem && currentItem.id) {
+    if (currentItem && currentItem.id) {
       var list = purchased();
       if (list.indexOf(currentItem.id) === -1) list.push(currentItem.id);
       write(STORE_KEY, list);
@@ -211,13 +202,10 @@
   function init() {
     var search = $('storeSearch');
     if (search) search.addEventListener('input', renderGrid);
-    var topup = $('topupBtn');
-    if (topup) topup.addEventListener('click', function () { openCheckout('Пополнение', 100, 'topup'); });
     var confirm = $('scConfirm');
     if (confirm) confirm.addEventListener('click', confirmCheckout);
     var year = $('year');
     if (year) year.textContent = String(new Date().getFullYear());
-    setCoins(coins());
     renderCats();
     renderGrid();
     renderCollection();
